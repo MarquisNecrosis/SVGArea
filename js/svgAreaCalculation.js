@@ -1,15 +1,18 @@
-import { SvgAreaOfSingleElement } from './svgAreaOfSingleElement';
+import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
 
-class svgAreaCalculation{
+export class svgAreaCalculation{
   constructor(){
   }
 
   calculateAreaOfAllSvgElements(id){
-    const svgElements = document.querySelectorAll(`#${id} svg`);
+    const parentElement = document.getElementById(id);
+    const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
+    const elementsArray = Array.from(elementsWithClass);
     let totalArea = 0;
-    const singleElementAreaCalculator = new SvgAreaOfSingleElement();
-    svgElements.forEach((element) => {
-      totalArea += singleElementAreaCalculator.calculateArea(element);
+    const areaElement = new svgAreaOfSingleElement();
+    elementsArray.forEach((element) => {
+      totalArea += areaElement.calculateArea(element);
     });
+    return totalArea;
   }
 }
