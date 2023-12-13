@@ -84,4 +84,60 @@ export class svgAreaOfSingleElement {
     return area;
   }
 
+  calcutaUncoveredPartPolygon(element, intersectElements) {
+    const numPoints = 10000;
+    const elementBBox = element.getBBox();
+    let percentageUncover = 0;
+    percentageUncover = this.calcutaUncoveredPartPolygonByRandomPoints(element, numPoints, elementBBox, intersectElements)
+    return percentageUncover;
+  }
+
+  calcutaUncoveredPartPolygonByRandomPoints(element, numberOfRandomPoints, elementBBox, intersectElements){
+    let realNumPoints = 1;
+    let pointsWithoutIntersection = 0;
+    let step = 0;
+    const MAX_STEPS_FOR_CALCULATE_AREA = 1000000;
+    while (realNumPoints < numberOfRandomPoints && step < MAX_STEPS_FOR_CALCULATE_AREA) {
+      let randomPoint = this.getRandomPointInBoundingBox(
+        elementBBox.x,
+        elementBBox.y,
+        elementBBox.x + elementBBox.width,
+        elementBBox.y + elementBBox.height
+      );
+
+      if (this.isPointInSvgPath(element, randomPoint)) {
+        realNumPoints++;
+        if(!this.isPointIntersect(intersectElements, randomPoint)){
+          pointsWithoutIntersection++;
+        }
+      }
+      step++;
+    }
+    const percentageUncover = pointsWithoutIntersection/realNumPoints;
+    return percentageUncover;
+  }
+
+  getRandomPointInBoundingBox(minX, minY, maxX, maxY) {
+    const x = Math.random() * (maxX - minX) + minX;
+    const y = Math.random() * (maxY - minY) + minY;
+    return { x, y };
+  }
+
+  isPointIntersect(intersectElements, point){
+    let pointIntersect = false;
+    intersectElements.forEach((element) => {
+      if (this.isPointInSvgPath(element, point)) {
+        pointIntersect = true;
+      }
+    });
+    return pointIntersect;
+  }
+
+  isPointInSvgPath(intersectElements, point) {
+    const svgPoint = intersectElements.ownerSVGElement.createSVGPoint();
+    svgPoint.x = point.x;
+    svgPoint.y = point.y;
+    return intersectElements.isPointInFill(svgPoint);
+  }
+
 }
