@@ -84,11 +84,10 @@ export class svgAreaOfSingleElement {
     return area;
   }
 
-  calcutaUncoveredPartPolygon(element, intersectElements) {
-    const numPoints = 10000;
+  calcutaUncoveredPartPolygon(element, intersectElements, numberOfRandomPoints) {
     const elementBBox = element.getBBox();
     let percentageUncover = 0;
-    percentageUncover = this.calcutaUncoveredPartPolygonByRandomPoints(element, numPoints, elementBBox, intersectElements)
+    percentageUncover = this.calcutaUncoveredPartPolygonByRandomPoints(element, numberOfRandomPoints, elementBBox, intersectElements)
     return percentageUncover;
   }
 

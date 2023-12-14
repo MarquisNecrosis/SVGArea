@@ -1,27 +1,32 @@
 import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
 
 export class svgAreaCalculation{
+
+  static LIT_RANDOM_POINTS = 10000;
+  static MOD_RANDOM_POINTS = 100000;
+  static HIGH_RANDOM_POINTS = 1000000;
+
   constructor(){
   }
 
-  calculateAreaOfAllSvgElements(id){
+  areaInSvg(id){
     const parentElement = document.getElementById(id);
     const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
-    const totalArea = this.calculateAreaOfAllElements(elementsWithClass);
+    const totalArea = this.areaOfEllements(elementsWithClass);
     return totalArea;
   }
 
-  calculateAreaOfAllSvgElementsByGroup(id, groupClass){
+  areaInSvgByGroup(id, groupClass){
     const parentElement = document.getElementById(id);
     const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
     const elementsWithAttribute = Array.from(elementsWithClass).filter((element) => {
       return element.getAttribute('areagroup') === groupClass;
     });
-    const totalArea = this.calculateAreaOfAllElements(elementsWithAttribute);
+    const totalArea = this.areaOfEllements(elementsWithAttribute);
     return totalArea;
   }
 
-  calculateAreaOfAllElements(svgElements){
+  areaOfEllements(svgElements){
     const elementsArray = Array.from(svgElements);
     let totalArea = 0;
     const areaElement = new svgAreaOfSingleElement();
@@ -31,23 +36,39 @@ export class svgAreaCalculation{
     return totalArea;
   }
 
-  calculateAreaOfAllSvgElementsWithIntersection(id){
+  areaInSvgWithIntersection(id, numberOfRandomPoints = this.LIT_RANDOM_POINTS){
+    const startTime = performance.now();
     const parentElement = document.getElementById(id);
     const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
-    const totalArea = this.calculateAreaOfAllElements(elementsWithClass);
+    const totalArea = this.areaOfEllementsWithIntersection(elementsWithClass, numberOfRandomPoints);
+    const endTime = performance.now();
+    const elapsedTime = endTime - startTime;
+    console.log('Function execution time:', elapsedTime, 'milliseconds');
     return totalArea;
   }
 
-  calculateAreaOfAllElementsWithIntersection(id){
+  areaInSvgWithIntersectionByGroup(id, groupClass, numberOfRandomPoints = this.LIT_RANDOM_POINTS){
+    const startTime = performance.now();
     const parentElement = document.getElementById(id);
     const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
-    const elementsArray = Array.from(elementsWithClass);
+    const elementsWithAttribute = Array.from(elementsWithClass).filter((element) => {
+      return element.getAttribute('areagroup') === groupClass;
+    });
+    const totalArea = this.areaOfEllementsWithIntersection(elementsWithAttribute, numberOfRandomPoints);
+    const endTime = performance.now();
+    const elapsedTime = endTime - startTime;
+    console.log('Function execution time:', elapsedTime, 'milliseconds');
+    return totalArea;
+  }
+
+  areaOfEllementsWithIntersection(svgElements, numberOfRandomPoints){
+    const elementsArray = Array.from(svgElements);
     let totalArea = 0;
     const areaElement = new svgAreaOfSingleElement();
     let intersectElements = [];
     elementsArray.forEach((element) => {
       const area = areaElement.calculateArea(element);
-      const percentageCover = areaElement.calcutaUncoveredPartPolygon(element, intersectElements);
+      const percentageCover = areaElement.calcutaUncoveredPartPolygon(element, intersectElements, numberOfRandomPoints);
       intersectElements.push(element);
       totalArea += area * percentageCover;
     });
