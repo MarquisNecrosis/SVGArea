@@ -2,11 +2,36 @@ import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
 
 export class svgAreaCalculation{
 
-  static LIT_RANDOM_POINTS = 10000;
-  static MOD_RANDOM_POINTS = 100000;
-  static HIGH_RANDOM_POINTS = 1000000;
+  static LIT_RANDOM_POINTS = 1000;
+  static MOD_RANDOM_POINTS = 10000;
+  static HIGH_RANDOM_POINTS = 100000;
 
   constructor(){
+  }
+
+  lazyStupidAreaCalculation(id){
+    const startTime = performance.now();
+
+    const parentElement = document.getElementById(id);
+    const childElements = Array.from(parentElement.children);
+    let totalArea = 0;
+    const areaElement = new svgAreaOfSingleElement();
+    let intersectElements = [];
+    childElements.forEach((child, index) => {
+      const bbox = child.getBBox();
+      for (let x = bbox.x; x < bbox.x + bbox.width; x++) {
+        for (let y = bbox.y; y < bbox.y + bbox.height; y++) {
+          if (!areaElement.isPointIntersect(intersectElements, {'x': x, 'y': y})){
+            totalArea ++;
+          }
+        }      
+      }
+      intersectElements.push(child);
+    });
+    const endTime = performance.now();
+    const elapsedTime = endTime - startTime;
+    console.log('Function execution time:', elapsedTime, 'milliseconds');
+    return totalArea; 
   }
 
   areaInSvg(id){

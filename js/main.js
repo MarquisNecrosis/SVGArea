@@ -1,10 +1,19 @@
 import {svgAreaCalculation} from './svgAreaCalculation.js';
+import {svgRandomGenerate} from './svgRandomGenerate.js';
 
 // Create an instance of the SvgAreaCalculation class
 const areaCalculator = new svgAreaCalculation();
+const svgRandom = new svgRandomGenerate('tutorial_svg');
 
 window.onload = function() {
 
+  const parentElement = document.getElementById('tutorial_svg');
+  const bbox = parentElement.getBoundingClientRect();
+  const width = bbox.width;
+  const height = bbox.height;
+  const totalAreaSvg = width * height;
+  console.log(totalAreaSvg);
+  svgRandom.generateRandomRectangle(20);
   const totalArea = areaCalculator.areaInSvg('tutorial_svg');
   console.log(totalArea);
   const totalArea2 = areaCalculator.areaInSvgByGroup('tutorial_svg', '1');
@@ -14,12 +23,13 @@ window.onload = function() {
   const totalArea4 = areaCalculator.areaInSvgByGroup('tutorial_svg', '3');
   console.log(totalArea4);
 
-  const totalAreaIntersect = areaCalculator.areaInSvgWithIntersection('tutorial_svg');
-  console.log(totalAreaIntersect);
-  const totalAreaIntersect2 = areaCalculator.areaInSvgWithIntersectionByGroup('tutorial_svg', '2', svgAreaCalculation.LIT_RANDOM_POINTS);
+  const totalAreaIntersect2 = areaCalculator.areaInSvgWithIntersection('tutorial_svg', svgAreaCalculation.LIT_RANDOM_POINTS);
   console.log(totalAreaIntersect2);
-  const totalAreaIntersect3 = areaCalculator.areaInSvgWithIntersectionByGroup('tutorial_svg', '2', svgAreaCalculation.MOD_RANDOM_POINTS);
-  console.log(totalAreaIntersect2);
-  const totalAreaIntersect4 = areaCalculator.areaInSvgWithIntersectionByGroup('tutorial_svg', '2', svgAreaCalculation.HIGH_RANDOM_POINTS);
-  console.log(totalAreaIntersect2);
+  const totalAreaIntersect3 = areaCalculator.areaInSvgWithIntersection('tutorial_svg', svgAreaCalculation.MOD_RANDOM_POINTS);
+  console.log(totalAreaIntersect3);
+  const totalAreaIntersect4 = areaCalculator.areaInSvgWithIntersection('tutorial_svg', svgAreaCalculation.HIGH_RANDOM_POINTS);
+  console.log(totalAreaIntersect4);
+  const preciseArea = areaCalculator.lazyStupidAreaCalculation('tutorial_svg');
+  console.log(preciseArea);
+  
 };
