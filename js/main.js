@@ -1,9 +1,11 @@
 import {svgAreaCalculation} from './svgAreaCalculation.js';
+import { svgAreaIntersection } from './svgAreaIntersection.js';
 import {svgRandomGenerate} from './svgRandomGenerate.js';
 
 // Create an instance of the SvgAreaCalculation class
 const areaCalculator = new svgAreaCalculation();
 const svgRandom = new svgRandomGenerate('tutorial_svg');
+const intersectElements = new svgAreaIntersection('tutorial_svg');
 
 window.onload = function() {
 
@@ -13,7 +15,7 @@ window.onload = function() {
   const height = bbox.height;
   const totalAreaSvg = width * height;
   console.log(totalAreaSvg);
-  svgRandom.generateRandomRectangle(20);
+ // svgRandom.generateRandomRectangle(20);
   const totalArea = areaCalculator.areaInSvg('tutorial_svg');
   console.log(totalArea);
   const totalArea2 = areaCalculator.areaInSvgByGroup('tutorial_svg', '1');
@@ -32,4 +34,7 @@ window.onload = function() {
   const preciseArea = areaCalculator.lazyStupidAreaCalculation('tutorial_svg');
   console.log(preciseArea);
   
+  intersectElements.lineIntersection(1, 1, 3, 2, 1, 4, 2, -1);
+  intersectElements.lineIntersection(-1, 0, 4, 0, 1, 4, 1, -1);
+
 };
