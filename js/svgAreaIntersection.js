@@ -9,7 +9,7 @@ export class svgAreaIntersection{
   }
 
   lineIntersectionLine(line1, line2){
-    return this.lineIntersection(line1[0][0], line1[1][0], line1[0][1], line1[1][1], line2[0][0], line2[1][0], line2[0][1], line2[1][1]);
+    return this.lineIntersection(line1[0][0], line1[0][1], line1[1][0], line1[1][1], line2[0][0], line2[0][1], line2[1][0], line2[1][1]);
   }
 
   lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4){
@@ -63,20 +63,18 @@ export class svgAreaIntersection{
     const pointsAttribute = polygonElement.getAttribute('points');
     if (!pointsAttribute) {
       console.error('The polygon element does not have a points attribute.');
-      return { xCoordinates: [], yCoordinates: [] };
+      return [];
     }
     const points = pointsAttribute.split(/\s+/);
   
-    const xCoordinates = [];
-    const yCoordinates = [];
+    const coord = [];
   
     points.forEach((point) => {
       const [x, y] = point.split(',').map(parseFloat);
-      xCoordinates.push(x);
-      yCoordinates.push(y);
+      coord.push([x, y]);
     });
   
-    return [ xCoordinates, yCoordinates ];
+    return coord;
   }
 
   getRectangleCoordinates(rectangleElement) {
@@ -84,9 +82,8 @@ export class svgAreaIntersection{
     const y = rectangleElement.getAttribute('y') ? parseFloat(rectangleElement.getAttribute('y')) : 0;
     const width = parseFloat(rectangleElement.getAttribute('width'));
     const height = parseFloat(rectangleElement.getAttribute('height'));
-    const xCoordinates = [x, width, width, x];
-    const yCoordinates = [y, y, height, height];
-    return [ xCoordinates, yCoordinates ];
+    const coord = [[x, y], [width, y], [width, height], [x, height]];
+    return coord;
   }
 
   polygonIntersection(currentPoints, intersectedPoints){
@@ -136,7 +133,6 @@ export class svgAreaIntersection{
     let interPointIndex = [];
     for (let i = 0; i < intersectedPoints.vectorDimension(); i++) {
       const intersectLine = intersectedPoints.nextLine(i);
-      console.log(intersectLine);
       const intersection = this.lineIntersectionLine(linePoints, intersectLine);
       if (intersection[0] != null && intersection[1] != null){
         intersections.push(intersection);

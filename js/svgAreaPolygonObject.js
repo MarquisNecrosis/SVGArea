@@ -5,15 +5,11 @@ export class svgAreaPolygonObject{
   }
 
   getPoint(index){
-    return [this.points[0][index], this.points[1][index]];
+    return this.points[index];
   }
 
-  pointsSlice(startIndex, endIndex){
-    return [this.points[0].slice(startIndex, endIndex), this.points[1].slice(startIndex, endIndex)];
-  }
-
-  pointsEndStart(){
-    return [[this.points[0][this.vectorDimension() - 1], this.points[0][0]], [this.points[1][this.vectorDimension() - 1], this.points[1][0]]]
+  nextPoints(startIndex, endIndex){
+    return [this.points.slice(startIndex, endIndex), this.points[1].slice(startIndex, endIndex)];
   }
 
   lineFromCurrentIndex(){
@@ -22,14 +18,14 @@ export class svgAreaPolygonObject{
 
   nextLine(index){
     if(index == this.vectorDimension() - 1){
-      return this.pointsEndStart();
+      return [this.points[this.vectorDimension() - 1], this.points[0]];
     }
     else {
-      return this.pointsSlice(index, index + 2);
+      return [this.points[index], this.points[index + 1]];
     }
   }
 
   vectorDimension(){
-    return this.points[0].length;
+    return this.points.length;
   }
 }
