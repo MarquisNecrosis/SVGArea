@@ -4,7 +4,16 @@ export class svgAreaPolygonObject{
     this.index = index;
   }
 
+  setNextIndex(){
+    this.setIndex(this.index + 1);
+  }
+
+  setIndex(index){
+    this.index = index % (this.points.length);
+  }
+
   getPoint(index){
+    index = index % (this.points.length);
     return this.points[index];
   }
 
@@ -17,15 +26,13 @@ export class svgAreaPolygonObject{
   }
 
   nextLine(index){
-    if(index == this.vectorDimension() - 1){
-      return [this.points[this.vectorDimension() - 1], this.points[0]];
+    index = index % (this.points.length);
+    if(index == this.points.length - 1){
+      return [this.points[this.points.length - 1], this.points[0]];
     }
     else {
       return [this.points[index], this.points[index + 1]];
     }
   }
 
-  vectorDimension(){
-    return this.points.length;
-  }
 }

@@ -3,6 +3,7 @@ import { svgAreaPolygonObject } from "./svgAreaPolygonObject.js";
 export class svgAreaIntersection{
 
   hasfirstIntersection = false;
+  MAX_ITERATION = 1000;
 
   constructor(){
     this.currentPolygon = new svgAreaPolygonObject([], 0);
@@ -13,18 +14,22 @@ export class svgAreaIntersection{
   }
 
   lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4){
-    let t = ((y3 - y1) * (x2 - x1) - (x3 - x1) * (y2 - y1)) / ((x4 - x3) * (y2 - y1) - (y4 - y3) * (x2 - x1));
-    let s = ((x3 - x1) + t * (x4 - x3)) / (x2 - x1);
+    let intersection1 = null;
+    let intersection2 = null;
+    let t = 0;
+    let s = 0;
+    t = ((y3 - y1) * (x2 - x1) - (x3 - x1) * (y2 - y1)) / ((x4 - x3) * (y2 - y1) - (y4 - y3) * (x2 - x1));
+    s = ((x3 - x1) + t * (x4 - x3)) / (x2 - x1);
+    if(isNaN(s) || isNaN(t)){
+      t = ((x3 - x1) * (y2 - y1) - (y3 - y1) * (x2 - x1)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
+      s = ((y3 - y1) + t * (y4 - y3)) / (y2 - y1);
+
+    }
     if (0 <= s && s <= 1 && 0 <= t && t <= 1) {
-      let intersection1 = (x1 + s * (x2 - x1));
-      let intersection2 = (y1 + s * (y2 - y1));
-      let intersection3 = (x3 + t * (x4 - x3));
-      let intersection4 = (y3 + t * (y4 - y3));
-      return [intersection1, intersection2];
+      intersection1 = (x1 + s * (x2 - x1));
+      intersection2 = (y1 + s * (y2 - y1));
     }
-    else {
-      return [null, null];
-    }
+    return [intersection1, intersection2];
   }
 
   polygonIntersectionInSvg(svgID){
@@ -35,6 +40,7 @@ export class svgAreaIntersection{
       const points = this.elementPointTransformation(element);
       const intersectPolygon = new svgAreaPolygonObject(points, 0);
       this.currentPolygon = this.polygonIntersection(this.currentPolygon, intersectPolygon);
+      console.log(this.currentPolygon);
     });
   }
 
@@ -82,7 +88,7 @@ export class svgAreaIntersection{
     const y = rectangleElement.getAttribute('y') ? parseFloat(rectangleElement.getAttribute('y')) : 0;
     const width = parseFloat(rectangleElement.getAttribute('width'));
     const height = parseFloat(rectangleElement.getAttribute('height'));
-    const coord = [[x, y], [width, y], [width, height], [x, height]];
+    const coord = [[x, y], [x + width, y], [x + width, y + height], [x, y + height]];
     return coord;
   }
 
@@ -95,35 +101,74 @@ export class svgAreaIntersection{
     }
     else{
       const startPoint = currentPoints.getPoint(0);
-      let newPolygonPoints = startPoint;
+      let newPolygonPoints = [startPoint];
       let endPoint = [];
-      let currentPointsIndex = 0;
-      let intersectedPointsIndex = 0;
+      let swap = false;
+      let intersectPolygon = intersectedPoints;
       let linePoints = currentPoints.lineFromCurrentIndex();
+      let it = 0;
       while (startPoint !== endPoint) {
         let intersection = null
         if (this.hasfirstIntersection){
-          intersection = this.checkIfLineHasIntersection(linePoints, intersectedPoints);
+          intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon);
         }
         else {
-          intersection = this.checkForFirstIntersection(linePoints, intersectedPoints);
+          intersection = this.checkForFirstIntersection(linePoints, intersectPolygon);
         }
-        currentPoints.index++;
         if(intersection == null){
-          linePoints = currentPoints.lineFromCurrentIndex();
+          if(swap){
+            intersectedPoints.setNextIndex();
+            linePoints = intersectedPoints.lineFromCurrentIndex();
+            const nextPoint = intersectedPoints.getPoint(intersectedPoints.index);
+            endPoint = nextPoint;
+            newPolygonPoints.push(nextPoint);
+          }
+          else{
+            currentPoints.setNextIndex();
+            linePoints = currentPoints.lineFromCurrentIndex();
+            const nextPoint = currentPoints.getPoint(currentPoints.index);
+            endPoint = nextPoint;
+            newPolygonPoints.push(nextPoint);
+          }
         }
-        break;
+        else{
+          this.hasfirstIntersection = true;
+          newPolygonPoints.push(intersection);
+          swap = !swap;
+          if(swap){
+            intersectedPoints.setNextIndex();
+            linePoints = intersectedPoints.lineFromCurrentIndex();
+            intersectPolygon = currentPoints;
+            const nextPoint = intersectedPoints.getPoint(intersectedPoints.index);
+            endPoint = nextPoint;
+            newPolygonPoints.push(nextPoint);
+          }
+          else {
+            currentPoints.setNextIndex();
+            linePoints = currentPoints.lineFromCurrentIndex();
+            intersectPolygon = intersectedPoints;
+            const nextPoint = currentPoints.getPoint(currentPoints.index);
+            endPoint = nextPoint;
+            newPolygonPoints.push(nextPoint);
+          }
+        }
+        it++;
+        if(it >= this.MAX_ITERATION){
+          break;
+        }
       }
+      return newPolygonPoints;
     }
   }
 
   checkIfLineHasIntersection(linePoints, intersectedPoints){
-    for (let i = 0; i < intersectedPoints.vectorDimension(); i++) {
-      const intersectLine = intersectedPoints.nextLine(i);
+    for (let i = 0; i < intersectedPoints.points.length; i++) {
+      const intersectLine = intersectedPoints.lineFromCurrentIndex();
       const intersection = this.lineIntersectionLine(linePoints, intersectLine);
       if (intersection[0] != null && intersection[1] != null){
         return intersection;
       }
+      intersectedPoints.setNextIndex();
     }
     return null;
   }
@@ -131,7 +176,7 @@ export class svgAreaIntersection{
   checkForFirstIntersection(linePoints, intersectedPoints){
     let intersections = [];
     let interPointIndex = [];
-    for (let i = 0; i < intersectedPoints.vectorDimension(); i++) {
+    for (let i = 0; i < intersectedPoints.points.length; i++) {
       const intersectLine = intersectedPoints.nextLine(i);
       const intersection = this.lineIntersectionLine(linePoints, intersectLine);
       if (intersection[0] != null && intersection[1] != null){
