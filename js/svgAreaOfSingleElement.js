@@ -40,19 +40,22 @@ export class svgAreaOfSingleElement {
 
   //Shoelace formula
   calculatePolygonArea(polygonElement) {
-    let xCoordinates = [];
-    let yCoordinates = [];
-    [xCoordinates, yCoordinates] = this.getPolygonCoordinates(polygonElement);
+    const coord = this.getPolygonCoordinates(polygonElement);
+    const area = this.calculatePolygonAreaFromPoints(coord);
+    polygonElement.setAttribute('area', area);
+    return area;
+  }
+
+  calculatePolygonAreaFromPoints(coord){
     var calc1 = 0;
     var calc2 = 0;
-    for (let index = 0; index < xCoordinates.length - 1; index++) {
-      calc1 += xCoordinates[index] * yCoordinates[index + 1];
-      calc2 += xCoordinates[index + 1] * yCoordinates[index];
+    for (let index = 0; index < coord.length - 1; index++) {
+      calc1 += coord[index][0] * coord[index + 1][1];
+      calc2 += coord[index + 1][0] * coord[index][1];
     }
-    calc1 += xCoordinates[xCoordinates.length - 1] * yCoordinates[0];
-    calc2 += xCoordinates[0] * yCoordinates[xCoordinates.length - 1];
+    calc1 += coord[coord.length - 1][0] * coord[0][1];
+    calc2 += coord[0][0] * coord[coord.length - 1][1];
     const area = Math.abs((calc2 - calc1)/2);
-    polygonElement.setAttribute('area', area);
     return area;
   }
 
@@ -60,20 +63,18 @@ export class svgAreaOfSingleElement {
     const pointsAttribute = polygonElement.getAttribute('points');
     if (!pointsAttribute) {
       console.error('The polygon element does not have a points attribute.');
-      return { xCoordinates: [], yCoordinates: [] };
+      return [];
     }
     const points = pointsAttribute.split(/\s+/);
   
-    const xCoordinates = [];
-    const yCoordinates = [];
+    const coord = [];
   
     points.forEach((point) => {
       const [x, y] = point.split(',').map(parseFloat);
-      xCoordinates.push(x);
-      yCoordinates.push(y);
+      coord.push([x, y]);
     });
   
-    return [ xCoordinates, yCoordinates ];
+    return coord;
   }
 
   calculateEllipseArea(ellipseElement) {

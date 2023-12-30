@@ -1,3 +1,5 @@
+import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
+
 export class svgAreaPolygonObject{
   constructor(points, index){
     this.points = points;
@@ -33,6 +35,12 @@ export class svgAreaPolygonObject{
     else {
       return [this.points[index], this.points[index + 1]];
     }
+  }
+
+  calculateArea(){
+    const areaElement = new svgAreaOfSingleElement();
+    this.area = areaElement.calculatePolygonAreaFromPoints(this.points);
+    return this.area;
   }
 
 }

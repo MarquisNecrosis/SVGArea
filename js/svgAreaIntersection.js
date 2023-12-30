@@ -41,7 +41,10 @@ export class svgAreaIntersection{
       const intersectPolygon = new svgAreaPolygonObject(points, 0);
       this.currentPolygon = this.polygonIntersection(this.currentPolygon, intersectPolygon);
       console.log(this.currentPolygon);
+      const area = this.currentPolygon.calculateArea();
+      console.log(area);
     });
+
   }
 
   elementPointTransformation(element){
@@ -157,7 +160,8 @@ export class svgAreaIntersection{
           break;
         }
       }
-      return newPolygonPoints;
+      currentPoints.points = newPolygonPoints;
+      return currentPoints;
     }
   }
 
