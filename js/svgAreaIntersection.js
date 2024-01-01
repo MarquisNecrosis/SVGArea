@@ -5,8 +5,9 @@ export class svgAreaIntersection{
   hasfirstIntersection = false;
   MAX_ITERATION = 1000;
 
-  constructor(){
-    this.currentPolygon = new svgAreaPolygonObject([], 0);
+  constructor(svgID){
+    this.parentSVG = document.getElementById(svgID);
+    this.currentPolygon = new svgAreaPolygonObject([], 0, this.parentSVG);
   }
 
   lineIntersectionLine(line1, line2){
@@ -32,19 +33,17 @@ export class svgAreaIntersection{
     return [intersection1, intersection2];
   }
 
-  polygonIntersectionInSvg(svgID){
-    const parentElement = document.getElementById(svgID);
-    const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
+  polygonIntersectionInSvg(){
+    const elementsWithClass = this.parentSVG.getElementsByClassName('area-calculate');
     const elementsArray = Array.from(elementsWithClass);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
-      const intersectPolygon = new svgAreaPolygonObject(points, 0);
+      const intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG);
       this.currentPolygon = this.polygonIntersection(this.currentPolygon, intersectPolygon);
       console.log(this.currentPolygon);
       const area = this.currentPolygon.calculateArea();
       console.log(area);
     });
-
   }
 
   elementPointTransformation(element){
@@ -103,7 +102,7 @@ export class svgAreaIntersection{
       return currentPoints;
     }
     else{
-      const startPoint = currentPoints.getPoint(0);
+      const startPoint = this.setStartPoint(currentPoints, intersectedPoints);
       let newPolygonPoints = [startPoint];
       let endPoint = [];
       let swap = false;
@@ -217,5 +216,21 @@ export class svgAreaIntersection{
       sum += Math.pow(vector1[i] - vector2[i], 2);
     }
     return Math.sqrt(sum);
+  }
+
+  setStartPoint(currentPoints, intersectedPoints){
+    let startPoint = [];
+    for (let i = 0; i < currentPoints.points.length; i++) {
+      currentPoints.index = i;
+      const svgPoint = intersectedPoints.element.ownerSVGElement.createSVGPoint();
+      startPoint = currentPoints.getPoint(i);
+      svgPoint.x = startPoint[0];
+      svgPoint.y = startPoint[1];
+      if (!intersectedPoints.element.isPointInFill(svgPoint)){
+        break;
+      }
+    }
+    console.log(startPoint);
+    return startPoint;
   }
 }
