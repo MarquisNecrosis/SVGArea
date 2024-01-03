@@ -1,9 +1,13 @@
 import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
 
 export class svgAreaPolygonObject{
-  constructor(points, index){
+  constructor(points, index, parent){
     this.points = points;
     this.index = index;
+    this.element = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    this.element.setAttribute('points', points);
+    this.element.setAttribute('display', 'none');
+    parent.appendChild(this.element);
   }
 
   setNextIndex(){
@@ -17,6 +21,10 @@ export class svgAreaPolygonObject{
   getPoint(index){
     index = index % (this.points.length);
     return this.points[index];
+  }
+
+  getCurrentPoint(){
+    return this.points[this.index];
   }
 
   nextPoints(startIndex, endIndex){
