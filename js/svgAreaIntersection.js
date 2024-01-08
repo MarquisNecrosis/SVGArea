@@ -2,12 +2,11 @@ import { svgAreaPolygonObject } from "./svgAreaPolygonObject.js";
 
 export class svgAreaIntersection{
 
-  hasfirstIntersection = false;
   MAX_ITERATION = 1000;
 
   constructor(svgID){
     this.parentSVG = document.getElementById(svgID);
-    this.currentPolygon = new svgAreaPolygonObject([], 0, this.parentSVG);
+    this.currentPolygon = new svgAreaPolygonObject([], 0, this.parentSVG, "current", this.currentPolygon);
   }
 
   lineIntersectionLine(line1, line2){
@@ -38,11 +37,13 @@ export class svgAreaIntersection{
     const elementsArray = Array.from(elementsWithClass);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
-      const intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG);
-      this.currentPolygon = this.polygonIntersection(this.currentPolygon, intersectPolygon);
+      const intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", element, false);
+      const newPolygon = this.polygonIntersection(this.currentPolygon, intersectPolygon, element);
+      this.currentPolygon.createFromObject(newPolygon, true);
       console.log(this.currentPolygon);
       const area = this.currentPolygon.calculateArea();
       console.log(area);
+      intersectPolygon.removeSvg();
     });
   }
 
@@ -94,7 +95,7 @@ export class svgAreaIntersection{
     return coord;
   }
 
-  polygonIntersection(currentPoints, intersectedPoints){
+  polygonIntersection(currentPoints, intersectedPoints, element){
     if(currentPoints.points.length == 0){
       return intersectedPoints;
     }
@@ -104,7 +105,7 @@ export class svgAreaIntersection{
     else{
       let startPoint = [];
       let swap = false;
-      [startPoint, currentPoints, intersectedPoints] = this.setStartPoint(currentPoints, intersectedPoints);
+      [startPoint, currentPoints, intersectedPoints] = this.setStartPoint(currentPoints, intersectedPoints, element);
       let newPolygonPoints = [startPoint];
       let endPoint = [];
       let intersectPolygon = intersectedPoints;
@@ -112,12 +113,7 @@ export class svgAreaIntersection{
       let it = 0;
       while (startPoint !== endPoint) {
         let intersection = null
-        if (this.hasfirstIntersection){
-          intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon);
-        }
-        else {
-          intersection = this.checkForFirstIntersection(linePoints, intersectPolygon);
-        }
+        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon);
         if(intersection == null){
           if(swap){
             intersectedPoints.setNextIndex();
@@ -135,12 +131,10 @@ export class svgAreaIntersection{
           }
         }
         else{
-          this.hasfirstIntersection = true;
           newPolygonPoints.push(intersection);
           swap = !swap;
           if(swap){
             intersectedPoints.setNextIndex();
-            currentPoints.setNextIndex();
             linePoints = intersectedPoints.lineFromCurrentIndex();
             intersectPolygon = currentPoints;
             const nextPoint = intersectedPoints.getPoint(intersectedPoints.index);
@@ -148,7 +142,6 @@ export class svgAreaIntersection{
             newPolygonPoints.push(nextPoint);
           }
           else {
-            intersectedPoints.setNextIndex();
             currentPoints.setNextIndex();
             linePoints = currentPoints.lineFromCurrentIndex();
             intersectPolygon = intersectedPoints;
@@ -168,18 +161,6 @@ export class svgAreaIntersection{
   }
 
   checkIfLineHasIntersection(linePoints, intersectedPoints){
-    for (let i = 0; i < intersectedPoints.points.length; i++) {
-      const intersectLine = intersectedPoints.lineFromCurrentIndex();
-      const intersection = this.lineIntersectionLine(linePoints, intersectLine);
-      if (intersection[0] != null && intersection[1] != null){
-        return intersection;
-      }
-      intersectedPoints.setNextIndex();
-    }
-    return null;
-  }
-
-  checkForFirstIntersection(linePoints, intersectedPoints){
     let intersections = [];
     let interPointIndex = [];
     for (let i = 0; i < intersectedPoints.points.length; i++) {
@@ -190,9 +171,9 @@ export class svgAreaIntersection{
         interPointIndex.push(i);
       }
     }
-    if (intersections != null) {
+    if (intersections.length > 0) {
       let distance = Number.MAX_VALUE;
-      const startPoint = [linePoints[0][0], linePoints[1][0]];
+      const startPoint = [linePoints[0][0], linePoints[0][1]];
       let distanceIndex = 0;
       for (let i = 0; i < intersections.length; i++) {
         const intersectPoint = intersections[i];

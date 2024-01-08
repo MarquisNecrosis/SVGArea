@@ -128,6 +128,10 @@ export class svgAreaOfSingleElement {
     intersectElements.forEach((element) => {
       if (this.isPointInSvgPath(element, point)) {
         pointIntersect = true;
+        console.log("je");
+      }
+      else{
+        console.log("neni");
       }
     });
     return pointIntersect;

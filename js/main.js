@@ -17,6 +17,8 @@ window.onload = function() {
   console.log(totalAreaSvg);
   intersectElements.polygonIntersectionInSvg('tutorial_svg');
  // svgRandom.generateRandomRectangle(20);
+
+ /*
   const totalArea = areaCalculator.areaInSvg('tutorial_svg');
   console.log(totalArea);
   const totalArea2 = areaCalculator.areaInSvgByGroup('tutorial_svg', '1');
@@ -37,5 +39,5 @@ window.onload = function() {
   
   intersectElements.lineIntersection(1, 1, 3, 2, 1, 4, 2, -1);
   intersectElements.lineIntersection(-1, 0, 4, 0, 1, 4, 1, -1);
-
+*/
 };
