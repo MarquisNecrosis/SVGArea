@@ -4,9 +4,15 @@ export class svgAreaIntersection{
 
   MAX_ITERATION = 1000;
 
+  INTERSECT = {
+    ADD: 1,
+    NEW: 2
+  }
+
   constructor(svgID){
     this.parentSVG = document.getElementById(svgID);
-    this.currentPolygon = new svgAreaPolygonObject([], 0, this.parentSVG, "current", this.currentPolygon);
+    this.currentPolygon = [];
+    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current");
   }
 
   lineIntersectionLine(line1, line2){
@@ -37,14 +43,27 @@ export class svgAreaIntersection{
     const elementsArray = Array.from(elementsWithClass);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
-      const intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", element, false);
-      const newPolygon = this.polygonIntersection(this.currentPolygon, intersectPolygon, element);
-      this.currentPolygon.createFromObject(newPolygon, true);
-      console.log(this.currentPolygon);
-      const area = this.currentPolygon.calculateArea();
-      console.log(area);
-      intersectPolygon.removeSvg();
+      const intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", false);
+      this.currentPolygon.forEach(polygon => {
+        let newPolygon = null;
+        let stat = 0;
+        [stat, newPolygon] = this.polygonIntersection(polygon, intersectPolygon);
+        switch (stat) {
+          case this.INTERSECT.ADD:
+            polygon.createFromObject(newPolygon, true);
+            console.log(polygon);
+            const area = polygon.calculateArea();
+            console.log(area);
+            intersectPolygon.removeSvg();
+            break;
+          case this.INTERSECT.NEW:
+            this.currentPolygon.push(newPolygon);
+          default:
+            break;
+        }
+      });
     });
+    console.log(this.currentPolygon);
   }
 
   elementPointTransformation(element){
@@ -95,22 +114,23 @@ export class svgAreaIntersection{
     return coord;
   }
 
-  polygonIntersection(currentPoints, intersectedPoints, element){
+  polygonIntersection(currentPoints, intersectedPoints){
     if(currentPoints.points.length == 0){
-      return intersectedPoints;
+      return [this.INTERSECT.ADD, intersectedPoints];
     }
     else if(intersectedPoints.points.length == 0){
-      return currentPoints;
+      return [this.INTERSECT.ADD, currentPoints];
     }
     else{
       let startPoint = [];
       let swap = false;
-      [startPoint, currentPoints, intersectedPoints] = this.setStartPoint(currentPoints, intersectedPoints, element);
+      [startPoint, currentPoints, intersectedPoints] = this.setStartPoint(currentPoints, intersectedPoints);
       let newPolygonPoints = [startPoint];
       let endPoint = [];
       let intersectPolygon = intersectedPoints;
       let linePoints = currentPoints.lineFromCurrentIndex();
       let it = 0;
+      let noIntersection = true;
       while (startPoint !== endPoint) {
         let intersection = null
         intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon);
@@ -133,6 +153,7 @@ export class svgAreaIntersection{
         else{
           newPolygonPoints.push(intersection);
           swap = !swap;
+          noIntersection = false;
           if(swap){
             intersectedPoints.setNextIndex();
             linePoints = intersectedPoints.lineFromCurrentIndex();
@@ -156,7 +177,12 @@ export class svgAreaIntersection{
         }
       }
       currentPoints.points = newPolygonPoints;
-      return currentPoints;
+      if(noIntersection == true && !this.checkIfPolygonIsInsidePolygon(currentPoints, intersectedPoints)){
+        return [this.INTERSECT.NEW, intersectedPoints];
+      }
+      else{
+        return [this.INTERSECT.ADD, currentPoints];
+      }
     }
   }
 
@@ -233,5 +259,21 @@ export class svgAreaIntersection{
     }
     console.log(startPoint);
     return [startPoint, currentPoints, intersectedPoints];
+  }
+
+  checkIfPolygonIsInsidePolygon(currentPoints, intersectedPoints){
+    let isInside = true;
+    for (let i = 0; i < currentPoints.points.length; i++) {
+      currentPoints.index = i;
+      const svgPoint = intersectedPoints.element.ownerSVGElement.createSVGPoint();
+      const point = currentPoints.getPoint(i);
+      svgPoint.x = point[0];
+      svgPoint.y = point[1];
+      if (!intersectedPoints.element.isPointInFill(svgPoint)){
+        isInside = false;
+        break;
+      }
+    }
+    return isInside;
   }
 }

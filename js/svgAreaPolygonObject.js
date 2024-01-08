@@ -1,12 +1,11 @@
 import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
 
 export class svgAreaPolygonObject{
-  constructor(points, index, parent, id, originalSvg, show = false){
+  constructor(points, index, parent, id, show = false){
     this.points = points;
     this.index = index;
     this.parent = parent;
     this.id = id;
-    this.originalSvg = originalSvg;
     this.createSvg(show);
   }
 
@@ -30,7 +29,6 @@ export class svgAreaPolygonObject{
       this.element.setAttribute('display', 'none');
     }
     this.parent.appendChild(this.element);
-    this.originalSvg = this.element;
   }
 
   setNextIndex(){
