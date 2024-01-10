@@ -1,13 +1,34 @@
 import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
 
 export class svgAreaPolygonObject{
-  constructor(points, index, parent){
+  constructor(points, index, parent, id, show = false){
     this.points = points;
     this.index = index;
+    this.parent = parent;
+    this.id = id;
+    this.createSvg(show);
+  }
+
+  createFromObject(svgAreaPolygonObject, show){
+    this.points = svgAreaPolygonObject.points;
+    this.parent = svgAreaPolygonObject.parent;
+    this.redrawSvg(show);
+  }
+
+  createSvg(show){
     this.element = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-    this.element.setAttribute('points', points);
-    this.element.setAttribute('display', 'none');
-    parent.appendChild(this.element);
+    this.element.setAttribute('id', this.id);
+    const pointsString = this.points.map(point => point.join(',')).join(' ');
+    this.element.setAttribute('points', pointsString);
+    if(true){
+      this.element.setAttribute('stroke', 'gold');
+      this.element.setAttribute('stroke-width', '2');
+      this.element.setAttribute('fill', 'black');
+    }
+    else{
+      this.element.setAttribute('display', 'none');
+    }
+    this.parent.appendChild(this.element);
   }
 
   setNextIndex(){
@@ -49,6 +70,15 @@ export class svgAreaPolygonObject{
     const areaElement = new svgAreaOfSingleElement();
     this.area = areaElement.calculatePolygonAreaFromPoints(this.points);
     return this.area;
+  }
+
+  removeSvg(){
+    this.parent.removeChild(this.element);
+  }
+
+  redrawSvg(show){
+    this.removeSvg();
+    this.createSvg(show);
   }
 
 }
