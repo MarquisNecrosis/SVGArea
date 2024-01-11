@@ -3,6 +3,7 @@ import { svgAreaPolygonObject } from "./svgAreaPolygonObject.js";
 export class svgAreaIntersection{
 
   MAX_ITERATION = 1000;
+  CIRCLE_LINES = 360;
 
   INTERSECT = {
     ADD: 1,
@@ -89,6 +90,7 @@ export class svgAreaIntersection{
         points = this.getRectangleCoordinates(element);
         break;
       case 'circle':
+        points = this.getCircleCoordinates(element);
         break;
       case 'polygon':
         points = this.getPolygonCoordinates(element);
@@ -126,6 +128,21 @@ export class svgAreaIntersection{
     const width = parseFloat(rectangleElement.getAttribute('width'));
     const height = parseFloat(rectangleElement.getAttribute('height'));
     const coord = [[x, y], [x + width, y], [x + width, y + height], [x, y + height]];
+    return coord;
+  }
+
+  getCircleCoordinates(circleElement) {
+    const radius = parseInt(circleElement.getAttribute('r'));
+    const centerX = parseInt(circleElement.getAttribute('cx'));
+    const centerY = parseInt(circleElement.getAttribute('cy'));
+    const angleIncrement = (2 * Math.PI) / this.CIRCLE_LINES;
+    const coord = [];
+    for (let i = 0; i < this.CIRCLE_LINES; i++) {
+      const angle = i * angleIncrement;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+      coord.push([x, y]);
+    }
     return coord;
   }
 
