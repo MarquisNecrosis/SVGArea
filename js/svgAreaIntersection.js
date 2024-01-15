@@ -165,7 +165,7 @@ export class svgAreaIntersection{
       let noIntersection = true;
       while (startPoint !== endPoint) {
         let intersection = null
-        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon);
+        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPoints);
         if(intersection == null){
           if(swap){
             [endPoint, linePoints] = this.managePoints(intersectedPoints, intersection);
@@ -214,7 +214,7 @@ export class svgAreaIntersection{
     return [nextPoint, linePoints];
   }
 
-  checkIfLineHasIntersection(linePoints, intersectedPoints){
+  checkIfLineHasIntersection(linePoints, intersectedPoints, currentPoints){
     let intersections = [];
     let interPointIndex = [];
     for (let i = 0; i < intersectedPoints.points.length; i++) {
@@ -231,14 +231,20 @@ export class svgAreaIntersection{
       let distanceIndex = 0;
       for (let i = 0; i < intersections.length; i++) {
         const intersectPoint = intersections[i];
-        const newDistance = this.vectorDistance(startPoint, intersectPoint);
+        const intersectLine = intersectedPoints.nextLine(interPointIndex[i]);
+        const newDistance = this.calculateDistance(intersectPoint, intersectLine, currentPoints, startPoint)
         if (newDistance < distance){
           distance = newDistance;
           distanceIndex = i;
         }
       }
-      intersectedPoints.index = interPointIndex[distanceIndex];
-      return intersections[distanceIndex];
+      if (distance == Number.MAX_VALUE){
+        return null;
+      }
+      else {
+        intersectedPoints.index = interPointIndex[distanceIndex];
+        return intersections[distanceIndex];
+      }
     }
     else {
       return null;
@@ -327,5 +333,53 @@ export class svgAreaIntersection{
       }
     }
     return true;
+  }
+
+  calculateDistance(intersectPoint, intersectLine, currentPoints, startPoint){
+    let newDistance = Number.MAX_VALUE;
+    if (this.arraysAreEqual(intersectPoint, intersectLine[0]) || this.arraysAreEqual(intersectPoint, intersectLine[1])){
+      if (this.arraysAreEqual(intersectPoint, intersectLine[1])){
+        intersectLine = [intersectLine[1], intersectLine[0]];
+      }
+      const isVertex = this.checkIfIsVertex(currentPoints, intersectLine);
+      if(isVertex){
+        newDistance = Number.MAX_VALUE;
+      }
+      else{
+        newDistance = this.vectorDistance(startPoint, intersectPoint);
+      }
+    }
+    else {
+      newDistance = this.vectorDistance(startPoint, intersectPoint);
+    }
+    return newDistance;
+  }
+
+  checkIfIsVertex(currentPoints, intersectLine){
+    const startPoint = intersectLine[0];
+    let endPoint = intersectLine[1];
+    let distance = this.vectorDistance(intersectLine[0], intersectLine[1]);
+    for (let i = 0; i < currentPoints.points.length; i++) {
+      const line = currentPoints.nextLine(i);
+      const intersection = this.lineIntersectionLine(line, intersectLine);
+      const newDistance = this.vectorDistance(intersectLine[0], intersection);
+      console.log(intersectLine);
+      console.log(intersection);
+      if(!this.arraysAreEqual(intersectLine[0], intersection) && (intersection[0] != null || intersection[1] != null) && newDistance < distance){
+        endPoint = intersection;
+      }
+    }
+    const midX = (startPoint[0] + endPoint[0]) / 2;
+    const midY = (startPoint[1] + endPoint[1]) / 2;
+    const middlePoint = [midX, midY];
+    const svgPoint = currentPoints.element.ownerSVGElement.createSVGPoint();
+    svgPoint.x = middlePoint[0];
+    svgPoint.y = middlePoint[1];
+    if (currentPoints.element.isPointInFill(svgPoint)) {
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }
