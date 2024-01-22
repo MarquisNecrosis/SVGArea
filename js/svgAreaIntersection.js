@@ -406,8 +406,6 @@ export class svgAreaIntersection{
       const line = currentPoints.nextLine(i);
       const intersection = this.lineIntersectionLine(line, intersectLine);
       const newDistance = this.vectorDistance(intersectLine[0], intersection);
-      console.log(intersectLine);
-      console.log(intersection);
       if(!this.arraysAreEqual(intersectLine[0], intersection) && (intersection[0] != null || intersection[1] != null) && newDistance < distance){
         endPoint = intersection;
       }
