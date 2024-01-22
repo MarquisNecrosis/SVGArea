@@ -97,6 +97,9 @@ export class svgAreaIntersection{
         break;
       case 'ellipse':
         break;
+      case 'path':
+        points = this.getPathCoordinates(element);
+        break;
       default:
         console.warn(`Unsupported SVG element type: ${elementType}`);
         points = [];
@@ -142,6 +145,46 @@ export class svgAreaIntersection{
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
       coord.push([x, y]);
+    }
+    return coord;
+  }
+
+  getPathCoordinates(pathElement) {
+    const d = pathElement.getAttribute('d');
+    const commands = d.match(/[MmLlHhVvCcSsQqTtAaZz]|[\-+]?\d+(\.\d+)?(?:[eE][\-+]?\d+)?/g);
+    const coord = [];
+  
+    let currentX = 0;
+    let currentY = 0;
+  
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
+  
+      switch (command) {
+        case 'M':
+          currentX = parseFloat(commands[i + 1]);
+          currentY = parseFloat(commands[i + 2]);
+          i += 2;
+          coord.push([currentX, currentY]);
+          break;
+        case 'L':
+          currentX = parseFloat(commands[i + 1]);
+          currentY = parseFloat(commands[i + 2]);
+          i += 2;
+          coord.push([currentX, currentY]);
+          break;
+        case 'Q':
+          const p0 = [parseFloat(commands[i + 2]), parseFloat(commands[i + 4])];
+          const p1 = [parseFloat(commands[i + 1]), parseFloat(commands[i + 2])];
+          const p2 = [parseFloat(commands[i + 3]), parseFloat(commands[i + 4])];
+          const points = this.splitQuadraticBezier(p0, p1, p2);
+          i += 4;
+          for (let i = 0; i < points.length; i++) {
+            coord.push(points[i]);
+          }
+          break;
+        // Add more cases for other path commands as needed
+      }
     }
     return coord;
   }
@@ -381,5 +424,19 @@ export class svgAreaIntersection{
     else{
       return false;
     }
+  }
+
+  splitQuadraticBezier(p0, p1, p2) {
+    const points = [];
+  
+    for (let t = 1; t <= this.CIRCLE_LINES; t ++) {
+      const part = t / this.CIRCLE_LINES;
+      const x = (1 - part) * (1 - part) * p0[0] + 2 * (1 - part) * part * p1[0] + part * part * p2[0];
+      const y = (1 - part) * (1 - part) * p0[1] + 2 * (1 - part) * part * p1[1] + part * part * p2[1];
+  
+      points.push([x, y]);
+    }
+  
+    return points;
   }
 }
