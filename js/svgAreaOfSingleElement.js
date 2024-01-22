@@ -16,6 +16,9 @@ export class svgAreaOfSingleElement {
       case 'ellipse':
         area = this.calculateEllipseArea(element);
         break;
+      case 'path':
+        area = this.calculatePathArea(element);
+        break;
       default:
         console.warn(`Unsupported SVG element type: ${elementType}`);
         area = 0;
@@ -83,6 +86,49 @@ export class svgAreaOfSingleElement {
     const area = Math.PI * radiusX * radiusY;
     ellipseElement.setAttribute('area', area);
     return area;
+  }
+
+  calculatePathArea(pathElement) {
+    const coord = this.getPathCoordinates(pathElement);
+    const area = this.calculatePolygonAreaFromPoints(coord);
+    pathElement.setAttribute('area', area);
+    return area;
+  }
+
+  getPathCoordinates(pathElement) {
+    const d = pathElement.getAttribute('d');
+    const commands = d.match(/[MmLlHhVvCcSsQqTtAaZz]|[\-+]?\d+(\.\d+)?(?:[eE][\-+]?\d+)?/g);
+    const coord = [];
+  
+    let currentX = 0;
+    let currentY = 0;
+  
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
+  
+      switch (command) {
+        case 'M':
+          currentX = parseFloat(commands[i + 1]);
+          currentY = parseFloat(commands[i + 2]);
+          i += 2;
+          coord.push([currentX, currentY]);
+          break;
+        case 'L':
+          currentX = parseFloat(commands[i + 1]);
+          currentY = parseFloat(commands[i + 2]);
+          i += 2;
+          coord.push([currentX, currentY]);
+          break;
+        case 'Q':
+          currentX = parseFloat(commands[i + 3]);
+          currentY = parseFloat(commands[i + 4]);
+          i += 4;
+          coord.push([currentX, currentY]);
+          break;
+        // Add more cases for other path commands as needed
+      }
+    }
+    return coord;
   }
 
   calcutaUncoveredPartPolygon(element, intersectElements, numberOfRandomPoints) {

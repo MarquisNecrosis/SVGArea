@@ -3,6 +3,7 @@ import { svgAreaPolygonObject } from "./svgAreaPolygonObject.js";
 export class svgAreaIntersection{
 
   MAX_ITERATION = 1000;
+  CIRCLE_LINES = 360;
 
   INTERSECT = {
     ADD: 1,
@@ -89,11 +90,15 @@ export class svgAreaIntersection{
         points = this.getRectangleCoordinates(element);
         break;
       case 'circle':
+        points = this.getCircleCoordinates(element);
         break;
       case 'polygon':
         points = this.getPolygonCoordinates(element);
         break;
       case 'ellipse':
+        break;
+      case 'path':
+        points = this.getPathCoordinates(element);
         break;
       default:
         console.warn(`Unsupported SVG element type: ${elementType}`);
@@ -129,6 +134,61 @@ export class svgAreaIntersection{
     return coord;
   }
 
+  getCircleCoordinates(circleElement) {
+    const radius = parseInt(circleElement.getAttribute('r'));
+    const centerX = parseInt(circleElement.getAttribute('cx'));
+    const centerY = parseInt(circleElement.getAttribute('cy'));
+    const angleIncrement = (2 * Math.PI) / this.CIRCLE_LINES;
+    const coord = [];
+    for (let i = 0; i < this.CIRCLE_LINES; i++) {
+      const angle = i * angleIncrement;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+      coord.push([x, y]);
+    }
+    return coord;
+  }
+
+  getPathCoordinates(pathElement) {
+    const d = pathElement.getAttribute('d');
+    const commands = d.match(/[MmLlHhVvCcSsQqTtAaZz]|[\-+]?\d+(\.\d+)?(?:[eE][\-+]?\d+)?/g);
+    const coord = [];
+  
+    let currentX = 0;
+    let currentY = 0;
+  
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
+  
+      switch (command) {
+        case 'M':
+          currentX = parseFloat(commands[i + 1]);
+          currentY = parseFloat(commands[i + 2]);
+          i += 2;
+          coord.push([currentX, currentY]);
+          break;
+        case 'L':
+          currentX = parseFloat(commands[i + 1]);
+          currentY = parseFloat(commands[i + 2]);
+          i += 2;
+          coord.push([currentX, currentY]);
+          break;
+        case 'Q':
+          const p0 = [parseFloat(commands[i + 2]), parseFloat(commands[i + 4])];
+          const p1 = [parseFloat(commands[i + 1]), parseFloat(commands[i + 2])];
+          const p2 = [parseFloat(commands[i + 3]), parseFloat(commands[i + 4])];
+          const points = this.splitQuadraticBezier(p0, p1, p2);
+          i += 4;
+          for (let i = 0; i < points.length; i++) {
+            coord.push(points[i]);
+          }
+          break;
+        // Add more cases for other path commands as needed
+      }
+    }
+    return coord;
+  }
+
   polygonIntersection(currentPoints, intersectedPoints){
     if(currentPoints.points.length == 0){
       return [this.INTERSECT.ADD, intersectedPoints];
@@ -148,7 +208,7 @@ export class svgAreaIntersection{
       let noIntersection = true;
       while (startPoint !== endPoint) {
         let intersection = null
-        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon);
+        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPoints);
         if(intersection == null){
           if(swap){
             [endPoint, linePoints] = this.managePoints(intersectedPoints, intersection);
@@ -197,7 +257,7 @@ export class svgAreaIntersection{
     return [nextPoint, linePoints];
   }
 
-  checkIfLineHasIntersection(linePoints, intersectedPoints){
+  checkIfLineHasIntersection(linePoints, intersectedPoints, currentPoints){
     let intersections = [];
     let interPointIndex = [];
     for (let i = 0; i < intersectedPoints.points.length; i++) {
@@ -214,14 +274,20 @@ export class svgAreaIntersection{
       let distanceIndex = 0;
       for (let i = 0; i < intersections.length; i++) {
         const intersectPoint = intersections[i];
-        const newDistance = this.vectorDistance(startPoint, intersectPoint);
+        const intersectLine = intersectedPoints.nextLine(interPointIndex[i]);
+        const newDistance = this.calculateDistance(intersectPoint, intersectLine, currentPoints, startPoint)
         if (newDistance < distance){
           distance = newDistance;
           distanceIndex = i;
         }
       }
-      intersectedPoints.index = interPointIndex[distanceIndex];
-      return intersections[distanceIndex];
+      if (distance == Number.MAX_VALUE){
+        return null;
+      }
+      else {
+        intersectedPoints.index = interPointIndex[distanceIndex];
+        return intersections[distanceIndex];
+      }
     }
     else {
       return null;
@@ -310,5 +376,65 @@ export class svgAreaIntersection{
       }
     }
     return true;
+  }
+
+  calculateDistance(intersectPoint, intersectLine, currentPoints, startPoint){
+    let newDistance = Number.MAX_VALUE;
+    if (this.arraysAreEqual(intersectPoint, intersectLine[0]) || this.arraysAreEqual(intersectPoint, intersectLine[1])){
+      if (this.arraysAreEqual(intersectPoint, intersectLine[1])){
+        intersectLine = [intersectLine[1], intersectLine[0]];
+      }
+      const isVertex = this.checkIfIsVertex(currentPoints, intersectLine);
+      if(isVertex){
+        newDistance = Number.MAX_VALUE;
+      }
+      else{
+        newDistance = this.vectorDistance(startPoint, intersectPoint);
+      }
+    }
+    else {
+      newDistance = this.vectorDistance(startPoint, intersectPoint);
+    }
+    return newDistance;
+  }
+
+  checkIfIsVertex(currentPoints, intersectLine){
+    const startPoint = intersectLine[0];
+    let endPoint = intersectLine[1];
+    let distance = this.vectorDistance(intersectLine[0], intersectLine[1]);
+    for (let i = 0; i < currentPoints.points.length; i++) {
+      const line = currentPoints.nextLine(i);
+      const intersection = this.lineIntersectionLine(line, intersectLine);
+      const newDistance = this.vectorDistance(intersectLine[0], intersection);
+      if(!this.arraysAreEqual(intersectLine[0], intersection) && (intersection[0] != null || intersection[1] != null) && newDistance < distance){
+        endPoint = intersection;
+      }
+    }
+    const midX = (startPoint[0] + endPoint[0]) / 2;
+    const midY = (startPoint[1] + endPoint[1]) / 2;
+    const middlePoint = [midX, midY];
+    const svgPoint = currentPoints.element.ownerSVGElement.createSVGPoint();
+    svgPoint.x = middlePoint[0];
+    svgPoint.y = middlePoint[1];
+    if (currentPoints.element.isPointInFill(svgPoint)) {
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  splitQuadraticBezier(p0, p1, p2) {
+    const points = [];
+  
+    for (let t = 1; t <= this.CIRCLE_LINES; t ++) {
+      const part = t / this.CIRCLE_LINES;
+      const x = (1 - part) * (1 - part) * p0[0] + 2 * (1 - part) * part * p1[0] + part * part * p2[0];
+      const y = (1 - part) * (1 - part) * p0[1] + 2 * (1 - part) * part * p1[1] + part * part * p2[1];
+  
+      points.push([x, y]);
+    }
+  
+    return points;
   }
 }
