@@ -81,4 +81,14 @@ export class svgAreaPolygonObject{
     this.createSvg(show);
   }
 
+  getIndex(point){
+    let i = null
+    this.points.forEach(function(element, index) {
+      if(element[0] == point[0] && element[1] == point[1]){
+        i = index;
+      }
+    });
+    return i;
+  }
+
 }

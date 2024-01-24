@@ -51,7 +51,16 @@ export class svgAreaIntersection{
       this.currentPolygon.forEach((polygon, index) => {
         let newPolygon = null;
         let stat = 0;
+        let allIntersection = this.findAllIntersection(polygon, intersectPolygon);
+        console.log(allIntersection);
+        let allVertexes = this.findAllVertexes(polygon, intersectPolygon);
+        console.log(allVertexes);
         [stat, newPolygon] = this.polygonIntersection(polygon, intersectPolygon);
+        allIntersection = allIntersection.filter(element => !newPolygon.points.includes(element));
+        allVertexes = allVertexes.filter(element => !newPolygon.points.includes(element));
+        if(allVertexes.length > 0){
+          [stat, newPolygon] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0]);
+        }
         switch (stat) {
           case this.INTERSECT.ADD:
             polygon.createFromObject(newPolygon, true);
@@ -189,7 +198,7 @@ export class svgAreaIntersection{
     return coord;
   }
 
-  polygonIntersection(currentPoints, intersectedPoints){
+  polygonIntersection(currentPoints, intersectedPoints, startPoint = null){
     if(currentPoints.points.length == 0){
       return [this.INTERSECT.ADD, intersectedPoints];
     }
@@ -197,9 +206,13 @@ export class svgAreaIntersection{
       return [this.INTERSECT.ADD, currentPoints];
     }
     else{
-      let startPoint = [];
       let swap = false;
-      [startPoint, currentPoints, intersectedPoints] = this.setStartPoint(currentPoints, intersectedPoints);
+      if (startPoint === null){
+        [startPoint, currentPoints, intersectedPoints] = this.setStartPoint(currentPoints, intersectedPoints);
+      }
+      else {
+        currentPoints.index = currentPoints.getIndex(startPoint);
+      }
       let newPolygonPoints = [startPoint];
       let endPoint = [];
       let intersectPolygon = intersectedPoints;
@@ -236,12 +249,13 @@ export class svgAreaIntersection{
           break;
         }
       }
-      currentPoints.points = newPolygonPoints;
-      if(noIntersection == true && !this.checkIfPolygonIsInsidePolygon(currentPoints, intersectedPoints)){
+      let newPolygon = { ...currentPoints};
+      newPolygon.points = newPolygonPoints;
+      if(noIntersection == true && !this.checkIfPolygonIsInsidePolygon(newPolygon, intersectedPoints)){
         return [this.INTERSECT.NEW, intersectedPoints];
       }
       else{
-        return [this.INTERSECT.ADD, currentPoints];
+        return [this.INTERSECT.ADD, newPolygon];
       }
     }
   }
@@ -437,4 +451,49 @@ export class svgAreaIntersection{
   
     return points;
   }
+
+  checkIfIsPointInFill(point, intersectPolygon){
+    const svgPoint = intersectPolygon.element.ownerSVGElement.createSVGPoint();
+    svgPoint.x = point[0];
+    svgPoint.y = point[1];
+    if (intersectPolygon.element.isPointInFill(svgPoint)) {
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  findAllIntersection(polygon, intersectPolygon) {
+    const allIntersection = [];
+    for (let i = 0; i < polygon.points.length; i++) {
+      for (let j = 0; j < intersectPolygon.points.length; j++) {
+        const polygonLine = polygon.nextLine(i);
+        const intersectLine = intersectPolygon.nextLine(j);
+        const intersection = this.lineIntersectionLine(polygonLine, intersectLine);
+        if(intersection[0] != null && intersection[1] != null){
+          allIntersection.push(intersection);
+        }
+      }
+    }
+    return allIntersection;
+  }
+
+  findAllVertexes(polygon, intersectPolygon){
+    const allVertexes = [];
+    for (let i = 0; i < polygon.points.length; i++) {
+      const polygonPoint = polygon.getPoint(i);
+      if (!this.checkIfIsPointInFill(polygonPoint, intersectPolygon)){
+        allVertexes.push(polygonPoint);
+      }
+    }
+    for (let j = 0; j < intersectPolygon.points.length; j++) {
+      const intersectPoint = intersectPolygon.getPoint(j);
+      if (!this.checkIfIsPointInFill(intersectPoint, polygon)){
+        allVertexes.push(intersectPoint);
+      }
+    }
+    return allVertexes;
+  }
+
 }
