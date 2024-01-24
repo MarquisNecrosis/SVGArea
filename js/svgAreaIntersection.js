@@ -4,6 +4,7 @@ export class svgAreaIntersection{
 
   MAX_ITERATION = 1000;
   CIRCLE_LINES = 360;
+  EPSILON = 0.0000001
 
   INTERSECT = {
     ADD: 1,
@@ -219,7 +220,7 @@ export class svgAreaIntersection{
       let linePoints = currentPoints.lineFromCurrentIndex();
       let it = 0;
       let noIntersection = true;
-      while (startPoint !== endPoint) {
+      while (!this.arraysAreEqual(startPoint, endPoint)) {
         let intersection = null
         intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPoints);
         if(intersection == null){
@@ -229,21 +230,24 @@ export class svgAreaIntersection{
           else{
             [endPoint, linePoints] = this.managePoints(currentPoints, intersection);
           }
+          newPolygonPoints.push(endPoint);
         }
         else{
           newPolygonPoints.push(intersection);
           swap = !swap;
           noIntersection = false;
           if(swap){
-            [endPoint, linePoints] = this.managePoints(intersectedPoints, intersection);
+            linePoints = intersectedPoints.lineFromCurrentIndex();
+            endPoint = intersection;
             intersectPolygon = currentPoints;
           }
           else {
-            [endPoint, linePoints] = this.managePoints(currentPoints, intersection);
+            linePoints = currentPoints.lineFromCurrentIndex();
+            endPoint = intersection;
             intersectPolygon = intersectedPoints;
           }
+          linePoints[0] = intersection;
         }
-        newPolygonPoints.push(endPoint);
         it++;
         if(it >= this.MAX_ITERATION){
           break;
@@ -277,7 +281,7 @@ export class svgAreaIntersection{
     for (let i = 0; i < intersectedPoints.points.length; i++) {
       const intersectLine = intersectedPoints.nextLine(i);
       const intersection = this.lineIntersectionLine(linePoints, intersectLine);
-      if (intersection[0] != null && intersection[1] != null){
+      if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(linePoints[0], intersection)){
         intersections.push(intersection);
         interPointIndex.push(i);
       }
@@ -385,7 +389,7 @@ export class svgAreaIntersection{
       return false;
     }
     for (let i = 0; i < arr1.length; i++) {
-      if (arr1[i] !== arr2[i]) {
+      if (Math.abs(arr1[i] - arr2[i]) >= this.EPSILON) {
         return false;
       }
     }
