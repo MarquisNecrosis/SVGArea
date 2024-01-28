@@ -28,7 +28,7 @@ export class svgAreaIntersection{
     let s = 0;
     t = ((y3 - y1) * (x2 - x1) - (x3 - x1) * (y2 - y1)) / ((x4 - x3) * (y2 - y1) - (y4 - y3) * (x2 - x1));
     s = ((x3 - x1) + t * (x4 - x3)) / (x2 - x1);
-    if(isNaN(s) || isNaN(t)){
+    if(isNaN(s) || isNaN(t) || !isFinite(s) || !isFinite(t)){
       t = ((x3 - x1) * (y2 - y1) - (y3 - y1) * (x2 - x1)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
       s = ((y3 - y1) + t * (y4 - y3)) / (y2 - y1);
 
@@ -59,18 +59,18 @@ export class svgAreaIntersection{
         [stat, newPolygon] = this.polygonIntersection(polygon, intersectPolygon);
         allIntersection = this.filterIntersection(allIntersection, newPolygon.points);
         allVertexes = this.filterPoints(allVertexes, newPolygon.points);
-        var hole = null;
+        var gap = null;
         if(allVertexes.length > 0){
-          [stat, hole] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0]);
+          [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0]);
         }
         else if(allIntersection.length > 0){
-          [stat, hole] = this.polygonIntersection(polygon, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
+          [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
         }
         switch (stat) {
           case this.INTERSECT.ADD:
             polygon.createFromObject(newPolygon, true);
-            if(hole != null){
-              polygon.createGap(hole);
+            if(gap != null){
+              polygon.createGap(gap);
             }
             console.log(polygon);
             const area = polygon.calculateArea();
