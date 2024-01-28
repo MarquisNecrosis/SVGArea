@@ -75,6 +75,9 @@ export class svgAreaPolygonObject{
   calculateArea(){
     const areaElement = new svgAreaOfSingleElement();
     this.area = areaElement.calculatePolygonAreaFromPoints(this.points);
+    this.gaps.forEach(gap => {
+      this.area -= areaElement.calculatePolygonAreaFromPoints(gap.points);
+    });
     return this.area;
   }
 
