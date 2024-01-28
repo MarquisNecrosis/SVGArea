@@ -89,7 +89,7 @@ export class svgAreaPolygonObject{
     this.removeSvg();
     this.createSvg(show);
     this.gaps.forEach(gap => {
-      gap.removeSvg;
+      gap.removeSvg();
       gap.createSvg(show, 'white');
     });
   }

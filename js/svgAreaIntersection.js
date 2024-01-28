@@ -66,6 +66,7 @@ export class svgAreaIntersection{
         else if(allIntersection.length > 0){
           [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
         }
+        this.manageGapsIntersection(polygon, intersectPolygon)
         switch (stat) {
           case this.INTERSECT.ADD:
             polygon.createFromObject(newPolygon, true);
@@ -550,6 +551,20 @@ export class svgAreaIntersection{
       }
     });
     return filterPoints
+  }
+
+  manageGapsIntersection(polygon, intersectPolygon){
+    polygon.gaps.forEach((gap, index) => {
+      let allIntersection = this.findAllIntersection(gap, intersectPolygon);
+      let allVertexes = this.findAllVertexes(gap, intersectPolygon);
+      allVertexes = this.filterPoints(allVertexes, gap.points);
+      let stat = null;
+      if(allIntersection.length > 0){
+        [stat, gap] = this.polygonIntersection(gap, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
+        polygon.gaps[index].points = gap.points;
+      }
+    });
+    return polygon;
   }
 
 }
