@@ -1,12 +1,13 @@
 import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
 
 export class svgAreaPolygonObject{
-  constructor(points, index, parent, id, show = false){
+  constructor(points, index, parent, id, show = false, color = 'black'){
     this.points = points;
     this.index = index;
     this.parent = parent;
     this.id = id;
-    this.createSvg(show);
+    this.createSvg(show, color);
+    this.gaps = [];
   }
 
   createFromObject(svgAreaPolygonObject, show){
@@ -15,7 +16,12 @@ export class svgAreaPolygonObject{
     this.redrawSvg(show);
   }
 
-  createSvg(show){
+  createGap(hole){
+    const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", true, 'white');
+    this.gaps.push(gap);
+  }
+
+  createSvg(show, color){
     this.element = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     this.element.setAttribute('id', this.id);
     const pointsString = this.points.map(point => point.join(',')).join(' ');
@@ -23,7 +29,7 @@ export class svgAreaPolygonObject{
     if(true){
       this.element.setAttribute('stroke', 'gold');
       this.element.setAttribute('stroke-width', '2');
-      this.element.setAttribute('fill', 'black');
+      this.element.setAttribute('fill', color);
     }
     else{
       this.element.setAttribute('display', 'none');
@@ -69,6 +75,9 @@ export class svgAreaPolygonObject{
   calculateArea(){
     const areaElement = new svgAreaOfSingleElement();
     this.area = areaElement.calculatePolygonAreaFromPoints(this.points);
+    this.gaps.forEach(gap => {
+      this.area -= areaElement.calculatePolygonAreaFromPoints(gap.points);
+    });
     return this.area;
   }
 
@@ -79,6 +88,20 @@ export class svgAreaPolygonObject{
   redrawSvg(show){
     this.removeSvg();
     this.createSvg(show);
+    this.gaps.forEach(gap => {
+      gap.removeSvg;
+      gap.createSvg(show, 'white');
+    });
+  }
+
+  getIndex(point){
+    let i = null
+    this.points.forEach(function(element, index) {
+      if(element[0] == point[0] && element[1] == point[1]){
+        i = index;
+      }
+    });
+    return i;
   }
 
 }
