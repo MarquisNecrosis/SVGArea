@@ -49,7 +49,7 @@ export class svgAreaOfSingleElement {
     return area;
   }
 
-  calculatePolygonAreaFromPoints(coord){
+  calculatePolygonAreaFromPoints(coord, absolute = true){
     var calc1 = 0;
     var calc2 = 0;
     for (let index = 0; index < coord.length - 1; index++) {
@@ -58,7 +58,12 @@ export class svgAreaOfSingleElement {
     }
     calc1 += coord[coord.length - 1][0] * coord[0][1];
     calc2 += coord[0][0] * coord[coord.length - 1][1];
-    const area = Math.abs((calc2 - calc1)/2);
+    if (absolute){
+      var area = Math.abs((calc2 - calc1)/2);
+    }
+    else {
+      var area = (calc2 - calc1)/2;
+    }
     return area;
   }
 

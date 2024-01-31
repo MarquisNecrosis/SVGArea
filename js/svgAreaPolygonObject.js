@@ -18,6 +18,10 @@ export class svgAreaPolygonObject{
 
   createGap(hole){
     const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", true, 'white');
+    let area = gap.calculateArea(false, false, false);
+    if (area < 0){
+      gap.reversePoints();
+    }
     this.gaps.push(gap);
   }
 
@@ -72,13 +76,18 @@ export class svgAreaPolygonObject{
     }
   }
 
-  calculateArea(){
+  calculateArea(addToParams = true, absolute = true, withGaps = true){
     const areaElement = new svgAreaOfSingleElement();
-    this.area = areaElement.calculatePolygonAreaFromPoints(this.points);
-    this.gaps.forEach(gap => {
-      this.area -= areaElement.calculatePolygonAreaFromPoints(gap.points);
-    });
-    return this.area;
+    let area = areaElement.calculatePolygonAreaFromPoints(this.points, absolute);
+    if (withGaps){
+      this.gaps.forEach(gap => {
+        area -= areaElement.calculatePolygonAreaFromPoints(gap.points, absolute);
+      });
+    }
+    if (addToParams){
+      this.area = area;
+    }
+    return area;
   }
 
   removeSvg(){
@@ -102,6 +111,14 @@ export class svgAreaPolygonObject{
       }
     });
     return i;
+  }
+
+  reversePoints(){
+    let newPoints = [];
+    this.points.forEach(point => {
+      newPoints.unshift(point);
+    });
+    this.points = newPoints;
   }
 
 }

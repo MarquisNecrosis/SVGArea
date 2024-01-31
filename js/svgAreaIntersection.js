@@ -74,7 +74,7 @@ export class svgAreaIntersection{
               polygon.createGap(gap);
             }
             console.log(polygon);
-            const area = polygon.calculateArea();
+            const area = polygon.calculateArea(true, false);
             console.log(area);
             intersectPolygon.removeSvg();
             intersectPolygon = polygon;
@@ -208,6 +208,7 @@ export class svgAreaIntersection{
   }
 
   polygonIntersection(currentPoints, intersectedPoints, startPoint = null, linePoints = null, clockTurn = true){
+    currentPoints instanceof svgAreaPolygonObject;
     if(currentPoints.points.length == 0){
       return [this.INTERSECT.ADD, intersectedPoints];
     }
@@ -273,6 +274,7 @@ export class svgAreaIntersection{
       }
       let newPolygon = { ...currentPoints};
       newPolygon.points = newPolygonPoints;
+      newPolygon.points.pop();
       if(noIntersection == true && !this.checkIfPolygonIsInsidePolygon(newPolygon, intersectedPoints)){
         return [this.INTERSECT.NEW, intersectedPoints];
       }
@@ -505,18 +507,22 @@ export class svgAreaIntersection{
     return allIntersection;
   }
 
-  findAllVertexes(polygon, intersectPolygon){
+  findAllVertexes(polygon, intersectPolygon, firstPolygonUse = true, secondPolygonUse = true){
     const allVertexes = [];
-    for (let i = 0; i < polygon.points.length; i++) {
-      const polygonPoint = polygon.getPoint(i);
-      if (!this.checkIfIsPointInFill(polygonPoint, intersectPolygon)){
-        allVertexes.push(polygonPoint);
+    if(firstPolygonUse){
+      for (let i = 0; i < polygon.points.length; i++) {
+        const polygonPoint = polygon.getPoint(i);
+        if (!this.checkIfIsPointInFill(polygonPoint, intersectPolygon)){
+          allVertexes.push(polygonPoint);
+        }
       }
     }
-    for (let j = 0; j < intersectPolygon.points.length; j++) {
-      const intersectPoint = intersectPolygon.getPoint(j);
-      if (!this.checkIfIsPointInFill(intersectPoint, polygon)){
-        allVertexes.push(intersectPoint);
+    if(secondPolygonUse){
+      for (let j = 0; j < intersectPolygon.points.length; j++) {
+        const intersectPoint = intersectPolygon.getPoint(j);
+        if (!this.checkIfIsPointInFill(intersectPoint, polygon)){
+          allVertexes.push(intersectPoint);
+        }
       }
     }
     return allVertexes;
@@ -554,16 +560,30 @@ export class svgAreaIntersection{
   }
 
   manageGapsIntersection(polygon, intersectPolygon){
+    const gapsToAdd = [];
+    const gapsToRemove = [];
     polygon.gaps.forEach((gap, index) => {
       let allIntersection = this.findAllIntersection(gap, intersectPolygon);
-      let allVertexes = this.findAllVertexes(gap, intersectPolygon);
-      allVertexes = this.filterPoints(allVertexes, gap.points);
+      let allVertexes = this.findAllVertexes(gap, intersectPolygon, true, false);
       let stat = null;
-      if(allIntersection.length > 0){
-        [stat, gap] = this.polygonIntersection(gap, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
-        polygon.gaps[index].points = gap.points;
+      while(allIntersection.length > 0){
+        let newGap;
+        [stat, newGap] = this.polygonIntersection(gap, intersectPolygon, allVertexes[0], null, true);
+        newGap instanceof svgAreaPolygonObject;
+        if (!gapsToRemove.includes(index)) {
+          gapsToRemove.unshift(index);
+        }
+        gapsToAdd.push(newGap);
+        allIntersection = this.filterIntersection(allIntersection, newGap.points);
+        allVertexes = this.filterPoints(allVertexes, newGap.points);
       }
     });
+    gapsToRemove.forEach(index => {
+      polygon.gaps.splice(index, 1);
+    });
+    gapsToAdd.forEach((gap, index) => {
+      polygon.createGap(gap);
+    })
     return polygon;
   }
 
