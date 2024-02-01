@@ -1,5 +1,9 @@
 export class svgRandomGenerate{
 
+  /**
+   * 
+   * @param {string} svgID ID of svg element
+   */
   constructor(svgID){
     this.svgElement = document.getElementById(svgID);
     const bbox = this.svgElement.getBoundingClientRect();
@@ -7,6 +11,10 @@ export class svgRandomGenerate{
     this.height = bbox.height;
   }
 
+  /**
+   * Generate random rectangle svg elements
+   * @param {number} count number of random elements
+   */
   generateRandomRectangle(count = 1){
     for (let i = 0; i < count; i++) {
       const randomX = this.getRandomNumber(0, this.width);
@@ -28,6 +36,10 @@ export class svgRandomGenerate{
     }
   }
 
+  /**
+   * Generate random hex colors
+   * @returns hex color
+   */
   getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -37,6 +49,12 @@ export class svgRandomGenerate{
     return color;
   }
 
+  /**
+   * Generate random between min and max number
+   * @param {number} min number from
+   * @param {number} max number to
+   * @returns random number between min and max
+   */
   getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
