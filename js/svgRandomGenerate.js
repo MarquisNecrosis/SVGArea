@@ -1,10 +1,10 @@
-export class svgRandomGenerate{
+export class svgRandomGenerate {
 
   /**
    * 
    * @param {string} svgID ID of svg element
    */
-  constructor(svgID){
+  constructor(svgID) {
     this.svgElement = document.getElementById(svgID);
     const bbox = this.svgElement.getBoundingClientRect();
     this.width = bbox.width;
@@ -15,14 +15,14 @@ export class svgRandomGenerate{
    * Generate random rectangle svg elements
    * @param {number} count number of random elements
    */
-  generateRandomRectangle(count = 1){
+  generateRandomRectangle(count = 1) {
     for (let i = 0; i < count; i++) {
       const randomX = this.getRandomNumber(0, this.width);
       const randomY = this.getRandomNumber(0, this.height);
       const randomWidth = this.getRandomNumber(0, this.width - randomX);
       const randomHeight = this.getRandomNumber(0, this.height - randomY);
       const randomColor = this.getRandomColor();
-    
+
       const rectElement = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       rectElement.setAttribute('x', randomX);
       rectElement.setAttribute('y', randomY);
@@ -31,7 +31,7 @@ export class svgRandomGenerate{
       rectElement.setAttribute('fill', randomColor);
       rectElement.setAttribute('class', 'area-calculate');
       rectElement.setAttribute('areagroup', this.getRandomNumber(1, 3));
-    
+
       this.svgElement.appendChild(rectElement);
     }
   }

@@ -4,13 +4,13 @@ import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
  * Class for calculate area for svg element. In <svg> element find every rectangle, polygon, circle,... with class area-calculate and calculate their area.
  * There are only heuristics, which calculate area via random points. It is easy to program, but has it limited precision average 1-5%(must be tested).
  */
-export class svgAreaCalculation{
+export class svgAreaCalculation {
 
   static LIT_RANDOM_POINTS = 1000; //TODO calculate precision
   static MOD_RANDOM_POINTS = 10000; //TODO calculate precision
   static HIGH_RANDOM_POINTS = 100000; //TODO calculate precision
 
-  constructor(){
+  constructor() {
   }
 
   /**
@@ -18,7 +18,7 @@ export class svgAreaCalculation{
    * @param {string} id <svg> element
    * @returns total area of all elements with intersection in svg
    */
-  lazyStupidAreaCalculation(id){
+  lazyStupidAreaCalculation(id) {
     const startTime = performance.now();
 
     const parentElement = document.getElementById(id);
@@ -30,17 +30,17 @@ export class svgAreaCalculation{
       const bbox = child.getBBox();
       for (let x = bbox.x; x < bbox.x + bbox.width; x++) {
         for (let y = bbox.y; y < bbox.y + bbox.height; y++) {
-          if (!areaElement.isPointIntersect(intersectElements, {'x': x, 'y': y})){
-            totalArea ++;
+          if (!areaElement.isPointIntersect(intersectElements, { 'x': x, 'y': y })) {
+            totalArea++;
           }
-        }      
+        }
       }
       intersectElements.push(child);
     });
     const endTime = performance.now();
     const elapsedTime = endTime - startTime;
     console.log('Function execution time:', elapsedTime, 'milliseconds');
-    return totalArea; 
+    return totalArea;
   }
 
   /**
@@ -48,7 +48,7 @@ export class svgAreaCalculation{
    * @param {string} id <svg> element
    * @returns total area of all elements without intersection in svg
    */
-  areaInSvg(id){
+  areaInSvg(id) {
     const parentElement = document.getElementById(id);
     const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
     const totalArea = this.areaOfEllements(elementsWithClass);
@@ -61,7 +61,7 @@ export class svgAreaCalculation{
    * @param {string} groupClass class of element for filtering specific svg elements
    * @returns total area of all elements without intersection in svg
    */
-  areaInSvgByGroup(id, groupClass){
+  areaInSvgByGroup(id, groupClass) {
     const parentElement = document.getElementById(id);
     const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
     const elementsWithAttribute = Array.from(elementsWithClass).filter((element) => {
@@ -76,7 +76,7 @@ export class svgAreaCalculation{
    * @param {HTMLCollection} svgElements Collection of all elements, for which is area calculate
    * @returns total area of all elements without intersection in svg
    */
-  areaOfEllements(svgElements){
+  areaOfEllements(svgElements) {
     const elementsArray = Array.from(svgElements);
     let totalArea = 0;
     const areaElement = new svgAreaOfSingleElement();
@@ -94,7 +94,7 @@ export class svgAreaCalculation{
    * You can choose from define constant LIT_RANDOM_POINTS(1000), MOD_RANDOM_POINTS(10000), HIGH_RANDOM_POINTS(10000) or choose your own
    * @returns Approximately area of all elements with intersection
    */
-  areaInSvgWithIntersection(id, numberOfRandomPoints = this.LIT_RANDOM_POINTS){
+  areaInSvgWithIntersection(id, numberOfRandomPoints = this.LIT_RANDOM_POINTS) {
     const startTime = performance.now();
     const parentElement = document.getElementById(id);
     const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
@@ -114,7 +114,7 @@ export class svgAreaCalculation{
    * You can choose from define constant LIT_RANDOM_POINTS(1000), MOD_RANDOM_POINTS(10000), HIGH_RANDOM_POINTS(10000) or choose your own
    * @returns Approximately area of all elements with intersection
    */
-  areaInSvgWithIntersectionByGroup(id, groupClass, numberOfRandomPoints = this.LIT_RANDOM_POINTS){
+  areaInSvgWithIntersectionByGroup(id, groupClass, numberOfRandomPoints = this.LIT_RANDOM_POINTS) {
     const startTime = performance.now();
     const parentElement = document.getElementById(id);
     const elementsWithClass = parentElement.getElementsByClassName('area-calculate');
@@ -136,7 +136,7 @@ export class svgAreaCalculation{
    * You can choose from define constant LIT_RANDOM_POINTS(1000), MOD_RANDOM_POINTS(10000), HIGH_RANDOM_POINTS(10000) or choose your own
    * @returns Approximately area of all elements with intersection
    */
-  areaOfEllementsWithIntersection(svgElements, numberOfRandomPoints){
+  areaOfEllementsWithIntersection(svgElements, numberOfRandomPoints) {
     const elementsArray = Array.from(svgElements);
     let totalArea = 0;
     const areaElement = new svgAreaOfSingleElement();
