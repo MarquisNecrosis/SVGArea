@@ -1,7 +1,20 @@
 import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
 
-export class svgAreaPolygonObject{
-  constructor(points, index, parent, id, show = false, color = 'black'){
+/**
+ * Class for contain vital info aboput polygons and save his html Element
+ */
+export class svgAreaPolygonObject {
+
+  /**
+   * 
+   * @param {Array} points points of polygons
+   * @param {number} index index means, number of point in polygon. 0 is first point, 1 - second...
+   * @param {*} parent <svg> parent when html element will be held
+   * @param {string} id unique id of polygon, which will his indetified in html
+   * @param {boolean} show true = show in html, false = not show 
+   * @param {string} color color of polygon in html
+   */
+  constructor(points, index, parent, id, show = false, color = 'black') {
     this.points = points;
     this.index = index;
     this.parent = parent;
@@ -10,65 +23,100 @@ export class svgAreaPolygonObject{
     this.gaps = [];
   }
 
-  createFromObject(svgAreaPolygonObject, show){
+  /**
+   * Take points from another svgAreaPolygonObject
+   * @param {svgAreaPolygonObject} svgAreaPolygonObject 
+   * @param {boolean} show 
+   */
+  createFromObject(svgAreaPolygonObject, show) {
     this.points = svgAreaPolygonObject.points;
     this.parent = svgAreaPolygonObject.parent;
     this.redrawSvg(show);
   }
 
-  createGap(hole){
+  /**
+   * If you want hole inside polygons, than this is define it
+   * @param {svgAreaPolygonObject} hole
+   */
+  createGap(hole) {
     const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", true, 'white');
     let area = gap.calculateArea(false, false, false);
-    if (area < 0){
+    if (area < 0) {
       gap.reversePoints();
     }
     this.gaps.push(gap);
   }
 
-  createSvg(show, color){
+  /**
+   * Create <polygon> base by his points
+   * @param {boolean} show show in html
+   * @param {string} color background color
+   */
+  createSvg(show, color) {
     this.element = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     this.element.setAttribute('id', this.id);
     const pointsString = this.points.map(point => point.join(',')).join(' ');
     this.element.setAttribute('points', pointsString);
-    if(true){
+    if (true) {
       this.element.setAttribute('stroke', 'gold');
       this.element.setAttribute('stroke-width', '2');
       this.element.setAttribute('fill', color);
     }
-    else{
+    else {
       this.element.setAttribute('display', 'none');
     }
     this.parent.appendChild(this.element);
   }
 
-  setNextIndex(){
+  /**
+   * Go to another point in polygon
+   */
+  setNextIndex() {
     this.setIndex(this.index + 1);
   }
 
-  setIndex(index){
+  /**
+   * Set new index (new point)
+   * @param {number} index 
+   */
+  setIndex(index) {
     this.index = index % (this.points.length);
   }
 
-  getPoint(index){
+  /**
+   * Return point which is assign to this index. 0 - first point, 1 second...
+   * @param {number} index 
+   * @returns Point [x, y]
+   */
+  getPoint(index) {
     index = index % (this.points.length);
     return this.points[index];
   }
 
-  getCurrentPoint(){
+  /**
+   * Return point assign to currentIndex
+   * @returns Point [x, y]
+   */
+  getCurrentPoint() {
     return this.points[this.index];
   }
 
-  nextPoints(startIndex, endIndex){
-    return [this.points.slice(startIndex, endIndex), this.points[1].slice(startIndex, endIndex)];
-  }
-
-  lineFromCurrentIndex(){
+  /**
+   * Return line base by current index. If its index 0 than line is point0 - point1, 1 point1 - point 2...
+   * @returns Line Array[[x,y][x,y]]
+   */
+  lineFromCurrentIndex() {
     return this.nextLine(this.index);
   }
 
-  nextLine(index){
+  /**
+   * Return line base by index
+   * @param {number} index 
+   * @returns Line Array[[x,y][x,y]]
+   */
+  nextLine(index) {
     index = index % (this.points.length);
-    if(index == this.points.length - 1){
+    if (index == this.points.length - 1) {
       return [this.points[this.points.length - 1], this.points[0]];
     }
     else {
@@ -76,25 +124,39 @@ export class svgAreaPolygonObject{
     }
   }
 
-  calculateArea(addToParams = true, absolute = true, withGaps = true){
+  /**
+   * Calculate area of polygon
+   * @param {boolean} addToParams true = rewrite attribute area with new value, false = only return a value
+   * @param {boolean} absolute true - absolute value, false - can be negative value, when the polygon is clockwise oriented
+   * @param {boolean} withGaps true = deduct the gaps, false = area without gaps
+   * @returns area
+   */
+  calculateArea(addToParams = true, absolute = true, withGaps = true) {
     const areaElement = new svgAreaOfSingleElement();
     let area = areaElement.calculatePolygonAreaFromPoints(this.points, absolute);
-    if (withGaps){
+    if (withGaps) {
       this.gaps.forEach(gap => {
         area -= areaElement.calculatePolygonAreaFromPoints(gap.points, absolute);
       });
     }
-    if (addToParams){
+    if (addToParams) {
       this.area = area;
     }
     return area;
   }
 
-  removeSvg(){
+  /**
+   * delete polygon from html
+   */
+  removeSvg() {
     this.parent.removeChild(this.element);
   }
 
-  redrawSvg(show){
+  /**
+   * redraw a polygon with new coordination
+   * @param {boolean} show 
+   */
+  redrawSvg(show) {
     this.removeSvg();
     this.createSvg(show);
     this.gaps.forEach(gap => {
@@ -103,17 +165,25 @@ export class svgAreaPolygonObject{
     });
   }
 
-  getIndex(point){
+  /**
+   * Return number of point, if the point not exist, return null
+   * @param {Array} point point[x, y]
+   * @returns number
+   */
+  getIndex(point) {
     let i = null
-    this.points.forEach(function(element, index) {
-      if(element[0] == point[0] && element[1] == point[1]){
+    this.points.forEach(function (element, index) {
+      if (element[0] == point[0] && element[1] == point[1]) {
         i = index;
       }
     });
     return i;
   }
 
-  reversePoints(){
+  /**
+   * Switch clockwise, counter-clockwise orientation of polygon
+   */
+  reversePoints() {
     let newPoints = [];
     this.points.forEach(point => {
       newPoints.unshift(point);
