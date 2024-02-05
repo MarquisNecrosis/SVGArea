@@ -1,5 +1,10 @@
 export class svgAreaOfSingleElement {
 
+  /**
+   * Calculate area of element
+   * @param {*} element 
+   * @returns area
+   */
   calculateArea(element) {
     const elementType = element.tagName.toLowerCase();
     let area = 0;
@@ -26,6 +31,11 @@ export class svgAreaOfSingleElement {
     return area;
   }
 
+  /**
+   * Area of rectangle
+   * @param {*} rectElement 
+   * @returns area
+   */
   calculateRectArea(rectElement) {
     const width = parseFloat(rectElement.getAttribute('width')) || 0;
     const height = parseFloat(rectElement.getAttribute('height')) || 0;
@@ -34,6 +44,11 @@ export class svgAreaOfSingleElement {
     return area;
   }
 
+  /**
+   * area of circle 
+   * @param {*} circleElement 
+   * @returns area
+   */
   calculateCircleArea(circleElement) {
     const radius = parseFloat(circleElement.getAttribute('r')) || 0;
     const area = Math.PI * Math.pow(radius, 2);
@@ -41,7 +56,11 @@ export class svgAreaOfSingleElement {
     return area;
   }
 
-  //Shoelace formula
+  /**
+   * area of polygon base on Shoelace formula
+   * @param {*} polygonElement 
+   * @returns area
+   */
   calculatePolygonArea(polygonElement) {
     const coord = this.getPolygonCoordinates(polygonElement);
     const area = this.calculatePolygonAreaFromPoints(coord);
@@ -49,6 +68,12 @@ export class svgAreaOfSingleElement {
     return area;
   }
 
+  /**
+   * Shoelace formula
+   * @param {Array} coord points
+   * @param {boolean} absolute true = absolute value
+   * @returns area
+   */
   calculatePolygonAreaFromPoints(coord, absolute = true){
     var calc1 = 0;
     var calc2 = 0;
@@ -67,6 +92,11 @@ export class svgAreaOfSingleElement {
     return area;
   }
 
+  /**
+   * Transform points from polygon element into matrix with dimension [m, 2] where m is number of points
+   * @param {*} polygonElement 
+   * @returns Array[Array[x,y]]
+   */
   getPolygonCoordinates(polygonElement) {
     const pointsAttribute = polygonElement.getAttribute('points');
     if (!pointsAttribute) {
@@ -85,6 +115,11 @@ export class svgAreaOfSingleElement {
     return coord;
   }
 
+  /**
+   * area of ellipse
+   * @param {*} ellipseElement 
+   * @returns area
+   */
   calculateEllipseArea(ellipseElement) {
     const radiusX = parseFloat(ellipseElement.getAttribute('rx')) || 0;
     const radiusY = parseFloat(ellipseElement.getAttribute('ry')) || 0;
@@ -100,6 +135,11 @@ export class svgAreaOfSingleElement {
     return area;
   }
 
+  /**
+   * Area of path - in test
+   * @param {*} pathElement 
+   * @returns area
+   */
   getPathCoordinates(pathElement) {
     const d = pathElement.getAttribute('d');
     const commands = d.match(/[MmLlHhVvCcSsQqTtAaZz]|[\-+]?\d+(\.\d+)?(?:[eE][\-+]?\d+)?/g);
@@ -136,6 +176,13 @@ export class svgAreaOfSingleElement {
     return coord;
   }
 
+  /**
+   * By heuristic it takes numberOfRandomPoints and try it if the point is in intersectElements or not and return ratio
+   * @param {*} element 
+   * @param {*} intersectElements 
+   * @param {number} numberOfRandomPoints 
+   * @returns number <0,1>
+   */
   calcutaUncoveredPartPolygon(element, intersectElements, numberOfRandomPoints) {
     const elementBBox = element.getBBox();
     let percentageUncover = 0;
@@ -143,6 +190,17 @@ export class svgAreaOfSingleElement {
     return percentageUncover;
   }
 
+  /**
+   * This function generate numberOfRandomPoints from elementBBox and try it if the point is in element and intersectElements.
+   * If the point is only in element than the point is without intersection
+   * If the point is in element and intersectElement than the point is intersect.
+   * The function return ratio pointsWithoutIntersection/totalPoints
+   * @param {*} element 
+   * @param {*} numberOfRandomPoints 
+   * @param {*} elementBBox 
+   * @param {*} intersectElements 
+   * @returns number <0,1>
+   */
   calcutaUncoveredPartPolygonByRandomPoints(element, numberOfRandomPoints, elementBBox, intersectElements){
     let realNumPoints = 1;
     let pointsWithoutIntersection = 0;
@@ -155,9 +213,10 @@ export class svgAreaOfSingleElement {
         elementBBox.x + elementBBox.width,
         elementBBox.y + elementBBox.height
       );
-
+      //check if the point is in element, because element does not cover whole bounding box
       if (this.isPointInSvgPath(element, randomPoint)) {
         realNumPoints++;
+        //check if the point intersect
         if(!this.isPointIntersect(intersectElements, randomPoint)){
           pointsWithoutIntersection++;
         }
@@ -168,31 +227,47 @@ export class svgAreaOfSingleElement {
     return percentageUncover;
   }
 
+  /**
+   * Generate random point
+   * @param {number} minX 
+   * @param {number} minY 
+   * @param {number} maxX 
+   * @param {number} maxY 
+   * @returns Array[x,y]
+   */
   getRandomPointInBoundingBox(minX, minY, maxX, maxY) {
     const x = Math.random() * (maxX - minX) + minX;
     const y = Math.random() * (maxY - minY) + minY;
     return { x, y };
   }
 
+  /**
+   * Check if the point is inside elements
+   * @param {Array} intersectElements element for trying for intersection
+   * @param {*} point 
+   * @returns true = point intersect at least with one element from intersectElements
+   */
   isPointIntersect(intersectElements, point){
     let pointIntersect = false;
     intersectElements.forEach((element) => {
       if (this.isPointInSvgPath(element, point)) {
         pointIntersect = true;
-        console.log("je");
-      }
-      else{
-        console.log("neni");
       }
     });
     return pointIntersect;
   }
 
-  isPointInSvgPath(intersectElements, point) {
-    const svgPoint = intersectElements.ownerSVGElement.createSVGPoint();
+  /**
+   * Check if the point is inside element
+   * @param {*} intersectElement 
+   * @param {*} point 
+   * @returns true = point is inside intersectElement
+   */
+  isPointInSvgPath(intersectElement, point) {
+    const svgPoint = intersectElement.ownerSVGElement.createSVGPoint();
     svgPoint.x = point.x;
     svgPoint.y = point.y;
-    return intersectElements.isPointInFill(svgPoint);
+    return intersectElement.isPointInFill(svgPoint);
   }
 
 }

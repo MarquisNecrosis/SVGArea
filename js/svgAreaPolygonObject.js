@@ -1,6 +1,19 @@
 import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
 
+/**
+ * Class for contain vital info aboput polygons and save his html Element
+ */
 export class svgAreaPolygonObject{
+
+  /**
+   * 
+   * @param {Array} points points of polygons
+   * @param {number} index index means, number of point in polygon. 0 is first point, 1 - second...
+   * @param {*} parent <svg> parent when html element will be held
+   * @param {string} id unique id of polygon, which will his indetified in html
+   * @param {boolean} show true = show in html, false = not show 
+   * @param {string} color color of polygon in html
+   */
   constructor(points, index, parent, id, show = false, color = 'black'){
     this.points = points;
     this.index = index;
@@ -10,12 +23,21 @@ export class svgAreaPolygonObject{
     this.gaps = [];
   }
 
+  /**
+   * Take points from another svgAreaPolygonObject
+   * @param {svgAreaPolygonObject} svgAreaPolygonObject 
+   * @param {boolean} show 
+   */
   createFromObject(svgAreaPolygonObject, show){
     this.points = svgAreaPolygonObject.points;
     this.parent = svgAreaPolygonObject.parent;
     this.redrawSvg(show);
   }
 
+  /**
+   * If you want hole inside polygons, than this is define it
+   * @param {svgAreaPolygonObject} hole
+   */
   createGap(hole){
     const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", true, 'white');
     let area = gap.calculateArea(false, false, false);
@@ -25,6 +47,11 @@ export class svgAreaPolygonObject{
     this.gaps.push(gap);
   }
 
+  /**
+   * Create <polygon> base by his points
+   * @param {boolean} show show in html
+   * @param {string} color background color
+   */
   createSvg(show, color){
     this.element = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     this.element.setAttribute('id', this.id);
@@ -41,31 +68,52 @@ export class svgAreaPolygonObject{
     this.parent.appendChild(this.element);
   }
 
+  /**
+   * Go to another point in polygon
+   */
   setNextIndex(){
     this.setIndex(this.index + 1);
   }
 
+  /**
+   * Set new index (new point)
+   * @param {number} index 
+   */
   setIndex(index){
     this.index = index % (this.points.length);
   }
 
+  /**
+   * Return point which is assign to this index. 0 - first point, 1 second...
+   * @param {number} index 
+   * @returns Point [x, y]
+   */
   getPoint(index){
     index = index % (this.points.length);
     return this.points[index];
   }
 
+  /**
+   * Return point assign to currentIndex
+   * @returns Point [x, y]
+   */
   getCurrentPoint(){
     return this.points[this.index];
   }
 
-  nextPoints(startIndex, endIndex){
-    return [this.points.slice(startIndex, endIndex), this.points[1].slice(startIndex, endIndex)];
-  }
-
+  /**
+   * Return line base by current index. If its index 0 than line is point0 - point1, 1 point1 - point 2...
+   * @returns Line Array[[x,y][x,y]]
+   */
   lineFromCurrentIndex(){
     return this.nextLine(this.index);
   }
 
+  /**
+   * Return line base by index
+   * @param {number} index 
+   * @returns Line Array[[x,y][x,y]]
+   */
   nextLine(index){
     index = index % (this.points.length);
     if(index == this.points.length - 1){
@@ -76,6 +124,13 @@ export class svgAreaPolygonObject{
     }
   }
 
+  /**
+   * Calculate area of polygon
+   * @param {boolean} addToParams true = rewrite attribute area with new value, false = only return a value
+   * @param {boolean} absolute true - absolute value, false - can be negative value, when the polygon is clockwise oriented
+   * @param {boolean} withGaps true = deduct the gaps, false = area without gaps
+   * @returns area
+   */
   calculateArea(addToParams = true, absolute = true, withGaps = true){
     const areaElement = new svgAreaOfSingleElement();
     let area = areaElement.calculatePolygonAreaFromPoints(this.points, absolute);
@@ -90,10 +145,17 @@ export class svgAreaPolygonObject{
     return area;
   }
 
+  /**
+   * delete polygon from html
+   */
   removeSvg(){
     this.parent.removeChild(this.element);
   }
 
+  /**
+   * redraw a polygon with new coordination
+   * @param {boolean} show 
+   */
   redrawSvg(show){
     this.removeSvg();
     this.createSvg(show);
@@ -103,6 +165,11 @@ export class svgAreaPolygonObject{
     });
   }
 
+  /**
+   * Return number of point, if the point not exist, return null
+   * @param {Array} point point[x, y]
+   * @returns number
+   */
   getIndex(point){
     let i = null
     this.points.forEach(function(element, index) {
@@ -113,6 +180,9 @@ export class svgAreaPolygonObject{
     return i;
   }
 
+  /**
+   * Switch clockwise, counter-clockwise orientation of polygon
+   */
   reversePoints(){
     let newPoints = [];
     this.points.forEach(point => {
