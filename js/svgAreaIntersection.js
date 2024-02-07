@@ -642,7 +642,7 @@ export class svgAreaIntersection {
         const polygonLine = polygon.nextLine(i);
         const intersectLine = intersectPolygon.nextLine(j);
         const intersection = this.lineIntersectionLine(polygonLine, intersectLine);
-        if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(intersectLine[0], intersection) && !this.arraysAreEqual(intersectLine[1], intersection)) {
+        if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(intersectLine[0], intersection) && !this.arraysAreEqual(intersectLine[1], intersection) && !this.checkIfIsVertex(intersectPolygon, polygonLine)) {
           const newIntersection = {
             'intersection': intersection,
             'startPoint': polygonLine[0]
@@ -733,31 +733,58 @@ export class svgAreaIntersection {
    * @returns polygon with potencially change gaps
    */
   manageGapsIntersection(polygon, intersectPolygon) {
-    const gapsToAdd = [];
-    const gapsToRemove = [];
+    let gapsToAdd = [];
+    let gapsToRemove = [];
     polygon.gaps.forEach((gap, index) => {
       let allIntersection = this.findAllIntersection(gap, intersectPolygon);
       let allVertexes = this.findAllVertexes(gap, intersectPolygon, true, false);
       let stat = null;
-      while (allIntersection.length > 0) {
-        let newGap;
-        [stat, newGap] = this.polygonIntersection(gap, intersectPolygon, allVertexes[0], null, true);
-        newGap instanceof svgAreaPolygonObject;
+      if(allIntersection.length == 0 && allVertexes.length == 0){
         if (!gapsToRemove.includes(index)) {
           gapsToRemove.unshift(index);
         }
-        gapsToAdd.push(newGap);
-        allIntersection = this.filterIntersection(allIntersection, newGap.points);
-        allVertexes = this.filterPoints(allVertexes, newGap.points);
+      }
+      else if (allIntersection.length > 0) {
+        gapsToAdd = this.intersectGap(allIntersection, allVertexes, gap, intersectPolygon, gapsToAdd);
+        if (!gapsToRemove.includes(index)) {
+          gapsToRemove.unshift(index);
+        }
       }
     });
     gapsToRemove.forEach(index => {
+      polygon.gaps[index].removeSvg();
       polygon.gaps.splice(index, 1);
     });
     gapsToAdd.forEach((gap, index) => {
       polygon.createGap(gap);
     })
     return polygon;
+  }
+
+  /**
+   * In while loop the algorhitm check all intersection between gap and intersectPolygon and transform gap into new shape or new pieces.
+   * @param {Array} allIntersection all intersection between gap and intersectPoly
+   * @param {*} allVertexes All gaps vertexes which are not part of intersect polygon
+   * @param {svgAreaPolygonObject} gap 
+   * @param {svgAreaPolygonObject} intersectPolygon 
+   * @param {Array} gapsToAdd Array of all new gaps
+   * @returns new gaps
+   */
+  intersectGap(allIntersection, allVertexes, gap, intersectPolygon, gapsToAdd) {
+    let it = 0;
+    while (allIntersection.length > 0) {
+      let newGap;
+      [, newGap] = this.polygonIntersection(gap, intersectPolygon, allVertexes[0], null, true);
+      newGap instanceof svgAreaPolygonObject;
+      gapsToAdd.push(newGap);
+      allIntersection = this.filterIntersection(allIntersection, newGap.points);
+      allVertexes = this.filterPoints(allVertexes, newGap.points);
+      it++;
+      if (it >= this.MAX_ITERATION) {
+        break;
+      }
+    }
+    return gapsToAdd;
   }
 
 }
