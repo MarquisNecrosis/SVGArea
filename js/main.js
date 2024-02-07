@@ -16,9 +16,10 @@ window.onload = function() {
   const totalAreaSvg = width * height;
   console.log(totalAreaSvg);
   intersectElements.polygonIntersectionInSvg('tutorial_svg');
+  /*
   svgRandom.generateRandomRectangle(20);
  const totalArea = areaCalculator.areaInSvg('tutorial_svg');
- console.log(totalArea);
+ console.log(totalArea);*/
  /*
   const totalArea = areaCalculator.areaInSvg('tutorial_svg');
   console.log(totalArea);
