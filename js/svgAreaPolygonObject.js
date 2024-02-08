@@ -245,4 +245,11 @@ export class svgAreaPolygonObject {
     this.points = newPoints;
   }
 
+  checkIsPointInFill(point) {
+    const svgPoint = this.element.ownerSVGElement.createSVGPoint();
+    svgPoint.x = point[0];
+    svgPoint.y = point[1];
+    return this.element.isPointInFill(svgPoint);
+  }
+
 }
