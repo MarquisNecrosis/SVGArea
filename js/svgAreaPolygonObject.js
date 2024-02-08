@@ -14,13 +14,16 @@ export class svgAreaPolygonObject {
    * @param {boolean} show true = show in html, false = not show 
    * @param {string} color color of polygon in html
    */
-  constructor(points, index, parent, id, show = false, color = 'black') {
+  constructor(points, index, parent, id, show = false, color = 'black', path = true) {
     this.points = points;
     this.index = index;
     this.parent = parent;
     this.id = id;
-    this.createSvg(show, color);
     this.gaps = [];
+    this.createSvg(show, color);
+    if (path){
+      this.createPath(color);
+    }
   }
 
   /**
@@ -39,7 +42,7 @@ export class svgAreaPolygonObject {
    * @param {svgAreaPolygonObject} hole
    */
   createGap(hole) {
-    const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", true, 'white');
+    const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", true, 'white', false);
     let area = gap.calculateArea(false, false, false);
     if (area < 0) {
       gap.reversePoints();
@@ -61,11 +64,56 @@ export class svgAreaPolygonObject {
       this.element.setAttribute('stroke', 'gold');
       this.element.setAttribute('stroke-width', '2');
       this.element.setAttribute('fill', color);
+      this.element.setAttribute('opacity', 0);
     }
     else {
       this.element.setAttribute('display', 'none');
     }
     this.parent.appendChild(this.element);
+  }
+
+  createPath(color) {
+    this.path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    this.path.setAttribute('id', this.id + "_path");
+    const pointsString = this.points.map(point => point.join(',')).join(' ');
+    let d = "";
+    if (this.points.length > 0){
+      for (let i = 0; i < this.points.length; i++) {
+        const point = this.points[i];
+        if(i == 0){
+          d += "M" + point[0] + "," + point[1];
+        }
+        else{
+          d += " L" + point[0] + "," + point[1];
+        }
+      }
+      d += " Z ";
+      this.gaps.forEach(gap => {
+        if (gap.points.length > 0){
+          for (let i = 0; i < gap.points.length; i++) {
+            const point = gap.points[i];
+            if(i == 0){
+              d += "M" + point[0] + "," + point[1];
+            }
+            else{
+              d += " L" + point[0] + "," + point[1];
+            }
+          }
+        }
+        d += " Z ";
+      });
+    }
+    this.path.setAttribute('d', d);
+    this.path.setAttribute('fill-rule', 'evenodd');
+    if (true) {
+      this.path.setAttribute('stroke', 'silver');
+      this.path.setAttribute('stroke-width', '2');
+      this.path.setAttribute('fill', "blue");
+    }
+    else {
+      this.element.setAttribute('display', 'none');
+    }
+    this.parent.appendChild(this.path);
   }
 
   /**
@@ -152,6 +200,10 @@ export class svgAreaPolygonObject {
     this.parent.removeChild(this.element);
   }
 
+  removePath() {
+    this.parent.removeChild(this.path);
+  }
+
   /**
    * redraw a polygon with new coordination
    * @param {boolean} show 
@@ -163,6 +215,8 @@ export class svgAreaPolygonObject {
       gap.removeSvg();
       gap.createSvg(show, 'white');
     });
+    this.removePath()
+    this.createPath(show);
   }
 
   /**

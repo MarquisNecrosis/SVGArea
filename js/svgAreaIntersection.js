@@ -105,6 +105,7 @@ export class svgAreaIntersection {
             const area = polygon.calculateArea(true, false);
             console.log(area);
             intersectPolygon.removeSvg();
+            intersectPolygon.removePath();
             intersectPolygon = polygon;
             if (hasIntersection) {
               indexesForDelete.push(indexForDelete);
