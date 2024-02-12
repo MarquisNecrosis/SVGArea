@@ -21,9 +21,7 @@ export class svgAreaPolygonObject {
     this.id = id;
     this.gaps = [];
     this.createSvg(show, color);
-    if (path){
-      this.createPath(color);
-    }
+    this.createPath(color);
   }
 
   /**
@@ -60,6 +58,7 @@ export class svgAreaPolygonObject {
     this.element.setAttribute('id', this.id);
     const pointsString = this.points.map(point => point.join(',')).join(' ');
     this.element.setAttribute('points', pointsString);
+    this.element.setAttribute('class', 'intersect-object');
     if (true) {
       this.element.setAttribute('stroke', 'gold');
       this.element.setAttribute('stroke-width', '2');
@@ -105,6 +104,7 @@ export class svgAreaPolygonObject {
     }
     this.path.setAttribute('d', d);
     this.path.setAttribute('fill-rule', 'evenodd');
+    this.path.setAttribute('class', 'intersect-object');
     if (true) {
       this.path.setAttribute('stroke', 'silver');
       this.path.setAttribute('stroke-width', '2');
@@ -202,6 +202,10 @@ export class svgAreaPolygonObject {
 
   removePath() {
     this.parent.removeChild(this.path);
+    var elements = document.querySelectorAll("#gap_path");
+    elements.forEach(function(element) {
+      element.parentNode.removeChild(element);
+    });
   }
 
   /**
@@ -249,6 +253,9 @@ export class svgAreaPolygonObject {
     const svgPoint = this.element.ownerSVGElement.createSVGPoint();
     svgPoint.x = point[0];
     svgPoint.y = point[1];
+    console.log("aaaaaa");
+    console.log(this.path.isPointInFill(svgPoint));
+    console.log(this.element.isPointInFill(svgPoint));
     return this.element.isPointInFill(svgPoint);
   }
 

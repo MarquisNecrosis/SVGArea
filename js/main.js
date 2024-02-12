@@ -8,6 +8,7 @@ const svgRandom = new svgRandomGenerate('tutorial_svg');
 const intersectElements = new svgAreaIntersection('tutorial_svg');
 
 window.onload = function() {
+  //svgRandom.generateRandomRectangle(20);
 
   const parentElement = document.getElementById('tutorial_svg');
   const bbox = parentElement.getBoundingClientRect();
@@ -16,6 +17,15 @@ window.onload = function() {
   const totalAreaSvg = width * height;
   console.log(totalAreaSvg);
   intersectElements.polygonIntersectionInSvg('tutorial_svg');
+  const checkbox = document.getElementById('opacity-test');
+
+  checkbox.addEventListener('input', function() {
+    const elements = document.querySelectorAll('.intersect-object');
+    const value = this.value;
+    elements.forEach(element => {
+      element.style.opacity = value;
+    });
+  });
   /*
   svgRandom.generateRandomRectangle(20);
  const totalArea = areaCalculator.areaInSvg('tutorial_svg');
