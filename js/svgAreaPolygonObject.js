@@ -255,9 +255,6 @@ export class svgAreaPolygonObject {
     const svgPoint = this.element.ownerSVGElement.createSVGPoint();
     svgPoint.x = point[0];
     svgPoint.y = point[1];
-    console.log("aaaaaa");
-    console.log(this.path.isPointInFill(svgPoint));
-    console.log(this.element.isPointInFill(svgPoint));
     return this.element.isPointInFill(svgPoint);
   }
 
