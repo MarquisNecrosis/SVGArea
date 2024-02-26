@@ -21,7 +21,7 @@ export class svgAreaIntersection {
   constructor(svgID) {
     this.parentSVG = document.getElementById(svgID);
     this.currentPolygon = [];
-    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current");
+    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current", true);
   }
 
   /**
@@ -30,8 +30,16 @@ export class svgAreaIntersection {
    * @param {*} line2 Second array of two points 
    * @returns Array[Number, Number] of intersection, if there isnt any intersection return null
    */
-  lineIntersectionLine(line1, line2) {
-    return this.lineIntersection(line1[0][0], line1[0][1], line1[1][0], line1[1][1], line2[0][0], line2[0][1], line2[1][0], line2[1][1]);
+  lineIntersectionLine(line1, line2, checkInsideLines) {
+    let intersection = this.lineIntersection(line1[0][0], line1[0][1], line1[1][0], line1[1][1], line2[0][0], line2[0][1], line2[1][0], line2[1][1]);
+    if (checkInsideLines && intersection[0] == null && intersection[1] == null){
+      const inside1 = this.checkIfPointIsInsideVectorLine(line2, line1[0]);
+      const inside2 = this.checkIfPointIsInsideVectorLine(line2, line1[1]);
+      if (inside1 && inside2){
+        intersection = line1[1];
+      }
+    }
+    return intersection;
   }
 
   /**
@@ -56,13 +64,62 @@ export class svgAreaIntersection {
     if (isNaN(s) || isNaN(t) || !isFinite(s) || !isFinite(t)) {
       t = ((x3 - x1) * (y2 - y1) - (y3 - y1) * (x2 - x1)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
       s = ((y3 - y1) + t * (y4 - y3)) / (y2 - y1);
-
     }
     if (0 <= s && s <= 1 && 0 <= t && t <= 1) {
       intersection1 = (x1 + s * (x2 - x1));
       intersection2 = (y1 + s * (y2 - y1));
     }
+    const isInside = this.checkIfPointIsInsideVector(x1, y1, x2, y2, x3, y3);
+    if(intersection1 == null && intersection2 == null && isInside){
+      intersection1 = x3;
+      intersection2 = y3;
+    }  
     return [intersection1, intersection2];
+  }
+
+  distance(x1, y1, x2, y2){
+    const distance = Math.sqrt(Math.pow(x1 - x2) + Math.pow(y1 - y2));
+    return distance;
+  }
+
+  isBetween(x1, y1, x2, y2, x3, y3){
+    const distance1 = this.distance(x1, y1, x3, y3);
+    const distance2 = this.distance(x3, y3, x2, y2);
+    const distance3 = this.distance(x1, y1, x2, y2);
+    const sumDistance = Math.abs(distance1 + distance2 + distance3);
+    if(sumDistance < this.EPSILON){
+      return true
+    }
+    else{
+      return false;
+    }
+  }
+
+  checkIfPointIsInsideVector(x1, y1, x2, y2, x3, y3) {
+    let isInside = true;
+    let crossproduct  = (y3 - y1) * (x2 - x1) - (x3 - x1) * (y2 - y1);
+    if (Math.abs(crossproduct) > this.EPSILON){
+      isInside = false;
+    }
+    let dotproduct = (x3 - x1) * (x2 - x1) + (y3 - y1)*(y2 - y1);
+    if(dotproduct < 0){
+      isInside = false;
+    }
+    let squaredlengthba = (x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1);
+    if (dotproduct > squaredlengthba){
+      isInside = false;
+    }
+    return isInside;
+  }
+
+  checkIfPointIsInsideVectorPoint(startPoint, endPoint, point){
+    const isInside = this.checkIfPointIsInsideVector(startPoint[0], startPoint[1], endPoint[0], endPoint[1], point[0], point[1]);
+    return isInside;
+  }
+
+  checkIfPointIsInsideVectorLine(line, point){
+    const isInside = this.checkIfPointIsInsideVectorPoint(line[0], line[1], point);
+    return isInside;
   }
 
   /**
@@ -73,7 +130,7 @@ export class svgAreaIntersection {
     const elementsArray = Array.from(elementsWithClass);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
-      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", false);
+      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", true);
       let hasIntersection = false;
       let indexesForDelete = [];
       let indexForDelete = -1;
@@ -81,12 +138,10 @@ export class svgAreaIntersection {
         let newPolygon = null;
         let stat = 0;
         let allIntersection = this.findAllIntersection(polygon, intersectPolygon);
-        console.log(allIntersection);
         let allVertexes = this.findAllVertexes(polygon, intersectPolygon);
-        console.log(allVertexes);
         [stat, newPolygon] = this.polygonIntersection(polygon, intersectPolygon);
-        allIntersection = this.filterIntersection(allIntersection, newPolygon.points);
-        allVertexes = this.filterPoints(allVertexes, newPolygon.points);
+        allIntersection = this.filterIntersection(allIntersection, newPolygon);
+        allVertexes = this.filterPoints(allVertexes, newPolygon);
         var gap = null;
         if (allVertexes.length > 0) {
           [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0]);
@@ -101,9 +156,7 @@ export class svgAreaIntersection {
             if (gap != null) {
               polygon.createGap(gap);
             }
-            console.log(polygon);
             const area = polygon.calculateArea(true, false);
-            console.log(area);
             intersectPolygon.removeSvg();
             intersectPolygon.removePath();
             intersectPolygon = polygon;
@@ -121,7 +174,6 @@ export class svgAreaIntersection {
       });
       if (!hasIntersection) {
         const area = intersectPolygon.calculateArea();
-        console.log(area);
         this.currentPolygon.push(intersectPolygon);
       }
       this.manageCurrentPolygons(indexesForDelete);
@@ -318,9 +370,9 @@ export class svgAreaIntersection {
         }
         //if there is intersection
         else {
-          newPolygonPoints.push(intersection);
           swap = !swap;
           noIntersection = false;
+          newPolygonPoints.push(intersection);
           if (swap) {
             linePoints = intersectedPoints.lineFromCurrentIndex();
             endPoint = intersection;
@@ -384,8 +436,10 @@ export class svgAreaIntersection {
     let intersections = [];
     let interPointIndex = [];
     for (let i = 0; i < intersectedPolygon.points.length; i++) {
+      let pom_i = i;
       const intersectLine = intersectedPolygon.nextLine(i);
-      const intersection = this.lineIntersectionLine(linePoints, intersectLine);
+      const intersection = this.lineIntersectionLine(linePoints, intersectLine, true);
+      
       if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(linePoints[0], intersection)) {
         intersections.push(intersection);
         interPointIndex.push(i);
@@ -398,7 +452,7 @@ export class svgAreaIntersection {
       for (let i = 0; i < intersections.length; i++) {
         const intersectPoint = intersections[i];
         const intersectLine = intersectedPolygon.nextLine(interPointIndex[i]);
-        const newDistance = this.calculateDistance(startPoint, intersectPoint, intersectLine, currentPolygon)
+        const newDistance = this.calculateDistance(startPoint, intersectPoint, intersectLine, currentPolygon, linePoints)
         if (newDistance < distance) {
           distance = newDistance;
           distanceIndex = i;
@@ -530,13 +584,13 @@ export class svgAreaIntersection {
    * @param {svgAreaPolygonObject} currentPolygon the polygon on which are locate fromPoint, toPoint and intersectLine
    * @returns distance between fromPoint to toPoint
    */
-  calculateDistance(fromPoint, toPoint, intersectLine, currentPolygon) {
+  calculateDistance(fromPoint, toPoint, intersectLine, currentPolygon, linePoints) {
     let newDistance = Number.MAX_VALUE;
     if (this.arraysAreEqual(toPoint, intersectLine[0]) || this.arraysAreEqual(toPoint, intersectLine[1])) {
       if (this.arraysAreEqual(toPoint, intersectLine[1])) {
         intersectLine = [intersectLine[1], intersectLine[0]];
       }
-      const isVertex = this.checkIfIsVertex(currentPolygon, intersectLine);
+      const isVertex = this.checkIfIsVertex(currentPolygon, intersectLine, linePoints);
       if (isVertex) {
         newDistance = Number.MAX_VALUE;
       }
@@ -556,22 +610,30 @@ export class svgAreaIntersection {
    * @param {Array} intersectLine 
    * @returns 
    */
-  checkIfIsVertex(currentPolygon, intersectLine) {
+  checkIfIsVertex(currentPolygon, intersectLine, linePoints) {
     const startPoint = intersectLine[0];
     let endPoint = intersectLine[1];
     let distance = this.vectorDistance(intersectLine[0], intersectLine[1]);
+    let intersectEndPoint = endPoint;
+    let pomLine;
+    let hasAnotherIntersection = false;
     for (let i = 0; i < currentPolygon.points.length; i++) {
       const line = currentPolygon.nextLine(i);
-      const intersection = this.lineIntersectionLine(line, intersectLine);
+      const intersection = this.lineIntersectionLine(line, intersectLine, true);
       const newDistance = this.vectorDistance(intersectLine[0], intersection);
       if (!this.arraysAreEqual(intersectLine[0], intersection) && (intersection[0] != null || intersection[1] != null) && newDistance < distance) {
         endPoint = intersection;
+        intersectEndPoint = line[1];
+        pomLine = line;
+        hasAnotherIntersection = true;
       }
     }
     const midX = (startPoint[0] + endPoint[0]) / 2;
     const midY = (startPoint[1] + endPoint[1]) / 2;
     const middlePoint = [midX, midY];
-    if (currentPolygon.checkIsPointInFill(middlePoint)) {
+    let isInside = false;
+    isInside = this.checkIfPointIsInsideVectorLine(linePoints, middlePoint); //todo tohle poladit
+    if (currentPolygon.checkIsPointInFill(middlePoint) && !isInside) {
       return true;
     }
     else {
@@ -627,22 +689,23 @@ export class svgAreaIntersection {
       for (let j = 0; j < intersectPolygon.points.length; j++) {
         const polygonLine = polygon.nextLine(i);
         const intersectLine = intersectPolygon.nextLine(j);
-        const intersection = this.lineIntersectionLine(polygonLine, intersectLine);
-        if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(intersectLine[0], intersection) && !this.arraysAreEqual(intersectLine[1], intersection) && !this.checkIfIsVertex(intersectPolygon, polygonLine)) {
-          if (swap){
-            var newIntersection = {
-              'intersection': intersection,
-              'startPoint': polygonLine[1]
-            };
+        const intersection = this.lineIntersectionLine(polygonLine, intersectLine, false);
+        if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(intersectLine[0], intersection) && !this.arraysAreEqual(intersectLine[1], intersection)) {
+          if (!this.checkIfIsVertex(intersectPolygon, polygonLine, intersectLine)){
+            if (swap){
+              var newIntersection = {
+                'intersection': intersection,
+                'startPoint': polygonLine[1]
+              };
+            }
+            else{
+              var newIntersection = {
+                'intersection': intersection,
+                'startPoint': polygonLine[0]
+              };
+            }
+            allIntersection.push(newIntersection);             
           }
-          else{
-            var newIntersection = {
-              'intersection': intersection,
-              'startPoint': polygonLine[0]
-            };
-          }
-
-          allIntersection.push(newIntersection);
         }
       }
     }
@@ -681,16 +744,25 @@ export class svgAreaIntersection {
   /**
    * Check all points and take only this, which are not in second array of points
    * @param {Array} points points to filter
-   * @param {Array} polygonPoints 
+   * @param {Array} polygon 
    * @returns all points which are not in polygonPoints
    */
-  filterPoints(points, polygonPoints) {
+  filterPoints(points, polygon) {
+    polygon = this.castIntosvgAreaPolygonObject(polygon);
     const filterPoints = [];
     points.forEach(point => {
       let filter = false;
-      polygonPoints.forEach(pp => {
+      polygon.points.forEach(pp => {
         if (Math.abs(point[0] - pp[0]) <= this.EPSILON && Math.abs(point[1] - pp[1]) <= this.EPSILON)
           filter = true;
+      });
+      const lines = polygon.getAllLines();
+      lines.forEach(line => {
+        const isInside = this.checkIfPointIsInsideVectorLine(line, point); {
+          if (isInside){
+            filter = true;
+          }
+        }
       });
       if (!filter) {
         filterPoints.push(point);
@@ -702,18 +774,20 @@ export class svgAreaIntersection {
   /**
    * Check all points and take only this, which are not in second array of points
    * @param {*} intersection intersection to filter
-   * @param {*} polygonPoints 
+   * @param {*} polygon 
    * @returns all points which are not in polygonPoints
    */
-  filterIntersection(intersection, polygonPoints) {
+  filterIntersection(intersection, polygon) {
+    polygon = this.castIntosvgAreaPolygonObject(polygon);
     const filterPoints = [];
     intersection.forEach(i => {
       let filter = false;
-      polygonPoints.forEach(pp => {
+      polygon.points.forEach(pp => {
         if (Math.abs(i['intersection'][0] - pp[0]) <= this.EPSILON && Math.abs(i['intersection'][1] - pp[1]) <= this.EPSILON) {
           filter = true;
         }
       });
+
       if (!filter) {
         filterPoints.push(i);
       }
@@ -777,14 +851,30 @@ export class svgAreaIntersection {
       }
       newGap instanceof svgAreaPolygonObject;
       gapsToAdd.push(newGap);
-      allIntersection = this.filterIntersection(allIntersection, newGap.points);
-      allVertexes = this.filterPoints(allVertexes, newGap.points);
+      allIntersection = this.filterIntersection(allIntersection, newGap);
+      allVertexes = this.filterPoints(allVertexes, newGap);
       it++;
       if (it >= this.MAX_ITERATION) {
         break;
       }
     }
     return gapsToAdd;
+  }
+
+  castIntosvgAreaPolygonObject(obj){
+    let svg = new svgAreaPolygonObject();
+    return Object.assign(svg, obj);
+  }
+
+  arrayIncludesArray(arrayOfArrays, comparisonArray){
+    let equal = false;
+    arrayOfArrays.forEach(innerArray => {
+      const isEqual = innerArray.every((value, index) => value === comparisonArray[index]); 
+      if (isEqual) {
+        equal = true;
+      }
+    });
+  return equal;
   }
 
 }

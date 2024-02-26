@@ -20,8 +20,10 @@ export class svgAreaPolygonObject {
     this.parent = parent;
     this.id = id;
     this.gaps = [];
-    this.createSvg(show, color);
-    this.createPath(color);
+    if(show){
+      this.createSvg(show, color);
+      this.createPath(color);
+    }
   }
 
   /**
@@ -253,10 +255,15 @@ export class svgAreaPolygonObject {
     const svgPoint = this.element.ownerSVGElement.createSVGPoint();
     svgPoint.x = point[0];
     svgPoint.y = point[1];
-    console.log("aaaaaa");
-    console.log(this.path.isPointInFill(svgPoint));
-    console.log(this.element.isPointInFill(svgPoint));
     return this.element.isPointInFill(svgPoint);
+  }
+
+  getAllLines(){
+    let lines = [];
+    for (let i = 0; i < this.points.length; i++) {
+      lines.push(this.nextLine(i));
+    }
+    return lines;
   }
 
 }
