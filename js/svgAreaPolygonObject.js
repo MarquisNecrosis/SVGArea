@@ -5,6 +5,8 @@ import { svgAreaOfSingleElement } from './svgAreaOfSingleElement.js';
  */
 export class svgAreaPolygonObject {
 
+  EPSILON = 0.0000001 //the deviation between two points
+
   /**
    * 
    * @param {Array} points points of polygons
@@ -21,6 +23,7 @@ export class svgAreaPolygonObject {
     this.id = id;
     this.gaps = [];
     if(show){
+      this.removeRedundantPoints();
       this.createSvg(show, color);
       this.createPath(color);
     }
@@ -33,6 +36,7 @@ export class svgAreaPolygonObject {
    */
   createFromObject(svgAreaPolygonObject, show) {
     this.points = svgAreaPolygonObject.points;
+    this.removeRedundantPoints();
     this.parent = svgAreaPolygonObject.parent;
     this.redrawSvg(show);
   }
@@ -139,7 +143,7 @@ export class svgAreaPolygonObject {
    * @returns Point [x, y]
    */
   getPoint(index) {
-    index = index % (this.points.length);
+    index = (this.points.length + index) % (this.points.length);
     return this.points[index];
   }
 
@@ -264,6 +268,54 @@ export class svgAreaPolygonObject {
       lines.push(this.nextLine(i));
     }
     return lines;
+  }
+
+  /**
+   * Remove points which is on the same line. This Points are duplicate and only add time comsuption and can bring some bugs.
+   */
+  removeRedundantPoints(){
+    let pointsToRemove = [];
+    for (let i = 0; i < this.points.length; i++) {
+      const point = this.points[i];
+      const nextPoint = this.getPoint(i + 1);
+      const previousPoint = this.getPoint(i - 1);
+      const isInside = this.checkIfPointIsInsideVectorPoint(previousPoint, nextPoint, point);
+      if(isInside){
+        pointsToRemove.unshift(i);
+      }
+    }
+    pointsToRemove.forEach(i => {
+      this.points.splice(i, 1);
+    });
+  }
+
+  /**
+   * Find if point is on the same line between startPoint and endPoint
+   * @param {*} startPoint 
+   * @param {*} endPoint 
+   * @param {*} point 
+   * @returns true/false
+   */
+  checkIfPointIsInsideVectorPoint(startPoint, endPoint, point){
+    const isInside = this.checkIfPointIsInsideVector(startPoint[0], startPoint[1], endPoint[0], endPoint[1], point[0], point[1]);
+    return isInside;
+  }
+
+  checkIfPointIsInsideVector(x1, y1, x2, y2, x3, y3) {
+    let isInside = true;
+    let crossproduct  = (y3 - y1) * (x2 - x1) - (x3 - x1) * (y2 - y1);
+    if (Math.abs(crossproduct) > this.EPSILON){
+      isInside = false;
+    }
+    let dotproduct = (x3 - x1) * (x2 - x1) + (y3 - y1)*(y2 - y1);
+    if(dotproduct < 0){
+      isInside = false;
+    }
+    let squaredlengthba = (x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1);
+    if (dotproduct > squaredlengthba){
+      isInside = false;
+    }
+    return isInside;
   }
 
 }
