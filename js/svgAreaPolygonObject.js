@@ -34,8 +34,9 @@ export class svgAreaPolygonObject {
    * @param {svgAreaPolygonObject} svgAreaPolygonObject 
    * @param {boolean} show 
    */
-  createFromObject(svgAreaPolygonObject, show) {
+  createFromObject(svgAreaPolygonObject, show, intersectPolygon) {
     this.points = svgAreaPolygonObject.points;
+    this.gaps = this.gaps.concat(intersectPolygon.gaps);
     this.removeRedundantPoints();
     this.parent = svgAreaPolygonObject.parent;
     this.redrawSvg(show);

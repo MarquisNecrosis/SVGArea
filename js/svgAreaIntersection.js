@@ -152,9 +152,10 @@ export class svgAreaIntersection {
         this.manageGapsIntersection(polygon, intersectPolygon)
         switch (stat) {
           case this.INTERSECT.ADD:
-            polygon.createFromObject(newPolygon, true);
+            polygon.createFromObject(newPolygon, true, intersectPolygon);
             if (gap != null) {
               polygon.createGap(gap);
+              polygon.redrawSvg(true);
             }
             const area = polygon.calculateArea(true, false);
             intersectPolygon.removeSvg();
