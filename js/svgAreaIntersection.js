@@ -352,12 +352,13 @@ export class svgAreaIntersection {
       let newPolygonPoints = [startPoint];
       let endPoint = [];
       let intersectPolygon = intersectedPoints;
+      let currentPolygon = currentPoints;
       let it = 0;
       let noIntersection = true;
       //take points after the new point is not startPoint. If its startPoint that means, that algorhitm take every point around the both polygons and merge is complete
       while (!this.arraysAreEqual(startPoint, endPoint)) {
         let intersection = null
-        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPoints);
+        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPolygon);
         //if there is not intersection than take point with current polygon an go on.
         if (intersection == null) {
           if (swap) {
@@ -377,11 +378,13 @@ export class svgAreaIntersection {
             linePoints = intersectedPoints.lineFromCurrentIndex();
             endPoint = intersection;
             intersectPolygon = currentPoints;
+            currentPolygon = intersectedPoints;
           }
           else {
             linePoints = currentPoints.lineFromCurrentIndex();
             endPoint = intersection;
             intersectPolygon = intersectedPoints;
+            currentPolygon = currentPoints;
           }
           if (clockTurn) {
             linePoints[0] = intersection;
@@ -587,7 +590,7 @@ export class svgAreaIntersection {
   calculateDistance(fromPoint, toPoint, intersectLine, currentPolygon, linePoints) {
     let newDistance = Number.MAX_VALUE;
     if (this.arraysAreEqual(toPoint, intersectLine[0]) || this.arraysAreEqual(toPoint, intersectLine[1])) {
-      if (this.arraysAreEqual(toPoint, intersectLine[1])) {
+      if (this.arraysAreEqual(fromPoint, intersectLine[0]) || this.arraysAreEqual(toPoint, intersectLine[1])) {
         intersectLine = [intersectLine[1], intersectLine[0]];
       }
       const isVertex = this.checkIfIsVertex(currentPolygon, intersectLine, linePoints);
