@@ -19,8 +19,8 @@ export class svgRandomGenerate {
     for (let i = 0; i < count; i++) {
       const randomX = this.getRandomNumber(0, this.width);
       const randomY = this.getRandomNumber(0, this.height);
-      const randomWidth = this.getRandomNumber(0, this.width - randomX);
-      const randomHeight = this.getRandomNumber(0, this.height - randomY);
+      const randomWidth = this.getRandomNumber(10, this.width - randomX);
+      const randomHeight = this.getRandomNumber(10, this.height - randomY);
       const randomColor = this.getRandomColor();
 
       const rectElement = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
