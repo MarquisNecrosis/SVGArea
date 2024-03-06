@@ -68,6 +68,8 @@ export class svgAreaIntersection {
     if (0 <= s && s <= 1 && 0 <= t && t <= 1) {
       intersection1 = (x1 + s * (x2 - x1));
       intersection2 = (y1 + s * (y2 - y1));
+      intersection1 = Math.round(intersection1 * 10000000000) / 10000000000;
+      intersection2 = Math.round(intersection2 * 10000000000) / 10000000000;
     }
     const isInside = this.checkIfPointIsInsideVector(x1, y1, x2, y2, x3, y3);
     if(intersection1 == null && intersection2 == null && isInside){
