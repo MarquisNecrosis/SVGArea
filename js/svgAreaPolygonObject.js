@@ -257,10 +257,10 @@ export class svgAreaPolygonObject {
   }
 
   checkIsPointInFill(point) {
-    const svgPoint = this.element.ownerSVGElement.createSVGPoint();
+    const svgPoint = this.path.ownerSVGElement.createSVGPoint();
     svgPoint.x = point[0];
     svgPoint.y = point[1];
-    return this.element.isPointInFill(svgPoint);
+    return this.path.isPointInFill(svgPoint);
   }
 
   getAllLines(){

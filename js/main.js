@@ -8,7 +8,7 @@ const svgRandom = new svgRandomGenerate('tutorial_svg');
 const intersectElements = new svgAreaIntersection('tutorial_svg');
 
 window.onload = function() {
-  svgRandom.generateRandomRectangle(10);
+  //svgRandom.generateRandomRectangle(10);
 
   const parentElement = document.getElementById('tutorial_svg');
   const bbox = parentElement.getBoundingClientRect();
