@@ -141,17 +141,30 @@ export class svgAreaIntersection {
         let stat = 0;
         let allIntersection = this.findAllIntersection(polygon, intersectPolygon);
         let allVertexes = this.findAllVertexes(polygon, intersectPolygon);
+        let allVertexesIntersect = this.findAllVertexes(polygon, intersectPolygon, false);
         [stat, newPolygon] = this.polygonIntersection(polygon, intersectPolygon);
         allIntersection = this.filterIntersection(allIntersection, newPolygon);
         allVertexes = this.filterPoints(allVertexes, newPolygon);
+        allVertexesIntersect = this.filterPoints(allVertexesIntersect, newPolygon);
+        this.manageGapsIntersection(polygon, intersectPolygon);
+        const gapsIntersection = this.manageGapsIntersection(intersectPolygon, polygon);
+        if (gapsIntersection){
+          stat = this.INTERSECT.ADD;
+        }
+        allVertexes = this.filterGapsPoints(allVertexes, polygon);
+        polygon.redrawSvg(true);
+
         var gap = null;
         if (allVertexes.length > 0) {
-          [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0]);
+          let clockTurn = true;
+          if (allVertexesIntersect.length > 0){
+            clockTurn = false;
+          }
+          [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0], null, clockTurn);
         }
         else if (allIntersection.length > 0) {
           [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
         }
-        this.manageGapsIntersection(polygon, intersectPolygon)
         switch (stat) {
           case this.INTERSECT.ADD:
             polygon.createFromObject(newPolygon, true, intersectPolygon);
@@ -350,6 +363,12 @@ export class svgAreaIntersection {
       //startPoint and linePoints is set
       else {
         currentPoints.index = currentPoints.getIndex(startPoint);
+        if (currentPoints.index == null){
+          let pom = currentPoints;
+          currentPoints = intersectedPoints;
+          intersectedPoints = pom;
+          currentPoints.index = currentPoints.getIndex(startPoint);
+        }
         linePoints = currentPoints.lineFromCurrentIndex();
       }
       let newPolygonPoints = [startPoint];
@@ -777,6 +796,14 @@ export class svgAreaIntersection {
     return filterPoints
   }
 
+  filterGapsPoints(points, polygon){
+    polygon = this.castIntosvgAreaPolygonObject(polygon);
+    polygon.gaps.forEach(gap => {
+      points = this.filterPoints(points, gap);
+    });
+    return points;
+  }
+
   /**
    * Check all points and take only this, which are not in second array of points
    * @param {*} intersection intersection to filter
@@ -808,6 +835,32 @@ export class svgAreaIntersection {
    * @returns polygon with potencially change gaps
    */
   manageGapsIntersection(polygon, intersectPolygon) {
+    let intersect = false;
+    let gapsToAdd = [];
+    let gapsToRemove = [];
+    let gapsToAddFromIntersect = [];
+    [gapsToRemove, gapsToAdd] = this.gapsIntersection(polygon, intersectPolygon);
+    [, gapsToAddFromIntersect] = this.gapsIntersection(intersectPolygon, polygon);
+    gapsToRemove.forEach(index => {
+      polygon.gaps[index].removeSvg();
+      polygon.gaps.splice(index, 1);
+    });
+    gapsToAdd.forEach((gap, index) => {
+      if(!polygon.gaps.includes(gap)){
+        polygon.createGap(gap);
+        intersect = true;
+      }
+    })
+    gapsToAddFromIntersect.forEach((gap, index) => {
+      if(!polygon.gaps.includes(gap)){
+        polygon.createGap(gap);
+        intersect = true;
+      }
+    })
+    return intersect;
+  }
+
+  gapsIntersection(polygon, intersectPolygon){
     let gapsToAdd = [];
     let gapsToRemove = [];
     polygon.gaps.forEach((gap, index) => {
@@ -826,14 +879,7 @@ export class svgAreaIntersection {
         }
       }
     });
-    gapsToRemove.forEach(index => {
-      polygon.gaps[index].removeSvg();
-      polygon.gaps.splice(index, 1);
-    });
-    gapsToAdd.forEach((gap, index) => {
-      polygon.createGap(gap);
-    })
-    return polygon;
+    return [gapsToRemove, gapsToAdd];
   }
 
   /**
