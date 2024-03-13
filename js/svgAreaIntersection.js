@@ -424,7 +424,7 @@ export class svgAreaIntersection {
       newPolygon.points = newPolygonPoints;
       newPolygon.points.pop();
       //if there is no intersection than add new polygon
-      if (noIntersection == true && !this.checkIfPolygonIsInsidePolygon(currentPoints, intersectedPoints)) {
+      if (noIntersection == true && this.checkIfPolygonIsOutsidePolygon(currentPoints, intersectedPoints)) {
         return [this.INTERSECT.NEW, intersectedPoints];
       }
       else {
@@ -542,6 +542,7 @@ export class svgAreaIntersection {
         }
       }
     }
+    console.log(startPoint);
     return [startPoint, currentPolygon, intersectedPolygon];
   }
 
@@ -551,17 +552,17 @@ export class svgAreaIntersection {
    * @param {svgAreaPolygonObject} intersectedPolygon 
    * @returns true = every points from currentPolygon are inside intersectedPolygon
    */
-  checkIfPolygonIsInsidePolygon(currentPolygon, intersectedPolygon) {
-    let isInside = true;
+  checkIfPolygonIsOutsidePolygon(currentPolygon, intersectedPolygon) {
+    let isOutside = true;
     for (let i = 0; i < intersectedPolygon.points.length; i++) {
       intersectedPolygon.index = i;
       const point = intersectedPolygon.getPoint(i);
-      if (!currentPolygon.checkIsPointInFill(point)) {
-        isInside = false;
+      if (currentPolygon.checkIsPointInFill(point)) {
+        isOutside = false;
         break;
       }
     }
-    return isInside;
+    return isOutside;
   }
 
   /**
