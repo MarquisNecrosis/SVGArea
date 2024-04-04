@@ -159,8 +159,11 @@ export class svgAreaIntersection {
           let clockTurn = true;
           if (allVertexesIntersect.length > 0){
             clockTurn = false;
+            [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexesIntersect[0], null, clockTurn);
           }
-          [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0], null, clockTurn);
+          else{
+            [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0], null, clockTurn);
+          }
         }
         else if (allIntersection.length > 0) {
           [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
@@ -377,10 +380,11 @@ export class svgAreaIntersection {
       let currentPolygon = currentPoints;
       let it = 0;
       let noIntersection = true;
+      let usedIntersection = [];
       //take points after the new point is not startPoint. If its startPoint that means, that algorhitm take every point around the both polygons and merge is complete
       while (!this.arraysAreEqual(startPoint, endPoint)) {
         let intersection = null
-        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPolygon);
+        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPolygon, usedIntersection);
         //if there is not intersection than take point with current polygon an go on.
         if (intersection == null) {
           if (swap) {
@@ -396,6 +400,7 @@ export class svgAreaIntersection {
           swap = !swap;
           noIntersection = false;
           newPolygonPoints.push(intersection);
+          usedIntersection.push(intersection);
           if (swap) {
             linePoints = intersectedPoints.lineFromCurrentIndex();
             endPoint = intersection;
@@ -457,15 +462,15 @@ export class svgAreaIntersection {
    * @param {svgAreaPolygonObject} currentPolygon 
    * @returns intersection [number, number] or null
    */
-  checkIfLineHasIntersection(linePoints, intersectedPolygon, currentPolygon) {
+  checkIfLineHasIntersection(linePoints, intersectedPolygon, currentPolygon, usedIntersection) {
     let intersections = [];
     let interPointIndex = [];
     for (let i = 0; i < intersectedPolygon.points.length; i++) {
       let pom_i = i;
       const intersectLine = intersectedPolygon.nextLine(i);
       const intersection = this.lineIntersectionLine(linePoints, intersectLine, true);
-      
-      if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(linePoints[0], intersection)) {
+      const isUsed = this.arrayIncludesArray(usedIntersection, intersection);
+      if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(linePoints[0], intersection) && !isUsed) {
         intersections.push(intersection);
         interPointIndex.push(i);
       }
@@ -717,7 +722,9 @@ export class svgAreaIntersection {
         const intersectLine = intersectPolygon.nextLine(j);
         const intersection = this.lineIntersectionLine(polygonLine, intersectLine, false);
         if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(intersectLine[0], intersection) && !this.arraysAreEqual(intersectLine[1], intersection)) {
-          if (!this.checkIfIsVertex(intersectPolygon, polygonLine, intersectLine)){
+          const isInCorner = polygon.points.some(subArray => subArray[0] === intersection[0] && subArray[1] === intersection[1])
+          const isVertex = this.checkIfIsVertex(intersectPolygon, polygonLine, intersectLine);
+          if (!isVertex && !isInCorner){
             if (swap){
               var newIntersection = {
                 'intersection': intersection,

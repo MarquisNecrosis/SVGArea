@@ -21,6 +21,8 @@ export class svgAreaPolygonObject {
     this.index = index;
     this.parent = parent;
     this.id = id;
+    this.isGap = false;
+    this.parentPath = null;
     this.gaps = [];
     if(show){
       this.removeRedundantPoints();
@@ -75,6 +77,9 @@ export class svgAreaPolygonObject {
    */
   createGap(hole) {
     const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", true, 'white');
+    gap.isGap = true;
+    gap.parentPath = this.path;
+    gap.parentPoints = this.points;
     let area = gap.calculateArea(false, false, false);
     if (area < 0) {
       gap.reversePoints();
@@ -198,6 +203,9 @@ export class svgAreaPolygonObject {
    * @returns Line Array[[x,y][x,y]]
    */
   nextLine(index) {
+    if (index < 0){
+      index = this.points.length + index;
+    }
     index = index % (this.points.length);
     if (index == this.points.length - 1) {
       return [this.points[this.points.length - 1], this.points[0]];
@@ -250,12 +258,14 @@ export class svgAreaPolygonObject {
   redrawSvg(show) {
     this.removeSvg();
     this.createSvg(show);
+    this.removePath()
+    this.createPath(show);
     this.gaps.forEach(gap => {
       gap.removeSvg();
       gap.createSvg(show, 'white');
+      gap.parentPath = this.path;
+      gap.parentPoints = this.points
     });
-    this.removePath()
-    this.createPath(show);
   }
 
   /**
@@ -285,9 +295,15 @@ export class svgAreaPolygonObject {
   }
 
   checkIsPointInFill(point) {
-    console.log(point);
-    console.log(this.path);
-    const svgPoint = this.path.ownerSVGElement.createSVGPoint();
+    if (this.path.id == 'gap_path'){
+      console.log(this);
+    }
+    if (this.isGap){
+      var svgPoint = this.parentPath.ownerSVGElement.createSVGPoint();
+    }
+    else {
+      var svgPoint = this.path.ownerSVGElement.createSVGPoint();
+    }
     svgPoint.x = point[0];
     svgPoint.y = point[1];
     return this.path.isPointInFill(svgPoint);
