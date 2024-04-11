@@ -374,6 +374,7 @@ export class svgAreaIntersection {
         linePoints = currentPoints.lineFromCurrentIndex();
       }
       let newPolygonPoints = [startPoint];
+      this.addSVGPointWithClass(startPoint);
       let endPoint = [];
       let intersectPolygon = intersectedPoints;
       let currentPolygon = currentPoints;
@@ -393,12 +394,14 @@ export class svgAreaIntersection {
             [endPoint, linePoints] = this.managePoints(currentPoints, intersection);
           }
           newPolygonPoints.push(endPoint);
+          this.addSVGPointWithClass(endPoint);
         }
         //if there is intersection
         else {
           swap = !swap;
           noIntersection = false;
           newPolygonPoints.push(intersection);
+          this.addSVGPointWithClass(intersection);
           usedIntersection.push(intersection);
           if (swap) {
             linePoints = intersectedPoints.lineFromCurrentIndex();
@@ -426,6 +429,7 @@ export class svgAreaIntersection {
       }
       let newPolygon = { ...currentPoints };
       newPolygon.points = newPolygonPoints;
+      this.deleteHelpPoints();
       newPolygon.points.pop();
       //if there is no intersection than add new polygon
       if (noIntersection == true && this.checkIfPolygonIsOutsidePolygon(currentPoints, intersectedPoints)) {
@@ -641,7 +645,6 @@ export class svgAreaIntersection {
    * @returns 
    */
   checkIfIsVertex(currentPolygon, intersectLine, linePoints, intersection) {
-    console.log(intersectLine);
     const startPoint = intersection;
     let endPoint = intersectLine[1];
     let distance = this.vectorDistance(intersectLine[0], intersectLine[1]);
@@ -945,6 +948,28 @@ export class svgAreaIntersection {
       }
     });
   return equal;
+  }
+
+  addSVGPointWithClass(point) {
+    // Create a new SVG point
+    var svgNS = "http://www.w3.org/2000/svg";
+    var newPoint = document.createElementNS(svgNS, "circle");
+    
+    // Set attributes for the point
+    newPoint.setAttribute("cx", point[0]);
+    newPoint.setAttribute("cy", point[1]);
+    newPoint.setAttribute("r", "5");
+    newPoint.setAttribute("class", "helpPoints"); // Add the class 'point'
+    
+    // Append the point to the SVG
+    document.getElementById("tutorial_svg").appendChild(newPoint);
+  }
+
+  deleteHelpPoints() {
+    var elements = document.getElementsByClassName("helpPoints");
+    while (elements.length > 0) {
+      elements[0].parentNode.removeChild(elements[0]);
+    }
   }
 
 }

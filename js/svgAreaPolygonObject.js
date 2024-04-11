@@ -295,9 +295,6 @@ export class svgAreaPolygonObject {
   }
 
   checkIsPointInFill(point) {
-    if (this.path.id == 'gap_path'){
-      console.log(this);
-    }
     if (this.isGap){
       var svgPoint = this.parentPath.ownerSVGElement.createSVGPoint();
     }
