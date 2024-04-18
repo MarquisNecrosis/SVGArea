@@ -81,8 +81,9 @@ export class svgAreaPolygonObject {
     gap.parentPath = this.path;
     gap.parentPoints = this.points;
     let area = gap.calculateArea(false, false, false);
+    console.log();
     if (area < 0) {
-      gap.reversePoints();
+      //gap.reversePoints();
     }
     this.gaps.push(gap);
   }
@@ -375,6 +376,48 @@ export class svgAreaPolygonObject {
       }
     }
     return true;
+  }
+
+  /**
+   * Correct the gaps and main polygon, sometimes during algorhitm the gaps can be main polygon, because in gaps start startPoint. 
+   * In this case, there is tool, which looked on every point in main polygon, if every point from main polygon are in gap, than switch polygon and gap
+   * @returns 
+   */
+  chooseCorrectGap() {
+    for (let index = 0; index < this.gaps.length; index++) {
+      const gap = this.gaps[index];
+      const isOutside = this.checkIfPolygonIsOutsidePolygon(gap, this);
+      if(!isOutside) {
+        console.log('Inside');
+        const newGapPoints = this.points;
+        const newGapElement = this.element;
+        const newGapPath = this.path;
+        const newGapArea = this.area;
+        this.points = gap.points;
+        this.element = gap.element;
+        this.path = gap.path;
+        this.area = gap.area;
+        gap.points = newGapPoints;
+        gap.element = newGapElement;
+        newGapPath.id = 'gap_path';
+        gap.path = newGapPath;
+        gap.area = newGapArea;
+        return;
+      }
+    }
+  }
+
+  checkIfPolygonIsOutsidePolygon(currentPolygon, intersectedPolygon) {
+    let isOutside = true;
+    for (let i = 0; i < intersectedPolygon.points.length; i++) {
+      intersectedPolygon.index = i;
+      const point = intersectedPolygon.getPoint(i);
+      if (currentPolygon.checkIsPointInFill(point)) {
+        isOutside = false;
+        break;
+      }
+    }
+    return isOutside;
   }
 
 }
