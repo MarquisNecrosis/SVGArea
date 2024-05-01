@@ -83,7 +83,7 @@ export class svgAreaPolygonObject {
     let area = gap.calculateArea(false, false, false);
     console.log();
     if (area < 0) {
-      //gap.reversePoints();
+      gap.reversePoints();
     }
     this.gaps.push(gap);
   }
@@ -371,8 +371,13 @@ export class svgAreaPolygonObject {
       return false;
     }
     for (let i = 0; i < arr1.length; i++) {
-      if (Math.abs(arr1[i] - arr2[i]) >= this.EPSILON) {
+      if (arr1[i].length !== arr2[i].length) {
         return false;
+      }
+      for (let j = 0; j < arr1[i].length; j++) {
+        if (Math.abs(arr1[i][j] - arr2[i][j]) >= this.EPSILON) {
+          return false;
+        }
       }
     }
     return true;

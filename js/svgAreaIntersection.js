@@ -162,7 +162,7 @@ export class svgAreaIntersection {
           console.log("vznika nova dira");
           let clockTurn = true;
           if (allVertexesIntersect.length > 0){
-            clockTurn = false;
+            clockTurn = true;
             [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexesIntersect[0], null, clockTurn);
           }
           else{
