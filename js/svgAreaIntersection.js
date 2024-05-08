@@ -387,6 +387,7 @@ export class svgAreaIntersection {
       let it = 0;
       let noIntersection = true;
       let usedIntersection = [];
+      this.highlightLinePoints(linePoints);
       //take points after the new point is not startPoint. If its startPoint that means, that algorhitm take every point around the both polygons and merge is complete
       while (!this.arraysAreEqual(startPoint, endPoint)) {
         let intersection = null
@@ -432,7 +433,9 @@ export class svgAreaIntersection {
         if (it >= this.MAX_ITERATION) {
           break;
         }
+        this.highlightLinePoints(linePoints);
       }
+      this.highlightLinePoints(null);
       let newPolygon = { ...currentPoints };
       newPolygon.points = newPolygonPoints;
       this.deleteHelpPoints();
@@ -477,16 +480,25 @@ export class svgAreaIntersection {
     for (let i = 0; i < intersectedPolygon.points.length; i++) {
       let pom_i = i;
       const intersectLine = intersectedPolygon.nextLine(i);
+      this.highlightIntersectLinePoints(intersectLine);
       const intersection = this.lineIntersectionLine(linePoints, intersectLine, true);
       const isUsed = this.arrayIncludesArray(usedIntersection, intersection);
       if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(linePoints[0], intersection) && !isUsed) {
         intersections.push(intersection);
         interPointIndex.push(i);
       }
+      else if(this.arraysAreEqual(linePoints[0], intersection)) {
+        const isInside = this.checkIfPointIsInsideVectorLine(intersectLine, linePoints[1]);
+        if (isInside) {
+          intersections.push(linePoints[1]);
+          interPointIndex.push(i);
+        }
+      }
+
     }
 
     [intersections, interPointIndex] = this.removeRedundandsIntersection(intersections, interPointIndex);
-
+    this.highlightIntersectLinePoints(null);
     if (intersections.length > 0) {
       let distance = Number.MAX_VALUE;
       const startPoint = [linePoints[0][0], linePoints[0][1]];
@@ -494,12 +506,14 @@ export class svgAreaIntersection {
       for (let i = 0; i < intersections.length; i++) {
         const intersectPoint = intersections[i];
         const intersectLine = intersectedPolygon.nextLine(interPointIndex[i]);
+        this.highlightIntersectLinePoints(intersectLine);
         const newDistance = this.calculateDistance(startPoint, intersectPoint, intersectLine, currentPolygon, linePoints, intersectedPolygon)
         if (newDistance < distance) {
           distance = newDistance;
           distanceIndex = i;
         }
       }
+      this.highlightIntersectLinePoints(null);
       if (distance == Number.MAX_VALUE) {
         return null;
       }
@@ -1014,6 +1028,42 @@ export class svgAreaIntersection {
       interPointIndex.splice(duplicateIndexes[i], 1);
     }
     return [intersections, interPointIndex];
+  }
+
+  highlightLinePoints(linePoints) {
+    var elements = document.getElementsByClassName("helpLine");
+    while (elements.length > 0) {
+      elements[0].parentNode.removeChild(elements[0]);
+    }
+    if(linePoints != null){
+      var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1",linePoints[0][0]);
+      line.setAttribute("y1", linePoints[0][1]);
+      line.setAttribute("x2", linePoints[1][0]);
+      line.setAttribute("y2", linePoints[1][1]);
+      line.setAttribute("stroke", "red");
+      line.setAttribute("stroke-width", "8");
+      line.setAttribute("class", "helpLine");
+      document.getElementById("tutorial_svg").appendChild(line);
+    }
+  }
+
+  highlightIntersectLinePoints(linePoints) {
+    var elements = document.getElementsByClassName("helpIntersectLine");
+    while (elements.length > 0) {
+      elements[0].parentNode.removeChild(elements[0]);
+    }
+    if(linePoints != null){
+      var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1",linePoints[0][0]);
+      line.setAttribute("y1", linePoints[0][1]);
+      line.setAttribute("x2", linePoints[1][0]);
+      line.setAttribute("y2", linePoints[1][1]);
+      line.setAttribute("stroke", "black");
+      line.setAttribute("stroke-width", "8");
+      line.setAttribute("class", "helpIntersectLine");
+      document.getElementById("tutorial_svg").appendChild(line);
+    }
   }
 
 
