@@ -408,7 +408,7 @@ export class svgAreaIntersection {
           noIntersection = false;
           newPolygonPoints.push(intersection);
           this.addSVGPointWithClass(intersection);
-          usedIntersection.push(intersection);
+          //usedIntersection.push(intersection);
           if (swap) {
             linePoints = intersectedPoints.lineFromCurrentIndex();
             endPoint = intersection;
@@ -484,6 +484,9 @@ export class svgAreaIntersection {
         interPointIndex.push(i);
       }
     }
+
+    [intersections, interPointIndex] = this.removeRedundandsIntersection(intersections, interPointIndex);
+
     if (intersections.length > 0) {
       let distance = Number.MAX_VALUE;
       const startPoint = [linePoints[0][0], linePoints[0][1]];
@@ -982,5 +985,36 @@ export class svgAreaIntersection {
       elements[0].parentNode.removeChild(elements[0]);
     }
   }
+
+  /**
+   * Remove redundant intersections base on duplication
+   * @param {*} intersections 
+   * @param {*} interPointIndex index of polygon which has intersection
+   * @returns 
+   */
+  removeRedundandsIntersection(intersections, interPointIndex) {
+    const duplicateIndexes = [];
+    const uniqueIntersect = [];
+
+    intersections.forEach((arr, index) => {
+      let isDuplicate = false;
+      uniqueIntersect.forEach((duplicate) => {
+        if (this.arraysAreEqual(arr, duplicate)){
+          duplicateIndexes.push(index);
+          isDuplicate = true;
+        }
+      });
+      if (!isDuplicate) {
+        uniqueIntersect.push(arr);
+      }
+    });
+
+    for (let i = duplicateIndexes.length - 1; i >= 0; i--) {
+      intersections.splice(duplicateIndexes[i], 1);
+      interPointIndex.splice(duplicateIndexes[i], 1);
+    }
+    return [intersections, interPointIndex];
+  }
+
 
 }

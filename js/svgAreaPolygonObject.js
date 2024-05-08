@@ -24,6 +24,7 @@ export class svgAreaPolygonObject {
     this.isGap = false;
     this.parentPath = null;
     this.gaps = [];
+    this.area = 0;
     if(show){
       this.removeRedundantPoints();
       if (element == null){
@@ -81,7 +82,6 @@ export class svgAreaPolygonObject {
     gap.parentPath = this.path;
     gap.parentPoints = this.points;
     let area = gap.calculateArea(false, false, false);
-    console.log();
     if (area < 0) {
       gap.reversePoints();
     }
@@ -224,17 +224,22 @@ export class svgAreaPolygonObject {
    * @returns area
    */
   calculateArea(addToParams = true, absolute = true, withGaps = true) {
-    const areaElement = new svgAreaOfSingleElement();
-    let area = areaElement.calculatePolygonAreaFromPoints(this.points, absolute);
-    if (withGaps) {
-      this.gaps.forEach(gap => {
-        area -= areaElement.calculatePolygonAreaFromPoints(gap.points, absolute);
-      });
+    if (this.points.length > 0){
+      const areaElement = new svgAreaOfSingleElement();
+      let area = areaElement.calculatePolygonAreaFromPoints(this.points, absolute);
+      if (withGaps) {
+        this.gaps.forEach(gap => {
+          area -= areaElement.calculatePolygonAreaFromPoints(gap.points, absolute);
+        });
+      }
+      if (addToParams) {
+        this.area = area;
+      }
+      return area;       
     }
-    if (addToParams) {
-      this.area = area;
+    else {
+      return 0;
     }
-    return area;
   }
 
   /**
@@ -258,6 +263,10 @@ export class svgAreaPolygonObject {
    */
   redrawSvg(show) {
     this.removeSvg();
+    let area = this.calculateArea(false, false, false);
+    if(area > 0) {
+      this.reversePoints();
+    }
     this.createSvg(show);
     this.removePath()
     this.createPath(show);
@@ -399,10 +408,18 @@ export class svgAreaPolygonObject {
         const newGapPath = this.path;
         const newGapArea = this.area;
         this.points = gap.points;
+        let area = this.calculateArea(false, false, false);
+        if(area > 0) {
+          this.reversePoints();
+        }
         this.element = gap.element;
         this.path = gap.path;
         this.area = gap.area;
         gap.points = newGapPoints;
+        let gapArea = gap.calculateArea(false, false, false);
+        if (gapArea < 0) {
+          gap.reversePoints();
+        }
         gap.element = newGapElement;
         newGapPath.id = 'gap_path';
         gap.path = newGapPath;
