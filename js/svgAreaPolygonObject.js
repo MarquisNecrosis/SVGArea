@@ -21,7 +21,10 @@ export class svgAreaPolygonObject {
     this.index = index;
     this.parent = parent;
     this.id = id;
+    this.isGap = false;
+    this.parentPath = null;
     this.gaps = [];
+    this.area = 0;
     if(show){
       this.removeRedundantPoints();
       if (element == null){
@@ -75,6 +78,9 @@ export class svgAreaPolygonObject {
    */
   createGap(hole) {
     const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", true, 'white');
+    gap.isGap = true;
+    gap.parentPath = this.path;
+    gap.parentPoints = this.points;
     let area = gap.calculateArea(false, false, false);
     if (area < 0) {
       gap.reversePoints();
@@ -198,6 +204,9 @@ export class svgAreaPolygonObject {
    * @returns Line Array[[x,y][x,y]]
    */
   nextLine(index) {
+    if (index < 0){
+      index = this.points.length + index;
+    }
     index = index % (this.points.length);
     if (index == this.points.length - 1) {
       return [this.points[this.points.length - 1], this.points[0]];
@@ -215,17 +224,22 @@ export class svgAreaPolygonObject {
    * @returns area
    */
   calculateArea(addToParams = true, absolute = true, withGaps = true) {
-    const areaElement = new svgAreaOfSingleElement();
-    let area = areaElement.calculatePolygonAreaFromPoints(this.points, absolute);
-    if (withGaps) {
-      this.gaps.forEach(gap => {
-        area -= areaElement.calculatePolygonAreaFromPoints(gap.points, absolute);
-      });
+    if (this.points.length > 0){
+      const areaElement = new svgAreaOfSingleElement();
+      let area = areaElement.calculatePolygonAreaFromPoints(this.points, absolute);
+      if (withGaps) {
+        this.gaps.forEach(gap => {
+          area -= areaElement.calculatePolygonAreaFromPoints(gap.points, absolute);
+        });
+      }
+      if (addToParams) {
+        this.area = area;
+      }
+      return area;       
     }
-    if (addToParams) {
-      this.area = area;
+    else {
+      return 0;
     }
-    return area;
   }
 
   /**
@@ -249,13 +263,19 @@ export class svgAreaPolygonObject {
    */
   redrawSvg(show) {
     this.removeSvg();
+    let area = this.calculateArea(false, false, false);
+    if(area > 0) {
+      this.reversePoints();
+    }
     this.createSvg(show);
+    this.removePath()
+    this.createPath(show);
     this.gaps.forEach(gap => {
       gap.removeSvg();
       gap.createSvg(show, 'white');
+      gap.parentPath = this.path;
+      gap.parentPoints = this.points
     });
-    this.removePath()
-    this.createPath(show);
   }
 
   /**
@@ -285,9 +305,12 @@ export class svgAreaPolygonObject {
   }
 
   checkIsPointInFill(point) {
-    console.log(point);
-    console.log(this.path);
-    const svgPoint = this.path.ownerSVGElement.createSVGPoint();
+    if (this.isGap){
+      var svgPoint = this.parentPath.ownerSVGElement.createSVGPoint();
+    }
+    else {
+      var svgPoint = this.path.ownerSVGElement.createSVGPoint();
+    }
     svgPoint.x = point[0];
     svgPoint.y = point[1];
     return this.path.isPointInFill(svgPoint);
@@ -357,11 +380,66 @@ export class svgAreaPolygonObject {
       return false;
     }
     for (let i = 0; i < arr1.length; i++) {
-      if (Math.abs(arr1[i] - arr2[i]) >= this.EPSILON) {
+      if (arr1[i].length !== arr2[i].length) {
         return false;
+      }
+      for (let j = 0; j < arr1[i].length; j++) {
+        if (Math.abs(arr1[i][j] - arr2[i][j]) >= this.EPSILON) {
+          return false;
+        }
       }
     }
     return true;
+  }
+
+  /**
+   * Correct the gaps and main polygon, sometimes during algorhitm the gaps can be main polygon, because in gaps start startPoint. 
+   * In this case, there is tool, which looked on every point in main polygon, if every point from main polygon are in gap, than switch polygon and gap
+   * @returns 
+   */
+  chooseCorrectGap() {
+    for (let index = 0; index < this.gaps.length; index++) {
+      const gap = this.gaps[index];
+      const isOutside = this.checkIfPolygonIsOutsidePolygon(gap, this);
+      if(!isOutside) {
+        console.log('Inside');
+        const newGapPoints = this.points;
+        const newGapElement = this.element;
+        const newGapPath = this.path;
+        const newGapArea = this.area;
+        this.points = gap.points;
+        let area = this.calculateArea(false, false, false);
+        if(area > 0) {
+          this.reversePoints();
+        }
+        this.element = gap.element;
+        this.path = gap.path;
+        this.area = gap.area;
+        gap.points = newGapPoints;
+        let gapArea = gap.calculateArea(false, false, false);
+        if (gapArea < 0) {
+          gap.reversePoints();
+        }
+        gap.element = newGapElement;
+        newGapPath.id = 'gap_path';
+        gap.path = newGapPath;
+        gap.area = newGapArea;
+        return;
+      }
+    }
+  }
+
+  checkIfPolygonIsOutsidePolygon(currentPolygon, intersectedPolygon) {
+    let isOutside = true;
+    for (let i = 0; i < intersectedPolygon.points.length; i++) {
+      intersectedPolygon.index = i;
+      const point = intersectedPolygon.getPoint(i);
+      if (currentPolygon.checkIsPointInFill(point)) {
+        isOutside = false;
+        break;
+      }
+    }
+    return isOutside;
   }
 
 }

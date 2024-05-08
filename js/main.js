@@ -26,6 +26,22 @@ window.onload = function() {
       element.style.opacity = value;
     });
   });
+
+  document.getElementById('copy').addEventListener('click', function() {
+    var elementsToCopy = document.querySelectorAll('.area-calculate');
+    var copiedContent = '';
+    elementsToCopy.forEach(function(element) {
+        copiedContent += element.outerHTML + '\n';
+    });
+    navigator.clipboard.writeText(copiedContent)
+    .then(function() {
+        alert('Elements copied to clipboard!');
+    })
+    .catch(function(err) {
+        alert('Failed to copy elements: ' + err);
+    });
+});
+
   /*
   svgRandom.generateRandomRectangle(20);
  const totalArea = areaCalculator.areaInSvg('tutorial_svg');

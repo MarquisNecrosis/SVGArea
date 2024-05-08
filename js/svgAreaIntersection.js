@@ -136,7 +136,10 @@ export class svgAreaIntersection {
       let hasIntersection = false;
       let indexesForDelete = [];
       let indexForDelete = -1;
+      console.log("novy polygon");
+      console.log(intersectPolygon);
       this.currentPolygon.forEach((polygon, index) => {
+        console.log("prunik s polygonem");
         let newPolygon = null;
         let stat = 0;
         let allIntersection = this.findAllIntersection(polygon, intersectPolygon);
@@ -156,13 +159,18 @@ export class svgAreaIntersection {
 
         var gap = null;
         if (allVertexes.length > 0) {
+          console.log("vznika nova dira");
           let clockTurn = true;
           if (allVertexesIntersect.length > 0){
-            clockTurn = false;
+            clockTurn = true;
+            [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexesIntersect[0], null, clockTurn);
           }
-          [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0], null, clockTurn);
+          else{
+            [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0], null, clockTurn);
+          }
         }
         else if (allIntersection.length > 0) {
+          console.log("vznika nova dira bez vrcholu");
           [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
         }
         switch (stat) {
@@ -170,6 +178,7 @@ export class svgAreaIntersection {
             polygon.createFromObject(newPolygon, true, intersectPolygon);
             if (gap != null) {
               polygon.createGap(gap);
+              polygon.chooseCorrectGap();
               polygon.redrawSvg(true);
             }
             const area = polygon.calculateArea(true, false);
@@ -194,7 +203,6 @@ export class svgAreaIntersection {
       }
       this.manageCurrentPolygons(indexesForDelete);
     });
-    console.log(this.currentPolygon);
   }
 
   /**
@@ -372,15 +380,17 @@ export class svgAreaIntersection {
         linePoints = currentPoints.lineFromCurrentIndex();
       }
       let newPolygonPoints = [startPoint];
+      this.addSVGPointWithClass(startPoint);
       let endPoint = [];
       let intersectPolygon = intersectedPoints;
       let currentPolygon = currentPoints;
       let it = 0;
       let noIntersection = true;
+      let usedIntersection = [];
       //take points after the new point is not startPoint. If its startPoint that means, that algorhitm take every point around the both polygons and merge is complete
       while (!this.arraysAreEqual(startPoint, endPoint)) {
         let intersection = null
-        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPolygon);
+        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPolygon, usedIntersection);
         //if there is not intersection than take point with current polygon an go on.
         if (intersection == null) {
           if (swap) {
@@ -390,12 +400,15 @@ export class svgAreaIntersection {
             [endPoint, linePoints] = this.managePoints(currentPoints, intersection);
           }
           newPolygonPoints.push(endPoint);
+          this.addSVGPointWithClass(endPoint);
         }
         //if there is intersection
         else {
           swap = !swap;
           noIntersection = false;
           newPolygonPoints.push(intersection);
+          this.addSVGPointWithClass(intersection);
+          //usedIntersection.push(intersection);
           if (swap) {
             linePoints = intersectedPoints.lineFromCurrentIndex();
             endPoint = intersection;
@@ -422,6 +435,7 @@ export class svgAreaIntersection {
       }
       let newPolygon = { ...currentPoints };
       newPolygon.points = newPolygonPoints;
+      this.deleteHelpPoints();
       newPolygon.points.pop();
       //if there is no intersection than add new polygon
       if (noIntersection == true && this.checkIfPolygonIsOutsidePolygon(currentPoints, intersectedPoints)) {
@@ -457,19 +471,22 @@ export class svgAreaIntersection {
    * @param {svgAreaPolygonObject} currentPolygon 
    * @returns intersection [number, number] or null
    */
-  checkIfLineHasIntersection(linePoints, intersectedPolygon, currentPolygon) {
+  checkIfLineHasIntersection(linePoints, intersectedPolygon, currentPolygon, usedIntersection) {
     let intersections = [];
     let interPointIndex = [];
     for (let i = 0; i < intersectedPolygon.points.length; i++) {
       let pom_i = i;
       const intersectLine = intersectedPolygon.nextLine(i);
       const intersection = this.lineIntersectionLine(linePoints, intersectLine, true);
-      
-      if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(linePoints[0], intersection)) {
+      const isUsed = this.arrayIncludesArray(usedIntersection, intersection);
+      if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(linePoints[0], intersection) && !isUsed) {
         intersections.push(intersection);
         interPointIndex.push(i);
       }
     }
+
+    [intersections, interPointIndex] = this.removeRedundandsIntersection(intersections, interPointIndex);
+
     if (intersections.length > 0) {
       let distance = Number.MAX_VALUE;
       const startPoint = [linePoints[0][0], linePoints[0][1]];
@@ -477,7 +494,7 @@ export class svgAreaIntersection {
       for (let i = 0; i < intersections.length; i++) {
         const intersectPoint = intersections[i];
         const intersectLine = intersectedPolygon.nextLine(interPointIndex[i]);
-        const newDistance = this.calculateDistance(startPoint, intersectPoint, intersectLine, currentPolygon, linePoints)
+        const newDistance = this.calculateDistance(startPoint, intersectPoint, intersectLine, currentPolygon, linePoints, intersectedPolygon)
         if (newDistance < distance) {
           distance = newDistance;
           distanceIndex = i;
@@ -542,7 +559,6 @@ export class svgAreaIntersection {
         }
       }
     }
-    console.log(startPoint);
     return [startPoint, currentPolygon, intersectedPolygon];
   }
 
@@ -610,13 +626,13 @@ export class svgAreaIntersection {
    * @param {svgAreaPolygonObject} currentPolygon the polygon on which are locate fromPoint, toPoint and intersectLine
    * @returns distance between fromPoint to toPoint
    */
-  calculateDistance(fromPoint, toPoint, intersectLine, currentPolygon, linePoints) {
+  calculateDistance(fromPoint, toPoint, intersectLine, currentPolygon, linePoints, intersectedPolygon) {
     let newDistance = Number.MAX_VALUE;
     if (this.arraysAreEqual(toPoint, intersectLine[0]) || this.arraysAreEqual(toPoint, intersectLine[1])) {
       if (this.arraysAreEqual(fromPoint, intersectLine[0]) || this.arraysAreEqual(toPoint, intersectLine[1])) {
         intersectLine = [intersectLine[1], intersectLine[0]];
       }
-      const isVertex = this.checkIfIsVertex(currentPolygon, intersectLine, linePoints);
+      const isVertex = this.checkIfIsVertex(currentPolygon, intersectLine, linePoints, toPoint);
       if (isVertex) {
         newDistance = Number.MAX_VALUE;
       }
@@ -636,8 +652,8 @@ export class svgAreaIntersection {
    * @param {Array} intersectLine 
    * @returns 
    */
-  checkIfIsVertex(currentPolygon, intersectLine, linePoints) {
-    const startPoint = intersectLine[0];
+  checkIfIsVertex(currentPolygon, intersectLine, linePoints, intersection) {
+    const startPoint = intersection;
     let endPoint = intersectLine[1];
     let distance = this.vectorDistance(intersectLine[0], intersectLine[1]);
     let intersectEndPoint = endPoint;
@@ -710,31 +726,43 @@ export class svgAreaIntersection {
    * @returns Array of all intersect points
    */
   findAllIntersection(polygon, intersectPolygon, swap = false) {
-    const allIntersection = [];
+    let allIntersection = [];
+    const banishedIntersection = [];
     for (let i = 0; i < polygon.points.length; i++) {
       for (let j = 0; j < intersectPolygon.points.length; j++) {
         const polygonLine = polygon.nextLine(i);
         const intersectLine = intersectPolygon.nextLine(j);
-        const intersection = this.lineIntersectionLine(polygonLine, intersectLine, false);
-        if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(intersectLine[0], intersection) && !this.arraysAreEqual(intersectLine[1], intersection)) {
-          if (!this.checkIfIsVertex(intersectPolygon, polygonLine, intersectLine)){
-            if (swap){
-              var newIntersection = {
-                'intersection': intersection,
-                'startPoint': polygonLine[1]
-              };
-            }
-            else{
-              var newIntersection = {
-                'intersection': intersection,
-                'startPoint': polygonLine[0]
-              };
-            }
+        const intersection = this.lineIntersectionLine(polygonLine, intersectLine, true);
+        if (intersection[0] != null && intersection[1] != null) {
+          const isInCorner = polygon.points.some(subArray => subArray[0] === intersection[0] && subArray[1] === intersection[1])
+          const isVertex = this.checkIfIsVertex(polygon, intersectLine, polygonLine, intersection);
+          if (swap){
+            var newIntersection = {
+              'intersection': intersection,
+              'startPoint': polygonLine[1]
+            };
+          }
+          else{
+            var newIntersection = {
+              'intersection': intersection,
+              'startPoint': polygonLine[0]
+            };
+          }
+          if (!isVertex && !isInCorner){
             allIntersection.push(newIntersection);             
+          }
+          else {
+            banishedIntersection.push(newIntersection);
           }
         }
       }
     }
+    allIntersection = allIntersection.filter(item => {
+      // Check if the intersection of the current item exists in banishedIntersection
+      return !banishedIntersection.some(banishedItem =>
+          JSON.stringify(banishedItem.intersection) === JSON.stringify(item.intersection)
+      );
+    });
     return allIntersection;
   }
 
@@ -865,15 +893,19 @@ export class svgAreaIntersection {
     let gapsToAdd = [];
     let gapsToRemove = [];
     polygon.gaps.forEach((gap, index) => {
+      console.log("prunik mezi dirami polygonu a novym polygonem");
+      console.log(gap);
       let allIntersection = this.findAllIntersection(gap, intersectPolygon, true);
       let allVertexes = this.findAllVertexes(gap, intersectPolygon, true, false);
       let stat = null;
       if(allIntersection.length == 0 && allVertexes.length == 0){
+        console.log("zadny prunik neni");
         if (!gapsToRemove.includes(index)) {
           gapsToRemove.unshift(index);
         }
       }
       else if (allIntersection.length > 0) {
+        console.log("prunik je mezi dirou a polygonem je");
         gapsToAdd = this.intersectGap(allIntersection, allVertexes, gap, intersectPolygon, gapsToAdd);
         if (!gapsToRemove.includes(index)) {
           gapsToRemove.unshift(index);
@@ -897,9 +929,11 @@ export class svgAreaIntersection {
     while (allIntersection.length > 0) {
       let newGap;
       if (allVertexes.length > 0){
+        console.log("prunik je mezi dirou a polygonem je a je startovni bod");
         [, newGap] = this.polygonIntersection(gap, intersectPolygon, allVertexes[0], null, true);
       }
       else {
+        console.log("prunik je mezi dirou a polygonem je a NENI startovni bod");
         [, newGap] = this.polygonIntersection(gap, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], true);
       }
       newGap instanceof svgAreaPolygonObject;
@@ -929,5 +963,58 @@ export class svgAreaIntersection {
     });
   return equal;
   }
+
+  addSVGPointWithClass(point) {
+    // Create a new SVG point
+    var svgNS = "http://www.w3.org/2000/svg";
+    var newPoint = document.createElementNS(svgNS, "circle");
+    
+    // Set attributes for the point
+    newPoint.setAttribute("cx", point[0]);
+    newPoint.setAttribute("cy", point[1]);
+    newPoint.setAttribute("r", "5");
+    newPoint.setAttribute("class", "helpPoints"); // Add the class 'point'
+    
+    // Append the point to the SVG
+    document.getElementById("tutorial_svg").appendChild(newPoint);
+  }
+
+  deleteHelpPoints() {
+    var elements = document.getElementsByClassName("helpPoints");
+    while (elements.length > 0) {
+      elements[0].parentNode.removeChild(elements[0]);
+    }
+  }
+
+  /**
+   * Remove redundant intersections base on duplication
+   * @param {*} intersections 
+   * @param {*} interPointIndex index of polygon which has intersection
+   * @returns 
+   */
+  removeRedundandsIntersection(intersections, interPointIndex) {
+    const duplicateIndexes = [];
+    const uniqueIntersect = [];
+
+    intersections.forEach((arr, index) => {
+      let isDuplicate = false;
+      uniqueIntersect.forEach((duplicate) => {
+        if (this.arraysAreEqual(arr, duplicate)){
+          duplicateIndexes.push(index);
+          isDuplicate = true;
+        }
+      });
+      if (!isDuplicate) {
+        uniqueIntersect.push(arr);
+      }
+    });
+
+    for (let i = duplicateIndexes.length - 1; i >= 0; i--) {
+      intersections.splice(duplicateIndexes[i], 1);
+      interPointIndex.splice(duplicateIndexes[i], 1);
+    }
+    return [intersections, interPointIndex];
+  }
+
 
 }
