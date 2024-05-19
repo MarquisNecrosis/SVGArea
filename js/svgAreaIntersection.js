@@ -387,10 +387,11 @@ export class svgAreaIntersection {
       let it = 0;
       let noIntersection = true;
       this.highlightLinePoints(linePoints);
+      let lastPoint = null;
       //take points after the new point is not startPoint. If its startPoint that means, that algorhitm take every point around the both polygons and merge is complete
       while (!this.arraysAreEqual(startPoint, endPoint)) {
         let intersection = null
-        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPolygon);
+        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPolygon, lastPoint);
         //if there is not intersection than take point with current polygon an go on.
         if (intersection == null) {
           if (swap) {
@@ -432,6 +433,7 @@ export class svgAreaIntersection {
           break;
         }
         this.highlightLinePoints(linePoints);
+        lastPoint = newPolygonPoints[newPolygonPoints.length - 1];
       }
       this.highlightLinePoints(null);
       let newPolygon = { ...currentPoints };
@@ -472,35 +474,49 @@ export class svgAreaIntersection {
    * @param {svgAreaPolygonObject} currentPolygon 
    * @returns intersection [number, number] or null
    */
-  checkIfLineHasIntersection(linePoints, intersectedPolygon, currentPolygon) {
-    const [intersections, interPointIndex] = this.findAllIntersectionBetweenLineLineAndPolygon(linePoints, intersectedPolygon, currentPolygon);
+  checkIfLineHasIntersection(linePoints, intersectedPolygon, currentPolygon, lastPoint) {
+    const [intersections, interPointIndex] = this.findAllIntersectionBetweenLineLineAndPolygon(linePoints, intersectedPolygon, currentPolygon, lastPoint);
     const intersection = this.findNearesIntersection(intersections, interPointIndex, currentPolygon, linePoints, intersectedPolygon);
     return intersection;
   }
 
-  findAllIntersectionBetweenLineLineAndPolygon(linePoints, intersectedPolygon, currentPolygon) {
+  findAllIntersectionBetweenLineLineAndPolygon(linePoints, intersectedPolygon, currentPolygon, lastPoint) {
     let intersections = [];
     let interPointIndex = [];
     for (let i = 0; i < intersectedPolygon.points.length; i++) {
       let intersectLine = intersectedPolygon.nextLine(i);
       this.highlightIntersectLinePoints(intersectLine);
-      const intersection = this.lineIntersectionLine(linePoints, intersectLine, true);
-      let isVertex = false;
-      if (this.arraysAreEqual(intersection, intersectLine[0]) || this.arraysAreEqual(intersection, intersectLine[1])) {
-        const startPoint = [linePoints[0][0], linePoints[0][1]];
-        if (this.arraysAreEqual(startPoint, intersectLine[0]) || this.arraysAreEqual(intersection, intersectLine[1])) {
-          intersectLine = [intersectLine[1], intersectLine[0]];
+      const isColinear = this.checkIfLinesIsColinear(linePoints, intersectLine);
+      if (isColinear && !this.arraysAreEqual(linePoints[0], intersectLine[0])) {
+        if (!this.arraysAreEqual(linePoints[1], lastPoint) && this.checkIfPointIsInsideVectorLine(intersectLine, linePoints[1])) {
+          intersections.push(linePoints[1]);
+          interPointIndex.push(i);
         }
-        isVertex = this.checkIfIsVertex(currentPolygon, intersectLine, linePoints, intersection);
-      } 
-      if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(linePoints[0], intersection) && !isVertex) {
-        intersections.push(intersection);
-        interPointIndex.push(i);
+        const isInside = this.checkIfPointIsInsideVectorLine(linePoints, intersectLine[0]);
+        if(isInside) {
+          intersections.push(intersectLine[0]);
+          interPointIndex.push(i);
+        }
       }
-      const isInside = this.checkIfPointIsInsideVectorLine(intersectLine, linePoints[1]);
-      if (isInside) {
-        intersections.push(linePoints[1]);
-        interPointIndex.push(i);
+      else {
+        const intersection = this.lineIntersectionLine(linePoints, intersectLine, true);
+        let isVertex = false;
+        if (this.arraysAreEqual(intersection, intersectLine[0]) || this.arraysAreEqual(intersection, intersectLine[1])) {
+          const startPoint = [linePoints[0][0], linePoints[0][1]];
+          if (this.arraysAreEqual(startPoint, intersectLine[0]) || this.arraysAreEqual(intersection, intersectLine[1])) {
+            intersectLine = [intersectLine[1], intersectLine[0]];
+          }
+          isVertex = this.checkIfIsVertex(currentPolygon, intersectLine, linePoints, intersection);
+        } 
+        if (intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(linePoints[0], intersection) && !isVertex) {
+          intersections.push(intersection);
+          interPointIndex.push(i);
+        }
+        const isInside = this.checkIfPointIsInsideVectorLine(intersectLine, linePoints[1]);
+        if (isInside) {
+          intersections.push(linePoints[1]);
+          interPointIndex.push(i);
+        }
       }
     }
 
@@ -508,6 +524,19 @@ export class svgAreaIntersection {
     this.highlightIntersectLinePoints(null);
     return [intersections, interPointIndex];
   }
+
+  checkIfLinesIsColinear(linePoints, intersectLine) {
+    const colinear1 = this.areCollinear(linePoints[0], linePoints[1], intersectLine[0]);
+    const colinear2 = this.areCollinear(linePoints[0], linePoints[1], intersectLine[1]);
+    const isInside1 = this.checkIfPointIsInsideVectorLine(linePoints, intersectLine[0]);
+    const isInside2 = this.checkIfPointIsInsideVectorLine(linePoints, intersectLine[1]);
+    const colinear = colinear1 && colinear2 && (isInside1 || isInside2);
+    return colinear;
+  }
+
+  areCollinear(p1, p2, p3) {
+    return (p2[1] - p1[1]) * (p3[0] - p2[0]) === (p3[1] - p2[1]) * (p2[0] - p1[0]);
+}
 
   findNearesIntersection(intersections, interPointIndex, currentPolygon, linePoints, intersectedPolygon) {
     if (intersections.length > 0) {
@@ -653,24 +682,7 @@ export class svgAreaIntersection {
    */
   calculateDistance(fromPoint, toPoint, intersectLine, currentPolygon, linePoints, intersectedPolygon) {
     let newDistance = Number.MAX_VALUE;
-    if (this.arraysAreEqual(toPoint, intersectLine[0]) || this.arraysAreEqual(toPoint, intersectLine[1])) {
-      if (this.arraysAreEqual(fromPoint, intersectLine[0]) || this.arraysAreEqual(toPoint, intersectLine[1])) {
-        intersectLine = [intersectLine[1], intersectLine[0]];
-      }
-      const isVertex = true;
-      if (isVertex) {
-        newDistance = Number.MAX_VALUE;
-      }
-      else {
-        newDistance = this.vectorDistance(fromPoint, toPoint);
-      }
-    }
-    else if (!this.arraysAreEqual(toPoint, linePoints[1])) {
-      newDistance = this.vectorDistance(fromPoint, toPoint);
-    }
-    else if (intersectedPolygon.isGap == true && !this.arraysAreEqual(toPoint, linePoints[0])) {
-      newDistance = this.vectorDistance(fromPoint, toPoint);
-    }
+    newDistance = this.vectorDistance(fromPoint, toPoint);
     return newDistance;
   }
 
