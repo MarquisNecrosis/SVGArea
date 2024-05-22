@@ -355,6 +355,11 @@ export class svgAreaPolygonObject {
     return isInside;
   }
 
+  checkIfPointIsInsideVectorLine(line, point){
+    const isInside = this.checkIfPointIsInsideVectorPoint(line[0], line[1], point);
+    return isInside;
+  }
+
   checkIfPointIsInsideVector(x1, y1, x2, y2, x3, y3) {
     let isInside = true;
     let crossproduct  = (y3 - y1) * (x2 - x1) - (x3 - x1) * (y2 - y1);
@@ -440,6 +445,20 @@ export class svgAreaPolygonObject {
       }
     }
     return isOutside;
+  }
+
+  checkIfPointIsInLineOfPolygon(point) {
+    const allLines = this.getAllLines();
+    let isInside = false;
+    for (let i = 0; i < allLines.length; i++) {
+    const line = allLines[i];
+      isInside = this.checkIfPointIsInsideVectorLine(line, point);
+      if(isInside){
+        isInside = true;
+        break;
+      }
+    }
+    return isInside;
   }
 
 }
