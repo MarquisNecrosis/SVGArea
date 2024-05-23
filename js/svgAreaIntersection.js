@@ -520,6 +520,7 @@ export class svgAreaIntersection {
           const startPoint = [linePoints[0][0], linePoints[0][1]];
           if (this.arraysAreEqual(startPoint, intersectLine[0]) || this.arraysAreEqual(intersection, intersectLine[1])) {
             intersectLine = [intersectLine[1], intersectLine[0]];
+            continue;
           }
           isVertex = this.checkIfIsVertex(currentPolygon, intersectLine, linePoints, intersection);
         } 
