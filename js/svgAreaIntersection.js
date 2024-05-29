@@ -157,8 +157,9 @@ export class svgAreaIntersection {
         allVertexes = this.filterGapsPoints(allVertexes, polygon);
         polygon.redrawSvg(true);
 
-        var gap = null;
-        if (allVertexes.length > 0) {
+        let gaps = [];
+        while(allVertexes.length > 0 && stat == this.INTERSECT.ADD) {
+          let gap = null;
           console.log("vznika nova dira");
           let clockTurn = true;
           if (allVertexesIntersect.length > 0){
@@ -168,19 +169,27 @@ export class svgAreaIntersection {
           else{
             [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0], null, clockTurn);
           }
+          allIntersection = this.filterIntersection(allIntersection, gap);
+          allVertexes = this.filterPoints(allVertexes, gap);
+          allVertexesIntersect = this.filterPoints(allVertexesIntersect, gap);
+          gaps.push(gap);
         }
-        else if (allIntersection.length > 0) {
+        if (allIntersection.length > 0) {
+          let gap = null
           console.log("vznika nova dira bez vrcholu");
           [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
+          gaps.push(gap);
         }
         switch (stat) {
           case this.INTERSECT.ADD:
             polygon.createFromObject(newPolygon, true, intersectPolygon);
-            if (gap != null) {
-              polygon.createGap(gap);
-              polygon.chooseCorrectGap();
-              polygon.redrawSvg(true);
-            }
+            gaps.forEach(gap => {
+              if (gap != null) {
+                polygon.createGap(gap);
+                polygon.chooseCorrectGap();
+                polygon.redrawSvg(true);
+              }   
+            });
             const area = polygon.calculateArea(true, false);
             intersectPolygon.removeSvg();
             intersectPolygon.removePath();
@@ -500,13 +509,18 @@ export class svgAreaIntersection {
         const sameDirection = this.checkIfLinesHasSameDirection(linePoints, intersectLine);
         if(!this.arraysAreEqual(linePoints[1], intersectLine[1])) {
           if (!this.arraysAreEqual(linePoints[1], lastPoint) && this.checkIfPointIsInsideVectorLine(intersectLine, linePoints[1])) {
-            intersections.push(linePoints[1]);
-            interPointIndex.push(i);
+            const isVertex = this.checkIfIsVertex(currentPolygon, [linePoints[1], intersectLine[1]], linePoints, linePoints[1]);
+            if(!isVertex) {
+              intersections.push(linePoints[1]);
+              interPointIndex.push(i);
+            }
           }
-          const isInside = this.checkIfPointIsInsideVectorLine(linePoints, intersectLine[0]);
-          if(isInside) {
-            intersections.push(intersectLine[0]);
-            interPointIndex.push(i);
+          else {
+            const isInside = this.checkIfPointIsInsideVectorLine(linePoints, intersectLine[0]);
+            if(isInside) {
+              intersections.push(intersectLine[0]);
+              interPointIndex.push(i);
+            }
           }
         }
         else {
@@ -520,6 +534,7 @@ export class svgAreaIntersection {
           const startPoint = [linePoints[0][0], linePoints[0][1]];
           if (this.arraysAreEqual(startPoint, intersectLine[0]) || this.arraysAreEqual(intersection, intersectLine[1])) {
             intersectLine = [intersectLine[1], intersectLine[0]];
+            continue;
           }
           isVertex = this.checkIfIsVertex(currentPolygon, intersectLine, linePoints, intersection);
         } 
@@ -546,7 +561,9 @@ export class svgAreaIntersection {
     const colinear2 = this.areCollinear(linePoints[0], linePoints[1], intersectLine[1]);
     const isInside1 = this.checkIfPointIsInsideVectorLine(linePoints, intersectLine[0]);
     const isInside2 = this.checkIfPointIsInsideVectorLine(linePoints, intersectLine[1]);
-    const colinear = colinear1 && colinear2 && (isInside1 || isInside2);
+    const isInside3 = this.checkIfPointIsInsideVectorLine(intersectLine, linePoints[0]);
+    const isInside4 = this.checkIfPointIsInsideVectorLine(intersectLine, linePoints[1]);
+    const colinear = colinear1 && colinear2 && (isInside1 || isInside2 || isInside3 || isInside4);
     return colinear;
   }
 
