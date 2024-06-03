@@ -760,14 +760,15 @@ export class svgAreaIntersection {
         intersectEndPoint = line[1];
         pomLine = line;
         hasAnotherIntersection = true;
+        distance = newDistance;
       }
     }
     const midX = (startPoint[0] + endPoint[0]) / 2;
     const midY = (startPoint[1] + endPoint[1]) / 2;
     const middlePoint = [midX, midY];
-    let isInside = false;
-    isInside = this.checkIfPointIsInsideVectorLine(linePoints, middlePoint); //todo tohle poladit
-    if (currentPolygon.checkIsPointInFill(middlePoint) && !isInside) {
+    const isInside = this.checkIfPointIsInsideVectorLine(linePoints, middlePoint);
+    const inFill = currentPolygon.checkIsPointInFill(middlePoint);
+    if(inFill && !isInside) {
       return true;
     }
     else {
