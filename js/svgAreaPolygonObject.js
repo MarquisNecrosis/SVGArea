@@ -328,6 +328,7 @@ export class svgAreaPolygonObject {
    * Remove points which is on the same line. This Points are duplicate and only add time comsuption and can bring some bugs.
    */
   removeRedundantPoints(){
+    this.removeDuplicatePoints();
     let pointsToRemove = [];
     for (let i = 0; i < this.points.length; i++) {
       const point = this.points[i];
@@ -477,6 +478,12 @@ export class svgAreaPolygonObject {
       }
     });
     return equal;
+  }
+
+  removeDuplicatePoints() {
+    // Convert arrays to JSON strings and use a Set to filter out duplicates
+    const uniquePoints = [...new Set(this.points.map(JSON.stringify))].map(JSON.parse);
+    this.points = uniquePoints;
   }
 
 }
