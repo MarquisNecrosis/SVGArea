@@ -28,7 +28,8 @@ window.onload = function() {
   });
 
   document.getElementById('copy').addEventListener('click', function() {
-    var elementsToCopy = document.querySelectorAll('.area-calculate');
+    const container = document.getElementById('tutorial_svg');
+    var elementsToCopy = container.querySelectorAll('.area-calculate');
     var copiedContent = '';
     elementsToCopy.forEach(function(element) {
         copiedContent += element.outerHTML + '\n';
