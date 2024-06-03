@@ -505,8 +505,8 @@ export class svgAreaIntersection {
       let intersectLine = intersectedPolygon.nextLine(i);
       this.highlightIntersectLinePoints(intersectLine);
       const isColinear = this.checkIfLinesIsColinear(linePoints, intersectLine);
-      if (isColinear && !this.arraysAreEqual(linePoints[0], intersectLine[0])) {
-        const sameDirection = this.checkIfLinesHasSameDirection(linePoints, intersectLine);
+      const sameDirection = this.checkIfLinesHasSameDirection(linePoints, intersectLine);
+      if (isColinear && sameDirection) {
         if(!this.arraysAreEqual(linePoints[1], intersectLine[1])) {
           if (!this.arraysAreEqual(linePoints[1], lastPoint) && this.checkIfPointIsInsideVectorLine(intersectLine, linePoints[1])) {
             const isVertex = this.checkIfIsVertex(currentPolygon, [linePoints[1], intersectLine[1]], linePoints, linePoints[1]);
@@ -526,6 +526,9 @@ export class svgAreaIntersection {
         else {
           banishedIntersection.push(intersectLine[1]);
         }
+      }
+      else if (isColinear && !sameDirection && this.arraysAreEqual(linePoints[1], intersectLine[1])){
+        banishedIntersection.push(intersectLine[1]);
       }
       else {
         const intersection = this.lineIntersectionLine(linePoints, intersectLine, true);
