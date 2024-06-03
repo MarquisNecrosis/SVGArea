@@ -155,6 +155,7 @@ export class svgAreaIntersection {
           stat = this.INTERSECT.ADD;
         }
         allVertexes = this.filterGapsPoints(allVertexes, polygon);
+        allVertexesIntersect = this.filterGapsPoints(allVertexesIntersect, polygon);
         polygon.redrawSvg(true);
 
         let gaps = [];
