@@ -61,7 +61,7 @@ export class svgAreaPolygonObject {
     this.gaps.forEach((value) => {
       let existing = false;
       uniqueArray.forEach(element => {
-        if (this.arraysAreEqual(value.points, element.points)){
+        if (this.arrayIncludesArray(value.points, element.points)){
           existing = true;
         }
       });
@@ -466,6 +466,17 @@ export class svgAreaPolygonObject {
       }
     }
     return isVertex;
+  }
+
+  arrayIncludesArray(arrayOfArrays, comparisonArray){
+    let equal = false;
+    arrayOfArrays.forEach(innerArray => {
+      const isEqual = innerArray.every((value, index) => value === comparisonArray[index]); 
+      if (isEqual) {
+        equal = true;
+      }
+    });
+    return equal;
   }
 
 }
