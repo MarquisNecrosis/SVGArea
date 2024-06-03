@@ -1057,7 +1057,7 @@ export class svgAreaIntersection {
         equal = true;
       }
     });
-  return equal;
+    return equal;
   }
 
   addSVGPointWithClass(point) {
