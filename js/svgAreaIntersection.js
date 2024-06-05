@@ -155,6 +155,7 @@ export class svgAreaIntersection {
           stat = this.INTERSECT.ADD;
         }
         allVertexes = this.filterGapsPoints(allVertexes, polygon);
+        allVertexesIntersect = this.filterGapsPoints(allVertexesIntersect, polygon);
         polygon.redrawSvg(true);
 
         let gaps = [];
@@ -767,7 +768,7 @@ export class svgAreaIntersection {
     const midY = (startPoint[1] + endPoint[1]) / 2;
     const middlePoint = [midX, midY];
     const isInside = this.checkIfPointIsInsideVectorLine(linePoints, middlePoint);
-    const inFill = currentPolygon.checkIsPointInFill(middlePoint);
+    const inFill = currentPolygon.checkIsPointInFillForGaps(middlePoint);
     if(inFill && !isInside) {
       return true;
     }

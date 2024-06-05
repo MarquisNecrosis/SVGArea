@@ -316,6 +316,28 @@ export class svgAreaPolygonObject {
     return this.path.isPointInFill(svgPoint);
   }
 
+  /**
+   * If there is gaps than check for parent, because gaps has no fill and must be check fort parents
+   * @param {*} point 
+   * @returns 
+   */
+  checkIsPointInFillForGaps(point) {
+    let inFill = false;
+    if (this.isGap){
+      var svgPoint = this.parentPath.ownerSVGElement.createSVGPoint();
+      svgPoint.x = point[0];
+      svgPoint.y = point[1];
+      inFill = this.parentPath.isPointInFill(svgPoint);
+    }
+    else {
+      var svgPoint = this.path.ownerSVGElement.createSVGPoint();
+      svgPoint.x = point[0];
+      svgPoint.y = point[1];
+      inFill = this.path.isPointInFill(svgPoint);
+    }
+    return inFill;
+  }
+
   getAllLines(){
     let lines = [];
     for (let i = 0; i < this.points.length; i++) {
