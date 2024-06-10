@@ -491,14 +491,20 @@ export class svgAreaPolygonObject {
     return isVertex;
   }
 
-  arrayIncludesArray(arrayOfArrays, comparisonArray){
-    let equal = false;
-    arrayOfArrays.forEach(innerArray => {
-      const isEqual = innerArray.every((value, index) => value === comparisonArray[index]); 
-      if (isEqual) {
-        equal = true;
+  arrayIncludesArray(arr1, arr2){
+    let equal = true;
+    if (arr1 === null || arr1 === undefined || arr2 === null || arr2 === undefined) {
+      return false;
+    }
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+    for (let i = 0; i < arr1.length; i++) {
+      equal = this.arraysAreEqual(arr1, arr2);
+      if (!equal) {
+        break;
       }
-    });
+    }
     return equal;
   }
 
