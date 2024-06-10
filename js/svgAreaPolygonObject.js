@@ -503,7 +503,7 @@ export class svgAreaPolygonObject {
       equal = this.arraysAreEqual(arr1, arr2);
       if (!equal) {
         break;
-      }
+      } 
     }
     return equal;
   }
