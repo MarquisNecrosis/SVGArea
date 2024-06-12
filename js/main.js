@@ -8,6 +8,7 @@ const svgRandom = new svgRandomGenerate('tutorial_svg');
 const intersectElements = new svgAreaIntersection('tutorial_svg');
 
 window.onload = function() {
+  //svgRandom.generateRandomRectangle(10);
 
   const parentElement = document.getElementById('tutorial_svg');
   const bbox = parentElement.getBoundingClientRect();
@@ -16,9 +17,36 @@ window.onload = function() {
   const totalAreaSvg = width * height;
   console.log(totalAreaSvg);
   intersectElements.polygonIntersectionInSvg('tutorial_svg');
+  const checkbox = document.getElementById('opacity-test');
+
+  checkbox.addEventListener('input', function() {
+    const elements = document.querySelectorAll('.intersect-object');
+    const value = this.value;
+    elements.forEach(element => {
+      element.style.opacity = value;
+    });
+  });
+
+  document.getElementById('copy').addEventListener('click', function() {
+    const container = document.getElementById('tutorial_svg');
+    var elementsToCopy = container.querySelectorAll('.area-calculate');
+    var copiedContent = '';
+    elementsToCopy.forEach(function(element) {
+        copiedContent += element.outerHTML + '\n';
+    });
+    navigator.clipboard.writeText(copiedContent)
+    .then(function() {
+        alert('Elements copied to clipboard!');
+    })
+    .catch(function(err) {
+        alert('Failed to copy elements: ' + err);
+    });
+});
+
+  /*
   svgRandom.generateRandomRectangle(20);
  const totalArea = areaCalculator.areaInSvg('tutorial_svg');
- console.log(totalArea);
+ console.log(totalArea);*/
  /*
   const totalArea = areaCalculator.areaInSvg('tutorial_svg');
   console.log(totalArea);
