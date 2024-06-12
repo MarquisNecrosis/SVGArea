@@ -22,14 +22,224 @@
   <main>
     <section>
       <h2>SVG Example</h2>
+      <input type="range" min="0" max="1" value="0.5" class="slider" id="opacity-test" name="opacity-test" step="0.1">
+      <button id="copy">Copy elements</button>
+      <label for="opacity-test">Opacity</label><br>
       <div class="tutorial-div">
-        <svg id="tutorial_svg" width="2000" height="1000" class="area-calculate">
-          <rect class="area-calculate" x="50" y="20" width="150" height="80" style="fill:orange;stroke:purple;stroke-width:3;" />
+        <svg id="tutorial_svg" width="2000" height="2000" class="area-calculate">
+
+          <!-- <rect x="1443" y="438" width="78" height="1312" fill="#A12511" class="area-calculate" areagroup="1"></rect>
+<rect x="1341" y="1410" width="239" height="220" fill="#496260" class="area-calculate" areagroup="2"></rect>
+<rect x="378" y="1600" width="369" height="373" fill="#31B523" class="area-calculate" areagroup="1"></rect>
+<rect x="640" y="1776" width="218" height="88" fill="#B5C50A" class="area-calculate" areagroup="3"></rect>
+<rect x="881" y="1020" width="187" height="792" fill="#7AD9FB" class="area-calculate" areagroup="2"></rect>
+<rect x="1780" y="1283" width="47" height="686" fill="#B4E367" class="area-calculate" areagroup="3"></rect>
+<rect x="297" y="1033" width="844" height="548" fill="#B718C4" class="area-calculate" areagroup="3"></rect>
+<rect x="1715" y="1760" width="22" height="69" fill="#204160" class="area-calculate" areagroup="3"></rect>
+<rect x="768" y="943" width="735" height="194" fill="#3D2427" class="area-calculate" areagroup="3"></rect>
+<rect x="1460" y="1342" width="41" height="450" fill="#46AA35" class="area-calculate" areagroup="3"></rect>
+<rect x="1642" y="421" width="62" height="1378" fill="#33625C" class="area-calculate" areagroup="2"></rect>
+<rect x="108" y="1934" width="1625" height="16" fill="#2DDA79" class="area-calculate" areagroup="3"></rect>
+<rect x="93" y="362" width="826" height="642" fill="#4ED8EC" class="area-calculate" areagroup="2"></rect>
+<rect x="723" y="955" width="43" height="203" fill="#BE4C25" class="area-calculate" areagroup="2"></rect>
+<rect x="1575" y="493" width="201" height="56" fill="#C26A49" class="area-calculate" areagroup="2"></rect>
+<rect x="1695" y="237" width="297" height="375" fill="#C2EB91" class="area-calculate" areagroup="1"></rect>
+<rect x="1917" y="1136" width="34" height="378" fill="#5EF70B" class="area-calculate" areagroup="2"></rect>
+<rect x="475" y="621" width="1398" height="450" fill="#71511E" class="area-calculate" areagroup="1"></rect>
+<rect x="1273" y="1814" width="123" height="24" fill="#E4EF95" class="area-calculate" areagroup="3"></rect>
+<rect x="873" y="1221" width="130" height="443" fill="#C7E750" class="area-calculate" areagroup="2"></rect>
+<rect x="1886" y="612" width="78" height="978" fill="#B7CE02" class="area-calculate" areagroup="2"></rect>
+<rect x="1684" y="1727" width="81" height="253" fill="#7B822E" class="area-calculate" areagroup="3"></rect>
+<rect x="382" y="778" width="97" height="198" fill="#924E9F" class="area-calculate" areagroup="1"></rect>
+<rect x="1253" y="614" width="80" height="598" fill="#4E8EE3" class="area-calculate" areagroup="3"></rect>
+<rect x="725" y="809" width="825" height="761" fill="#1D7040" class="area-calculate" areagroup="3"></rect>
+<rect x="642" y="427" width="739" height="1543" fill="#AF9538" class="area-calculate" areagroup="3"></rect>
+<rect x="557" y="1323" width="159" height="539" fill="#DB6C18" class="area-calculate" areagroup="2"></rect>
+<rect x="791" y="1009" width="365" height="607" fill="#574D65" class="area-calculate" areagroup="2"></rect>
+<rect x="1003" y="1201" width="307" height="154" fill="#CF35B1" class="area-calculate" areagroup="3"></rect>
+<rect x="1863" y="467" width="62" height="1051" fill="#574A7F" class="area-calculate" areagroup="2"></rect>
+<rect x="1184" y="1279" width="542" height="169" fill="#6B24E1" class="area-calculate" areagroup="3"></rect>
+<rect x="353" y="877" width="782" height="635" fill="#3966DD" class="area-calculate" areagroup="2"></rect>
+<rect x="212" y="1260" width="663" height="132" fill="#573A03" class="area-calculate" areagroup="2"></rect>
+<rect x="1540" y="1042" width="454" height="86" fill="#7D5B17" class="area-calculate" areagroup="3"></rect>
+<rect x="1122" y="1019" width="690" height="58" fill="#5330D5" class="area-calculate" areagroup="1"></rect>
+<rect x="779" y="1518" width="700" height="182" fill="#462EBC" class="area-calculate" areagroup="2"></rect>
+<rect x="1898" y="53" width="25" height="421" fill="#748E40" class="area-calculate" areagroup="3"></rect>
+<rect x="86" y="1933" width="839" height="53" fill="#CED1E2" class="area-calculate" areagroup="1"></rect>
+<rect x="1559" y="718" width="114" height="630" fill="#5BBD99" class="area-calculate" areagroup="2"></rect>
+<rect x="186" y="1662" width="1411" height="150" fill="#DCA528" class="area-calculate" areagroup="2"></rect>
+<rect x="22" y="1500" width="844" height="315" fill="#D5F725" class="area-calculate" areagroup="2"></rect>
+<rect x="983" y="1876" width="801" height="106" fill="#303889" class="area-calculate" areagroup="3"></rect>
+<rect x="1925" y="1783" width="21" height="165" fill="#66BAD9" class="area-calculate" areagroup="1"></rect>
+<rect x="73" y="1751" width="861" height="32" fill="#7FD601" class="area-calculate" areagroup="1"></rect>
+<rect x="1894" y="520" width="78" height="1106" fill="#7C3B70" class="area-calculate" areagroup="1"></rect>
+<rect x="132" y="1318" width="558" height="193" fill="#4149D3" class="area-calculate" areagroup="3"></rect>
+<rect x="483" y="1539" width="844" height="355" fill="#11F4EA" class="area-calculate" areagroup="2"></rect>
+<rect x="1384" y="625" width="491" height="185" fill="#BDF4AA" class="area-calculate" areagroup="2"></rect>
+<rect x="547" y="1238" width="59" height="545" fill="#1F529D" class="area-calculate" areagroup="3"></rect>
+<rect x="608" y="1167" width="255" height="231" fill="#FD775D" class="area-calculate" areagroup="2"></rect> -->
+
+
+          <!-- <rect x="1326" y="1719" width="642" height="161" fill="#AB5C6E" class="area-calculate" areagroup="1"></rect>
+<rect x="1283" y="1474" width="471" height="515" fill="#7D8221" class="area-calculate" areagroup="2"></rect>
+<rect x="1455" y="69" width="290" height="1787" fill="#60BDA3" class="area-calculate" areagroup="3"></rect>
+<rect x="1989" y="1902" width="10" height="73" fill="#FA8B2E" class="area-calculate" areagroup="1"></rect>
+<rect x="897" y="1767" width="626" height="184" fill="#241172" class="area-calculate" areagroup="1"></rect>
+<rect x="1699" y="247" width="275" height="1275" fill="#38DC94" class="area-calculate" areagroup="1"></rect>
+<rect x="221" y="1195" width="649" height="464" fill="#C4AB50" class="area-calculate" areagroup="2"></rect>
+<rect x="1322" y="1136" width="195" height="446" fill="#28ECD9" class="area-calculate" areagroup="3"></rect>
+<rect x="25" y="77" width="291" height="1813" fill="#ECD5AA" class="area-calculate" areagroup="2"></rect>
+<rect x="1865" y="763" width="116" height="268" fill="#679254" class="area-calculate" areagroup="2"></rect>
+<rect x="424" y="1912" width="1207" height="80" fill="#C39E71" class="area-calculate" areagroup="1"></rect>
+<rect x="734" y="455" width="18" height="1508" fill="#EBC6BB" class="area-calculate" areagroup="1"></rect>
+<rect x="1641" y="451" width="276" height="220" fill="#9A6A8C" class="area-calculate" areagroup="3"></rect>
+<rect x="640" y="1819" width="709" height="30" fill="#89B6B4" class="area-calculate" areagroup="3"></rect>
+<rect x="283" y="1977" width="485" height="21" fill="#33F9B5" class="area-calculate" areagroup="3"></rect>
+<rect x="289" y="773" width="51" height="17" fill="#8B7EF0" class="area-calculate" areagroup="2"></rect>
+<rect x="648" y="779" width="718" height="434" fill="#376828" class="area-calculate" areagroup="3"></rect>
+<rect x="810" y="1626" width="23" height="54" fill="#E11120" class="area-calculate" areagroup="2"></rect>
+<rect x="1533" y="1031" width="245" height="516" fill="#0D5CD1" class="area-calculate" areagroup="3"></rect>
+<rect x="440" y="563" width="1143" height="714" fill="#5DE9C0" class="area-calculate" areagroup="1"></rect>
+<rect x="1140" y="333" width="130" height="1117" fill="#60EF84" class="area-calculate" areagroup="2"></rect>
+<rect x="1742" y="1037" width="43" height="670" fill="#37E19A" class="area-calculate" areagroup="1"></rect>
+<rect x="1193" y="1404" width="650" height="580" fill="#CA3B0D" class="area-calculate" areagroup="2"></rect>
+<rect x="1808" y="104" width="58" height="1426" fill="#D766C1" class="area-calculate" areagroup="2"></rect>
+<rect x="1564" y="612" width="374" height="555" fill="#C3C544" class="area-calculate" areagroup="3"></rect>
+<rect x="337" y="912" width="1021" height="578" fill="#DBA58C" class="area-calculate" areagroup="3"></rect>
+<rect x="148" y="870" width="1799" height="416" fill="#FB5C1C" class="area-calculate" areagroup="3"></rect>
+<rect x="151" y="320" width="244" height="252" fill="#2AA02C" class="area-calculate" areagroup="2"></rect>
+<rect x="1727" y="1324" width="214" height="569" fill="#BCFC8F" class="area-calculate" areagroup="2"></rect>
+<rect x="438" y="1958" width="1442" height="35" fill="#AC1BF9" class="area-calculate" areagroup="2"></rect>
+<rect x="292" y="1767" width="1653" height="76" fill="#996436" class="area-calculate" areagroup="3"></rect>
+<rect x="1600" y="58" width="398" height="1369" fill="#A28DE0" class="area-calculate" areagroup="3"></rect>
+<rect x="1421" y="680" width="150" height="613" fill="#84BE65" class="area-calculate" areagroup="1"></rect>
+<rect x="1920" y="37" width="30" height="1233" fill="#3EBF2E" class="area-calculate" areagroup="3"></rect>
+<rect x="82" y="475" width="1771" height="1246" fill="#AC0A1B" class="area-calculate" areagroup="2"></rect>
+<rect x="825" y="1933" width="625" height="27" fill="#10A495" class="area-calculate" areagroup="2"></rect>
+<rect x="1942" y="1021" width="20" height="507" fill="#362FE1" class="area-calculate" areagroup="2"></rect>
+<rect x="1959" y="463" width="28" height="738" fill="#8AC62D" class="area-calculate" areagroup="3"></rect>
+<rect x="492" y="708" width="706" height="1232" fill="#7A5AC3" class="area-calculate" areagroup="1"></rect>
+<rect x="983" y="45" width="412" height="267" fill="#50E227" class="area-calculate" areagroup="2"></rect>
+<rect x="262" y="1884" width="617" height="65" fill="#33AC62" class="area-calculate" areagroup="2"></rect>
+<rect x="824" y="942" width="657" height="691" fill="#4AA67E" class="area-calculate" areagroup="3"></rect>
+<rect x="715" y="986" width="913" height="31" fill="#D27A24" class="area-calculate" areagroup="2"></rect>
+<rect x="1951" y="1284" width="23" height="98" fill="#D1B907" class="area-calculate" areagroup="3"></rect>
+<rect x="5" y="1920" width="562" height="44" fill="#D7382E" class="area-calculate" areagroup="3"></rect>
+<rect x="868" y="290" width="352" height="508" fill="#EE6636" class="area-calculate" areagroup="1"></rect>
+<rect x="1749" y="1364" width="151" height="327" fill="#08DC20" class="area-calculate" areagroup="2"></rect>
+<rect x="1740" y="1133" width="64" height="267" fill="#8AC0E5" class="area-calculate" areagroup="1"></rect>
+<rect x="1120" y="1103" width="307" height="543" fill="#A1A39C" class="area-calculate" areagroup="1"></rect>
+<rect x="1938" y="1883" width="29" height="90" fill="#CFD219" class="area-calculate" areagroup="3"></rect> -->
+
+          
+          <!-- <rect x="163" y="398" width="360" height="1055" fill="#4A3056" class="area-calculate" areagroup="1"></rect>
+          <rect x="1224" y="1881" width="443" height="29" fill="#ABF84C" class="area-calculate" areagroup="3"></rect>
+          <rect x="1023" y="1357" width="186" height="222" fill="#6A806E" class="area-calculate" areagroup="2"></rect>
+          <rect x="954" y="1260" width="437" height="101" fill="#F01883" class="area-calculate" areagroup="2"></rect>
+          <rect x="1820" y="1344" width="120" height="234" fill="#60EAF3" class="area-calculate" areagroup="3"></rect>
+          <rect x="1158" y="781" width="611" height="148" fill="#02C785" class="area-calculate" areagroup="3"></rect>
+          <rect x="1976" y="1702" width="17" height="273" fill="#BF95E5" class="area-calculate" areagroup="1"></rect>
+          <rect x="1153" y="1651" width="755" height="166" fill="#37F9DD" class="area-calculate" areagroup="2"></rect>
+          <rect x="535" y="1821" width="92" height="160" fill="#054C73" class="area-calculate" areagroup="2"></rect>
+          <rect x="1770" y="833" width="11" height="759" fill="#C3CFC7" class="area-calculate" areagroup="2"></rect>
+          <rect x="1506" y="1349" width="299" height="551" fill="#303320" class="area-calculate" areagroup="3"></rect>
+          <rect x="1007" y="1050" width="949" height="204" fill="#DEB281" class="area-calculate" areagroup="2"></rect>
+          <rect x="1108" y="1755" width="146" height="221" fill="#CF791B" class="area-calculate" areagroup="3"></rect>
+          <rect x="434" y="376" width="462" height="455" fill="#DB35C8" class="area-calculate" areagroup="2"></rect>
+          <rect x="1034" y="1893" width="690" height="62" fill="#16528A" class="area-calculate" areagroup="2"></rect>
+          <rect x="480" y="384" width="1494" height="845" fill="#613D2D" class="area-calculate" areagroup="3"></rect>
+          <rect x="495" y="171" width="1384" height="1415" fill="#7E8E70" class="area-calculate" areagroup="1"></rect>
+          <rect x="336" y="603" width="826" height="787" fill="#FD3F9E" class="area-calculate" areagroup="2"></rect>
+          <rect x="1576" y="1097" width="224" height="563" fill="#F6A386" class="area-calculate" areagroup="2"></rect>
+          <rect x="1451" y="1680" width="512" height="76" fill="#6B82FC" class="area-calculate" areagroup="1"></rect>
+          <rect x="618" y="1068" width="109" height="825" fill="#95522E" class="area-calculate" areagroup="3"></rect>
+          <rect x="1796" y="1731" width="84" height="124" fill="#445988" class="area-calculate" areagroup="3"></rect>
+          <rect x="220" y="1867" width="1277" height="125" fill="#6C512E" class="area-calculate" areagroup="3"></rect>
+          <rect x="845" y="674" width="445" height="370" fill="#ACA5B3" class="area-calculate" areagroup="3"></rect>
+          <rect x="306" y="1982" width="1435" height="14" fill="#CB6B7F" class="area-calculate" areagroup="2"></rect>
+          <rect x="649" y="562" width="381" height="663" fill="#CB6900" class="area-calculate" areagroup="3"></rect>
+          <rect x="1946" y="946" width="34" height="600" fill="#7F424E" class="area-calculate" areagroup="2"></rect>
+          <rect x="1500" y="1884" width="488" height="75" fill="#C25173" class="area-calculate" areagroup="2"></rect>
+          <rect x="315" y="66" width="713" height="1721" fill="#B204EC" class="area-calculate" areagroup="1"></rect>
+          <rect x="345" y="278" width="1439" height="664" fill="#A4EF63" class="area-calculate" areagroup="1"></rect>
+          <rect x="706" y="718" width="1279" height="388" fill="#1C73D1" class="area-calculate" areagroup="1"></rect>
+          <rect x="1465" y="1651" width="150" height="61" fill="#9ED698" class="area-calculate" areagroup="2"></rect>
+          <rect x="172" y="1706" width="1676" height="171" fill="#B8AF43" class="area-calculate" areagroup="2"></rect>
+          <rect x="838" y="898" width="100" height="1002" fill="#DBAADF" class="area-calculate" areagroup="1"></rect>
+          <rect x="1311" y="1341" width="33" height="650" fill="#A7015E" class="area-calculate" areagroup="2"></rect>
+          <rect x="1759" y="548" width="11" height="668" fill="#602AED" class="area-calculate" areagroup="2"></rect>
+          <rect x="1977" y="1807" width="17" height="22" fill="#E0943E" class="area-calculate" areagroup="2"></rect>
+          <rect x="71" y="81" width="1847" height="1658" fill="#990B2F" class="area-calculate" areagroup="1"></rect>
+          <rect x="870" y="1504" width="245" height="314" fill="#63AF86" class="area-calculate" areagroup="3"></rect>
+          <rect x="5" y="1628" width="1229" height="287" fill="#CAAC12" class="area-calculate" areagroup="2"></rect>
+          <rect x="1557" y="116" width="35" height="92" fill="#0699B4" class="area-calculate" areagroup="3"></rect>
+          <rect x="527" y="1240" width="1420" height="350" fill="#01A3D5" class="area-calculate" areagroup="2"></rect>
+          <rect x="488" y="27" width="439" height="1027" fill="#CD782C" class="area-calculate" areagroup="2"></rect>
+          <rect x="630" y="395" width="1274" height="1519" fill="#B6D66C" class="area-calculate" areagroup="3"></rect>
+          <rect x="1016" y="1827" width="601" height="120" fill="#771ABC" class="area-calculate" areagroup="1"></rect>
+          <rect x="39" y="842" width="418" height="495" fill="#124A42" class="area-calculate" areagroup="3"></rect>
+          <rect x="1948" y="362" width="27" height="1606" fill="#5F8E15" class="area-calculate" areagroup="2"></rect>
+          <rect x="392" y="1059" width="288" height="167" fill="#DD301D" class="area-calculate" areagroup="3"></rect>
+          <rect x="1846" y="70" width="18" height="1602" fill="#31D635" class="area-calculate" areagroup="2"></rect>
+          <rect x="858" y="1477" width="1040" height="473" fill="#2E5EA6" class="area-calculate" areagroup="2"></rect> -->
+          
+  
+
+          
+          <!-- <rect x="1141" y="555" width="173" height="267" fill="#CD46DE" class="area-calculate" areagroup="3"></rect>
+          <rect x="106" y="881" width="414" height="1027" fill="#FFDAD7" class="area-calculate" areagroup="1"></rect>
+          <rect x="1971" y="181" width="13" height="1406" fill="#8F382A" class="area-calculate" areagroup="2"></rect>
+          <rect x="1327" y="293" width="460" height="477" fill="#97D463" class="area-calculate" areagroup="3"></rect>
+          <rect x="1022" y="630" width="711" height="296" fill="#7E607C" class="area-calculate" areagroup="1"></rect>
+          <rect x="1570" y="1160" width="297" height="807" fill="#1B1F3B" class="area-calculate" areagroup="1"></rect>
+          <rect x="1621" y="1658" width="144" height="141" fill="#F79372" class="area-calculate" areagroup="2"></rect>
+          <rect x="601" y="1684" width="199" height="249" fill="#09826A" class="area-calculate" areagroup="1"></rect>
+          <rect x="303" y="1263" width="449" height="386" fill="#B898B2" class="area-calculate" areagroup="1"></rect>
+          <rect x="942" y="1894" width="1010" height="45" fill="#774A34" class="area-calculate" areagroup="3"></rect>
+          <rect x="1200" y="1642" width="752" height="65" fill="#88FA5A" class="area-calculate" areagroup="3"></rect>
+          <rect x="1234" y="683" width="396" height="1108" fill="#707339" class="area-calculate" areagroup="2"></rect>
+          <rect x="187" y="425" width="1067" height="1367" fill="#E8F9DD" class="area-calculate" areagroup="3"></rect>
+          <rect x="140" y="1891" width="867" height="103" fill="#72EE98" class="area-calculate" areagroup="2"></rect>
+          <rect x="1424" y="911" width="374" height="432" fill="#729EAD" class="area-calculate" areagroup="3"></rect>
+          <rect x="433" y="1948" width="1480" height="30" fill="#D20447" class="area-calculate" areagroup="1"></rect>
+          <rect x="1911" y="1320" width="67" height="341" fill="#39DC6A" class="area-calculate" areagroup="1"></rect>
+          <rect x="222" y="1338" width="896" height="227" fill="#BB266C" class="area-calculate" areagroup="1"></rect>
+          <rect x="0" y="1723" width="1206" height="50" fill="#F4303C" class="area-calculate" areagroup="1"></rect>
+          <rect x="1047" y="1542" width="747" height="380" fill="#C7C7EB" class="area-calculate" areagroup="2"></rect> -->
+          
+  
+
+  <!-- <rect class="area-calculate" x="400" y="400" width="100" height="100"></rect>
+  <rect class="area-calculate" x="400" y="300" width="100" height="100"></rect>
+  <rect class="area-calculate" x="300" y="400" width="100" height="100"></rect>
+  <rect class="area-calculate" x="500" y="400" width="100" height="100"></rect>
+  <rect class="area-calculate" x="450" y="400" width="60" height="10"></rect>
+
+  <rect class="area-calculate" x="400" y="500" width="100" height="100"></rect>
+  <rect class="area-calculate" x="200" y="400" width="500" height="10"></rect> -->
+
+
+  <!-- <rect class="area-calculate" x="400" y="300" width="100" height="1000"></rect>
+  <rect class="area-calculate" x="1400" y="300" width="100" height="1100"></rect>
+  <rect class="area-calculate" x="400" y="300" width="1000" height="100"></rect>
+  <rect class="area-calculate" x="400" y="1300" width="1000" height="100"></rect>
+  <rect class="area-calculate" x="600" y="390" width="100" height="10"></rect> -->
+
+
+
+
+          <!-- <rect class="area-calculate" x="50" y="20" width="150" height="80" style="fill:orange;stroke:purple;stroke-width:3;" />
           <rect class="area-calculate" x="55" y="25" width="10" height="10" style="fill:orange;stroke:purple;stroke-width:3;" />
           <polygon class="area-calculate" points="160,20 190,220 100,90" fill="red" />
           <polygon class="area-calculate" points="180,200 90,220 60,90 100,10 125,120 80,90" style="fill:blue;stroke:purple;stroke-width:3;" />
           <rect class="area-calculate" x="180" y="20" width="150" height="180" style="fill:orange;stroke:purple;stroke-width:3;" />
-          <rect class="area-calculate" x="120" y="120" width="1000" height="19" style="fill:orange;stroke:purple;stroke-width:3;" />
+          <rect class="area-calculate" x="100" y="100" width="1000" height="19" style="fill:orange;stroke:purple;stroke-width:3;" />
+          <polygon class="area-calculate" points="80,150 80,90 150,90 150,150 110,150 110,92 100,92 100,150" style="fill:blue;stroke:purple;stroke-width:3;" />
+          <rect class="area-calculate" x="400" y="300" width="100" height="100"></rect>
+          <rect class="area-calculate" x="300" y="400" width="100" height="100"></rect>
+          <rect class="area-calculate" x="500" y="10" width="100" height="1000"></rect>
+          <rect class="area-calculate" x="400" y="400" width="100" height="100"></rect> -->
+
         </svg>
       </div>
     </section>
