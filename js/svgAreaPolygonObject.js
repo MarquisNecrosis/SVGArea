@@ -509,8 +509,10 @@ export class svgAreaPolygonObject {
   }
 
   removeDuplicatePoints() {
-    // Convert arrays to JSON strings and use a Set to filter out duplicates
-    const uniquePoints = [...new Set(this.points.map(JSON.stringify))].map(JSON.parse);
+    const uniquePoints = this.points.filter((element, index) => index === 0 || element !== this.points[index - 1]);
+    if (uniquePoints[0] === uniquePoints[uniquePoints.length - 1]) {
+      uniquePoints.pop();
+    }
     this.points = uniquePoints;
   }
 
