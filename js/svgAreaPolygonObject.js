@@ -425,7 +425,6 @@ export class svgAreaPolygonObject {
       const gap = this.gaps[index];
       const isOutside = this.checkIfPolygonIsOutsidePolygon(gap, this);
       if(!isOutside) {
-        console.log('Inside');
         const newGapPoints = this.points;
         const newGapElement = this.element;
         const newGapPath = this.path;
