@@ -127,7 +127,7 @@ export class svgAreaIntersection {
   /**
    * Take every svg elements, in svg which is define in constructor and take every elements in this svg which has class "area-calculate"
    */
-  polygonIntersectionInSvg() {
+  polygonIntersectionInSvg(show = false) {
     const elementsWithClass = this.parentSVG.getElementsByClassName('area-calculate');
     const elementsArray = Array.from(elementsWithClass);
     elementsArray.forEach(element => {
@@ -187,7 +187,6 @@ export class svgAreaIntersection {
                 polygon.redrawSvg(true);
               }   
             });
-            const area = polygon.calculateArea(true, false);
             intersectPolygon.removeSvg();
             intersectPolygon.removePath();
             intersectPolygon = polygon;
@@ -204,15 +203,12 @@ export class svgAreaIntersection {
         }
       });
       if (!hasIntersection) {
-        const area = intersectPolygon.calculateArea();
         this.currentPolygon.push(intersectPolygon);
       }
       this.manageCurrentPolygons(indexesForDelete);
     });
-    let area = 0;
-    this.currentPolygon.forEach((polygon, index) => {
-      area += polygon.calculateArea();
-    });
+    const area = this.calculateAreaofAllPolygons();
+    this.removePolygons(show);
     return area;
   }
 
@@ -1183,5 +1179,25 @@ export class svgAreaIntersection {
     }
   }
 
+  /**
+   * Calculate area of all polygons in pixels
+   * @returns area of all polygons in pixels
+   */
+  calculateAreaofAllPolygons() {
+    let area = 0;
+    this.currentPolygon.forEach((polygon, index) => {
+      area += polygon.calculateArea();
+    });
+    return area;
+  }
+
+  removePolygons(show = false) {
+    if(!show) {
+      this.currentPolygon.forEach((polygon, index) => {
+        polygon.removeSvg();
+        polygon.removePath();
+      });
+    }
+  }
 
 }
