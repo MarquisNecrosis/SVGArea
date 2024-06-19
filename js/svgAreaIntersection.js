@@ -18,10 +18,9 @@ export class svgAreaIntersection {
    * Konstruktor
    * @param {string} svgID id of <svg>
    */
-  constructor(svgID, color) {
+  constructor(svgID) {
     this.parentSVG = document.getElementById(svgID);
     this.currentPolygon = [];
-    this.color = color;
     this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current");
   }
 
@@ -128,12 +127,12 @@ export class svgAreaIntersection {
   /**
    * Take every svg elements, in svg which is define in constructor and take every elements in this svg which has class "area-calculate"
    */
-  polygonIntersectionInSvg(show = false) {
+  polygonIntersectionInSvg(show = false, color) {
     const elementsWithClass = this.parentSVG.getElementsByClassName('area-calculate');
     const elementsArray = Array.from(elementsWithClass);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
-      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect");
+      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", color);
       let hasIntersection = false;
       let indexesForDelete = [];
       let indexForDelete = -1;

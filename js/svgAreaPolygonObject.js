@@ -21,19 +21,20 @@ export class svgAreaPolygonObject {
     this.parent = parent;
     this.id = id;
     this.isGap = false;
+    this.color = color;
     this.parentPath = null;
     this.gaps = [];
     this.area = 0;
     if(points != undefined){
       this.removeRedundantPoints();
       if (element == null){
-        this.createSvg(color);
+        this.createSvg();
       }
       else {
         this.element = element;
       }
       if (path == null){
-        this.createPath(color);
+        this.createPath();
       }
       else{
         this.path = path;
@@ -90,7 +91,7 @@ export class svgAreaPolygonObject {
    * Create <polygon> base by his points
    * @param {string} color background color
    */
-  createSvg(color) {
+  createSvg() {
     this.element = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     this.element.setAttribute('id', this.id);
     const pointsString = this.points.map(point => point.join(',')).join(' ');
@@ -99,12 +100,12 @@ export class svgAreaPolygonObject {
     this.element.setAttribute('opacity', 0);
     this.element.setAttribute('stroke', 'gold');
     this.element.setAttribute('stroke-width', '2');
-    this.element.setAttribute('fill', color);
+    this.element.setAttribute('fill', this.color);
     this.element.setAttribute('opacity', 0);
     this.parent.appendChild(this.element);
   }
 
-  createPath(color) {
+  createPath() {
     this.path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     this.path.setAttribute('id', this.id + "_path");
     const pointsString = this.points.map(point => point.join(',')).join(' ');
@@ -138,14 +139,10 @@ export class svgAreaPolygonObject {
     this.path.setAttribute('d', d);
     this.path.setAttribute('fill-rule', 'evenodd');
     this.path.setAttribute('class', 'intersect-object');
-    if (true) {
-      this.path.setAttribute('stroke', 'silver');
-      this.path.setAttribute('stroke-width', '2');
-      this.path.setAttribute('fill', "blue");
-    }
-    else {
-      this.element.setAttribute('display', 'none');
-    }
+    this.path.setAttribute('stroke', 'silver');
+    this.path.setAttribute('stroke-width', '2');
+    this.path.setAttribute('fill', this.color);
+
     this.parent.appendChild(this.path);
   }
 
