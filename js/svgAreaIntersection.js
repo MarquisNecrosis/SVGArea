@@ -126,9 +126,14 @@ export class svgAreaIntersection {
    * Take every svg elements, in svg which is define in constructor and take every elements in this svg which has class "area-calculate"
    */
   polygonIntersectionInSvg(show = false, color, group = null) {
+    const elementsArray = this.elementsToIntersect(group);
+    const area = this.polygonIntersectionInSvgForElements(elementsArray, show, color);
+    return area;
+  }
+
+  polygonIntersectionInSvgForElements(elementsArray, show = false, color) {
     this.currentPolygon = [];
     this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current", color);
-    const elementsArray = this.elementsToIntersect(group);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
       let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", color);
