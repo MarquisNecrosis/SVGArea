@@ -18,10 +18,11 @@ export class svgAreaIntersection {
    * Konstruktor
    * @param {string} svgID id of <svg>
    */
-  constructor(svgID) {
+  constructor(svgID, color) {
     this.parentSVG = document.getElementById(svgID);
     this.currentPolygon = [];
-    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current", true);
+    this.color = color;
+    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current");
   }
 
   /**
@@ -132,7 +133,7 @@ export class svgAreaIntersection {
     const elementsArray = Array.from(elementsWithClass);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
-      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", true);
+      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect");
       let hasIntersection = false;
       let indexesForDelete = [];
       let indexForDelete = -1;
@@ -153,7 +154,7 @@ export class svgAreaIntersection {
         }
         allVertexes = this.filterGapsPoints(allVertexes, polygon);
         allVertexesIntersect = this.filterGapsPoints(allVertexesIntersect, polygon);
-        polygon.redrawSvg(true);
+        polygon.redrawSvg();
 
         let gaps = [];
         while(allVertexes.length > 0 && stat == this.INTERSECT.ADD) {
@@ -179,12 +180,12 @@ export class svgAreaIntersection {
         }
         switch (stat) {
           case this.INTERSECT.ADD:
-            polygon.createFromObject(newPolygon, true, intersectPolygon);
+            polygon.createFromObject(newPolygon, intersectPolygon);
             gaps.forEach(gap => {
               if (gap != null) {
                 polygon.createGap(gap);
                 polygon.chooseCorrectGap();
-                polygon.redrawSvg(true);
+                polygon.redrawSvg();
               }   
             });
             intersectPolygon.removeSvg();
