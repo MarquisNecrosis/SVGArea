@@ -20,8 +20,6 @@ export class svgAreaIntersection {
    */
   constructor(svgID) {
     this.parentSVG = document.getElementById(svgID);
-    this.currentPolygon = [];
-    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current");
   }
 
   /**
@@ -127,9 +125,10 @@ export class svgAreaIntersection {
   /**
    * Take every svg elements, in svg which is define in constructor and take every elements in this svg which has class "area-calculate"
    */
-  polygonIntersectionInSvg(show = false, color) {
-    const elementsWithClass = this.parentSVG.getElementsByClassName('area-calculate');
-    const elementsArray = Array.from(elementsWithClass);
+  polygonIntersectionInSvg(show = false, color, group = null) {
+    this.currentPolygon = [];
+    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current", color);
+    const elementsArray = this.elementsToIntersect(group);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
       let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", color);
@@ -210,6 +209,15 @@ export class svgAreaIntersection {
     const area = this.calculateAreaofAllPolygons();
     this.removePolygons(show);
     return area;
+  }
+
+  elementsToIntersect(group = null) {
+    const elementsWithClass = this.parentSVG.getElementsByClassName('area-calculate');
+    let elementsArray = Array.from(elementsWithClass);
+    if(group != null) {
+      elementsArray = elementsArray.filter(element => element.getAttribute('areagroup') == group);
+    }
+    return elementsArray;
   }
 
   /**
