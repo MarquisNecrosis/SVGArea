@@ -16,7 +16,7 @@ window.onload = function() {
   const height = bbox.height;
   const totalAreaSvg = width * height;
   console.log(totalAreaSvg);
-  intersectElements.polygonIntersectionInSvg('tutorial_svg');
+  intersectElements.polygonIntersectionInSvg(true, 'blue');
   const checkbox = document.getElementById('opacity-test');
 
   checkbox.addEventListener('input', function() {

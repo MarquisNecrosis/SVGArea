@@ -399,8 +399,6 @@ export class svgAreaIntersection {
         }
         linePoints = currentPoints.lineFromCurrentIndex();
       }
-      let newPolygonPoints = [startPoint];
-      this.addSVGPointWithClass(startPoint);
       let endPoint = [];
       let intersectPolygon = intersectedPoints;
       let currentPolygon = currentPoints;
@@ -408,58 +406,64 @@ export class svgAreaIntersection {
       let noIntersection = true;
       this.highlightLinePoints(linePoints);
       let lastPoint = null;
-      //take points after the new point is not startPoint. If its startPoint that means, that algorhitm take every point around the both polygons and merge is complete
-      while (!this.arraysAreEqual(startPoint, endPoint)) {
-        let intersection = null
-        intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPolygon, lastPoint);
-        //if there is not intersection than take point with current polygon an go on.
-        if (intersection == null) {
-          if (swap) {
-            [endPoint, linePoints] = this.managePoints(intersectedPoints, intersection);
+      let newPolygonPoints = [];
+      if(startPoint != null) {
+        this.addSVGPointWithClass(startPoint);
+        //take points after the new point is not startPoint. If its startPoint that means, that algorhitm take every point around the both polygons and merge is complete
+        while (!this.arraysAreEqual(startPoint, endPoint)) {
+          let intersection = null
+          intersection = this.checkIfLineHasIntersection(linePoints, intersectPolygon, currentPolygon, lastPoint);
+          //if there is not intersection than take point with current polygon an go on.
+          if (intersection == null) {
+            if (swap) {
+              [endPoint, linePoints] = this.managePoints(intersectedPoints, intersection);
+            }
+            else {
+              [endPoint, linePoints] = this.managePoints(currentPoints, intersection);
+            }
+            newPolygonPoints.push(endPoint);
+            this.addSVGPointWithClass(endPoint);
           }
+          //if there is intersection
           else {
-            [endPoint, linePoints] = this.managePoints(currentPoints, intersection);
+            swap = !swap;
+            noIntersection = false;
+            newPolygonPoints.push(intersection);
+            this.addSVGPointWithClass(intersection);
+            if (swap) {
+              linePoints = intersectedPoints.lineFromCurrentIndex();
+              endPoint = intersection;
+              intersectPolygon = currentPoints;
+              currentPolygon = intersectedPoints;
+            }
+            else {
+              linePoints = currentPoints.lineFromCurrentIndex();
+              endPoint = intersection;
+              intersectPolygon = intersectedPoints;
+              currentPolygon = currentPoints;
+            }
+            if (clockTurn) {
+              linePoints[0] = intersection;
+            }
+            else {
+              linePoints[1] = intersection;
+            }
           }
-          newPolygonPoints.push(endPoint);
-          this.addSVGPointWithClass(endPoint);
+          it++;
+          if (it >= this.MAX_ITERATION) {
+            break;
+          }
+          this.highlightLinePoints(linePoints);
+          lastPoint = newPolygonPoints[newPolygonPoints.length - 1];
         }
-        //if there is intersection
-        else {
-          swap = !swap;
-          noIntersection = false;
-          newPolygonPoints.push(intersection);
-          this.addSVGPointWithClass(intersection);
-          if (swap) {
-            linePoints = intersectedPoints.lineFromCurrentIndex();
-            endPoint = intersection;
-            intersectPolygon = currentPoints;
-            currentPolygon = intersectedPoints;
-          }
-          else {
-            linePoints = currentPoints.lineFromCurrentIndex();
-            endPoint = intersection;
-            intersectPolygon = intersectedPoints;
-            currentPolygon = currentPoints;
-          }
-          if (clockTurn) {
-            linePoints[0] = intersection;
-          }
-          else {
-            linePoints[1] = intersection;
-          }
-        }
-        it++;
-        if (it >= this.MAX_ITERATION) {
-          break;
-        }
-        this.highlightLinePoints(linePoints);
-        lastPoint = newPolygonPoints[newPolygonPoints.length - 1];
+      }
+      else {
+        newPolygonPoints = currentPolygon.points;
       }
       this.highlightLinePoints(null);
       let newPolygon = { ...currentPoints };
       newPolygon.points = newPolygonPoints;
       this.deleteHelpPoints();
-      newPolygon.points.pop();
       //if there is no intersection than add new polygon
       if (noIntersection == true && this.checkIfPolygonIsOutsidePolygon(currentPoints, intersectedPoints)) {
         return [this.INTERSECT.NEW, intersectedPoints];
