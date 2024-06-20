@@ -25,18 +25,14 @@ export class svgAreaCalculation {
     const childElements = Array.from(parentElement.children);
     let totalArea = 0;
     const areaElement = new svgAreaOfSingleElement();
-    let intersectElements = [];
-    childElements.forEach((child, index) => {
-      const bbox = child.getBBox();
-      for (let x = bbox.x; x < bbox.x + bbox.width; x++) {
-        for (let y = bbox.y; y < bbox.y + bbox.height; y++) {
-          if (!areaElement.isPointIntersect(intersectElements, { 'x': x, 'y': y })) {
-            totalArea++;
-          }
+    const bbox = parentElement.getBBox();
+    for (let x = bbox.x; x < bbox.x + bbox.width; x++) {
+      for (let y = bbox.y; y < bbox.y + bbox.height; y++) {
+        if (areaElement.isPointIntersect(childElements, { 'x': x, 'y': y })) {
+          totalArea++;
         }
       }
-      intersectElements.push(child);
-    });
+    }
     const endTime = performance.now();
     const elapsedTime = endTime - startTime;
     console.log('Function execution time:', elapsedTime, 'milliseconds');

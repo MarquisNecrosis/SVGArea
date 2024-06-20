@@ -13,28 +13,28 @@ export class svgAreaPolygonObject {
    * @param {number} index index means, number of point in polygon. 0 is first point, 1 - second...
    * @param {*} parent <svg> parent when html element will be held
    * @param {string} id unique id of polygon, which will his indetified in html
-   * @param {boolean} show true = show in html, false = not show 
    * @param {string} color color of polygon in html
    */
-  constructor(points, index, parent, id, show = false, color = 'black', element = null, path = null) {
+  constructor(points, index, parent, id, color = 'black', element = null, path = null) {
     this.points = points;
     this.index = index;
     this.parent = parent;
     this.id = id;
     this.isGap = false;
+    this.color = color;
     this.parentPath = null;
     this.gaps = [];
     this.area = 0;
-    if(show){
+    if(points != undefined){
       this.removeRedundantPoints();
       if (element == null){
-        this.createSvg(show, color);
+        this.createSvg();
       }
       else {
         this.element = element;
       }
       if (path == null){
-        this.createPath(color);
+        this.createPath();
       }
       else{
         this.path = path;
@@ -45,15 +45,14 @@ export class svgAreaPolygonObject {
   /**
    * Take points from another svgAreaPolygonObject
    * @param {svgAreaPolygonObject} svgAreaPolygonObject 
-   * @param {boolean} show 
    */
-  createFromObject(svgAreaPolygonObject, show, intersectPolygon) {
+  createFromObject(svgAreaPolygonObject, intersectPolygon) {
     this.points = svgAreaPolygonObject.points;
     this.gaps = this.gaps.concat(intersectPolygon.gaps);
     this.removeDuplicateGaps();
     this.removeRedundantPoints();
     this.parent = svgAreaPolygonObject.parent;
-    this.redrawSvg(show);
+    this.redrawSvg();
   }
 
   removeDuplicateGaps(){
@@ -77,7 +76,7 @@ export class svgAreaPolygonObject {
    * @param {svgAreaPolygonObject} hole
    */
   createGap(hole) {
-    const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", true, 'white');
+    const gap = new svgAreaPolygonObject(hole.points, 0, this.parent, "gap", 'white');
     gap.isGap = true;
     gap.parentPath = this.path;
     gap.parentPoints = this.points;
@@ -90,29 +89,23 @@ export class svgAreaPolygonObject {
 
   /**
    * Create <polygon> base by his points
-   * @param {boolean} show show in html
    * @param {string} color background color
    */
-  createSvg(show, color) {
+  createSvg() {
     this.element = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     this.element.setAttribute('id', this.id);
     const pointsString = this.points.map(point => point.join(',')).join(' ');
     this.element.setAttribute('points', pointsString);
     this.element.setAttribute('class', 'intersect-object');
     this.element.setAttribute('opacity', 0);
-    if (true) {
-      this.element.setAttribute('stroke', 'gold');
-      this.element.setAttribute('stroke-width', '2');
-      this.element.setAttribute('fill', color);
-      this.element.setAttribute('opacity', 0);
-    }
-    else {
-      this.element.setAttribute('display', 'none');
-    }
+    this.element.setAttribute('stroke', 'gold');
+    this.element.setAttribute('stroke-width', '2');
+    this.element.setAttribute('fill', this.color);
+    this.element.setAttribute('opacity', 0);
     this.parent.appendChild(this.element);
   }
 
-  createPath(color) {
+  createPath() {
     this.path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     this.path.setAttribute('id', this.id + "_path");
     const pointsString = this.points.map(point => point.join(',')).join(' ');
@@ -146,14 +139,10 @@ export class svgAreaPolygonObject {
     this.path.setAttribute('d', d);
     this.path.setAttribute('fill-rule', 'evenodd');
     this.path.setAttribute('class', 'intersect-object');
-    if (true) {
-      this.path.setAttribute('stroke', 'silver');
-      this.path.setAttribute('stroke-width', '2');
-      this.path.setAttribute('fill', "blue");
-    }
-    else {
-      this.element.setAttribute('display', 'none');
-    }
+    this.path.setAttribute('stroke', 'silver');
+    this.path.setAttribute('stroke-width', '2');
+    this.path.setAttribute('fill', this.color);
+
     this.parent.appendChild(this.path);
   }
 
@@ -259,20 +248,19 @@ export class svgAreaPolygonObject {
 
   /**
    * redraw a polygon with new coordination
-   * @param {boolean} show 
    */
-  redrawSvg(show) {
+  redrawSvg() {
     this.removeSvg();
     let area = this.calculateArea(false, false, false);
     if(area > 0) {
       this.reversePoints();
     }
-    this.createSvg(show);
+    this.createSvg();
     this.removePath()
-    this.createPath(show);
+    this.createPath();
     this.gaps.forEach(gap => {
       gap.removeSvg();
-      gap.createSvg(show, 'white');
+      gap.createSvg('white');
       gap.parentPath = this.path;
       gap.parentPoints = this.points
     });
@@ -425,7 +413,6 @@ export class svgAreaPolygonObject {
       const gap = this.gaps[index];
       const isOutside = this.checkIfPolygonIsOutsidePolygon(gap, this);
       if(!isOutside) {
-        console.log('Inside');
         const newGapPoints = this.points;
         const newGapElement = this.element;
         const newGapPath = this.path;
