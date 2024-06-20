@@ -20,8 +20,6 @@ export class svgAreaIntersection {
    */
   constructor(svgID) {
     this.parentSVG = document.getElementById(svgID);
-    this.currentPolygon = [];
-    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current", true);
   }
 
   /**
@@ -127,19 +125,22 @@ export class svgAreaIntersection {
   /**
    * Take every svg elements, in svg which is define in constructor and take every elements in this svg which has class "area-calculate"
    */
-  polygonIntersectionInSvg() {
-    const elementsWithClass = this.parentSVG.getElementsByClassName('area-calculate');
-    const elementsArray = Array.from(elementsWithClass);
+  polygonIntersectionInSvg(show = false, color, group = null) {
+    const elementsArray = this.elementsToIntersect(group);
+    const area = this.polygonIntersectionInSvgForElements(elementsArray, show, color);
+    return area;
+  }
+
+  polygonIntersectionInSvgForElements(elementsArray, show = false, color) {
+    this.currentPolygon = [];
+    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current", color);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
-      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", true);
+      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", color);
       let hasIntersection = false;
       let indexesForDelete = [];
       let indexForDelete = -1;
-      console.log("novy polygon");
-      console.log(intersectPolygon);
       this.currentPolygon.forEach((polygon, index) => {
-        console.log("prunik s polygonem");
         let newPolygon = null;
         let stat = 0;
         let allIntersection = this.findAllIntersection(polygon, intersectPolygon);
@@ -156,12 +157,11 @@ export class svgAreaIntersection {
         }
         allVertexes = this.filterGapsPoints(allVertexes, polygon);
         allVertexesIntersect = this.filterGapsPoints(allVertexesIntersect, polygon);
-        polygon.redrawSvg(true);
+        polygon.redrawSvg();
 
         let gaps = [];
         while(allVertexes.length > 0 && stat == this.INTERSECT.ADD) {
           let gap = null;
-          console.log("vznika nova dira");
           let clockTurn = true;
           if (allVertexesIntersect.length > 0){
             clockTurn = true;
@@ -183,15 +183,14 @@ export class svgAreaIntersection {
         }
         switch (stat) {
           case this.INTERSECT.ADD:
-            polygon.createFromObject(newPolygon, true, intersectPolygon);
+            polygon.createFromObject(newPolygon, intersectPolygon);
             gaps.forEach(gap => {
               if (gap != null) {
                 polygon.createGap(gap);
                 polygon.chooseCorrectGap();
-                polygon.redrawSvg(true);
+                polygon.redrawSvg();
               }   
             });
-            const area = polygon.calculateArea(true, false);
             intersectPolygon.removeSvg();
             intersectPolygon.removePath();
             intersectPolygon = polygon;
@@ -208,11 +207,22 @@ export class svgAreaIntersection {
         }
       });
       if (!hasIntersection) {
-        const area = intersectPolygon.calculateArea();
         this.currentPolygon.push(intersectPolygon);
       }
       this.manageCurrentPolygons(indexesForDelete);
     });
+    const area = this.calculateAreaofAllPolygons();
+    this.removePolygons(show);
+    return area;
+  }
+
+  elementsToIntersect(group = null) {
+    const elementsWithClass = this.parentSVG.getElementsByClassName('area-calculate');
+    let elementsArray = Array.from(elementsWithClass);
+    if(group != null) {
+      elementsArray = elementsArray.filter(element => element.getAttribute('areagroup') == group);
+    }
+    return elementsArray;
   }
 
   /**
@@ -990,19 +1000,15 @@ export class svgAreaIntersection {
     let gapsToAdd = [];
     let gapsToRemove = [];
     polygon.gaps.forEach((gap, index) => {
-      console.log("prunik mezi dirami polygonu a novym polygonem");
-      console.log(gap);
       let allIntersection = this.findAllIntersection(gap, intersectPolygon, true);
       let allVertexes = this.findAllVertexes(gap, intersectPolygon, true, false);
       let stat = null;
       if(allIntersection.length == 0 && allVertexes.length == 0){
-        console.log("zadny prunik neni");
         if (!gapsToRemove.includes(index)) {
           gapsToRemove.unshift(index);
         }
       }
       else if (allIntersection.length > 0) {
-        console.log("prunik je mezi dirou a polygonem je");
         gapsToAdd = this.intersectGap(allIntersection, allVertexes, gap, intersectPolygon, gapsToAdd);
         if (!gapsToRemove.includes(index)) {
           gapsToRemove.unshift(index);
@@ -1026,11 +1032,9 @@ export class svgAreaIntersection {
     while (allIntersection.length > 0) {
       let newGap;
       if (allVertexes.length > 0){
-        console.log("prunik je mezi dirou a polygonem je a je startovni bod");
         [, newGap] = this.polygonIntersection(gap, intersectPolygon, allVertexes[0], null, true);
       }
       else {
-        console.log("prunik je mezi dirou a polygonem je a NENI startovni bod");
         [, newGap] = this.polygonIntersection(gap, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], true);
       }
       newGap instanceof svgAreaPolygonObject;
@@ -1188,5 +1192,25 @@ export class svgAreaIntersection {
     }
   }
 
+  /**
+   * Calculate area of all polygons in pixels
+   * @returns area of all polygons in pixels
+   */
+  calculateAreaofAllPolygons() {
+    let area = 0;
+    this.currentPolygon.forEach((polygon, index) => {
+      area += polygon.calculateArea();
+    });
+    return area;
+  }
+
+  removePolygons(show = false) {
+    if(!show) {
+      this.currentPolygon.forEach((polygon, index) => {
+        polygon.removeSvg();
+        polygon.removePath();
+      });
+    }
+  }
 
 }
