@@ -487,7 +487,7 @@ export class svgAreaPolygonObject {
       return false;
     }
     for (let i = 0; i < arr1.length; i++) {
-      equal = this.arraysAreEqual(arr1, arr2);
+      equal = this.arraysAreEqual(arr1[i], arr2[i]);
       if (!equal) {
         break;
       } 
