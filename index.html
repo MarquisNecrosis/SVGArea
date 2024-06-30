@@ -22,9 +22,13 @@
   <main>
     <section>
       <h2>SVG Example</h2>
+      <label for="opacity-test">Opacity</label>
       <input type="range" min="0" max="1" value="0.5" class="slider" id="opacity-test" name="opacity-test" step="0.1">
+      <label for="generate-input">Number of random polygons:</label>
+      <input type="number" name="generate-input" value="10" id="generate-input" min="1">
+      <button id="generate-btn">Generate</button>
+      <br>
       <button id="copy">Copy elements</button>
-      <label for="opacity-test">Opacity</label><br>
       <div class="tutorial-div">
         <svg id="tutorial_svg" width="2000" height="2000" class="area-calculate">
 
