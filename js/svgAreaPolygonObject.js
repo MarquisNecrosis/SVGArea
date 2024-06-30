@@ -487,7 +487,7 @@ export class svgAreaPolygonObject {
       return false;
     }
     for (let i = 0; i < arr1.length; i++) {
-      equal = this.arraysAreEqual(arr1, arr2);
+      equal = this.arraysAreEqual(arr1[i], arr2[i]);
       if (!equal) {
         break;
       } 
@@ -496,11 +496,19 @@ export class svgAreaPolygonObject {
   }
 
   removeDuplicatePoints() {
-    const uniquePoints = this.points.filter((element, index) => index === 0 || element !== this.points[index - 1]);
-    if (uniquePoints[0] === uniquePoints[uniquePoints.length - 1]) {
-      uniquePoints.pop();
+    if(this.points.length > 0){
+      const uniquePoints = [];
+      if (!this.arraysAreEqual(this.points[0], this.points[length - 1])) {
+        uniquePoints.push(this.points[0]);
+      }
+      for (let i = 1; i < this.points.length; i++) {
+        if(!this.arraysAreEqual(this.points[i-1], this.points[i])){
+          uniquePoints.push(this.points[i]);
+        }
+        
+      }
+      this.points = uniquePoints;
     }
-    this.points = uniquePoints;
   }
 
 }
