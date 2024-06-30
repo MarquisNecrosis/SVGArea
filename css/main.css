@@ -1,0 +1,29 @@
+.separator {
+  border-left: 1px solid #000;
+  margin: 0 10px;
+  height: 10px;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.sub-container {
+  display: flex;
+  align-items: center;
+  background-color: lightgray;
+  margin: 5px;
+  padding: 10px;
+}
+
+.sub-container * {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+input[type="number"] {
+  max-width: 100px;
+  width: 100%;
+  box-sizing: border-box;
+}

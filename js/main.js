@@ -2,29 +2,7 @@ import { svgAreaCalculation } from './svgAreaCalculation.js';
 import { svgAreaIntersection } from './svgAreaIntersection.js';
 import { svgRandomGenerate } from './svgRandomGenerate.js';
 
-// Create an instance of the SvgAreaCalculation class
-const areaCalculator = new svgAreaCalculation();
-const intersectElements = new svgAreaIntersection('tutorial_svg');
-
 window.onload = function () {
-  //svgRandom.generateRandomRectangle(10);
-
-  const parentElement = document.getElementById('tutorial_svg');
-  const bbox = parentElement.getBoundingClientRect();
-  const width = bbox.width;
-  const height = bbox.height;
-  const totalAreaSvg = width * height;
-  console.log(totalAreaSvg);
-  intersectElements.polygonIntersectionInSvg(true, 'blue');
-  const checkbox = document.getElementById('opacity-test');
-
-  checkbox.addEventListener('input', function () {
-    const elements = document.querySelectorAll('.intersect-object');
-    const value = this.value;
-    elements.forEach(element => {
-      element.style.opacity = value;
-    });
-  });
 
   document.getElementById('copy').addEventListener('click', function () {
     const container = document.getElementById('tutorial_svg');
@@ -45,6 +23,43 @@ window.onload = function () {
     const svgRandom = new svgRandomGenerate('tutorial_svg');
     const numberOfRandomPolygons = document.getElementById('generate-input').value;
     svgRandom.generateRandomRectangle(numberOfRandomPolygons);
+  });
+  document.getElementById('lazyAlg-btn').addEventListener('click', function() {
+    const startTime = performance.now();
+    const areaCalculator = new svgAreaCalculation();
+    const area = areaCalculator.lazyStupidAreaCalculation('tutorial_svg');
+    document.getElementById('lazyAlg-area').textContent = area + ' px';
+    const endTime = performance.now();
+    const elapsedTime = endTime - startTime;
+    document.getElementById('lazyAlg-time').textContent = elapsedTime + ' ms';
+  });
+  document.getElementById('heuristicAlg-btn').addEventListener('click', function() {
+    const startTime = performance.now();
+    const areaCalculator = new svgAreaCalculation();
+    const numberOfRandomPoints = document.getElementById('heuristicAlg-input').value;
+    const area = areaCalculator.areaInSvgWithIntersection('tutorial_svg', numberOfRandomPoints);
+    document.getElementById('heuristicAlg-area').textContent = area + ' px';
+    const endTime = performance.now();
+    const elapsedTime = endTime - startTime;
+    document.getElementById('heuristicAlg-time').textContent = elapsedTime + ' ms';
+  });
+  document.getElementById('SVGAreaAlg-btn').addEventListener('click', function() {
+    const startTime = performance.now();
+    const intersectElements = new svgAreaIntersection('tutorial_svg');
+    const show = document.getElementById('SVGAreaAlg-checkBox').checked;
+    const color = document.getElementById('SVGAreaAlg-color').value;
+    const area = intersectElements.polygonIntersectionInSvg(show, color);
+    document.getElementById('SVGAreaAlg-area').textContent = area + ' px';
+    const endTime = performance.now();
+    const elapsedTime = endTime - startTime;
+    document.getElementById('SVGAreaAlg-time').textContent = elapsedTime + ' ms';
+  });
+  document.getElementById('SVGAreaAlg-opacity').addEventListener('input', function () {
+    const elements = document.querySelectorAll('.intersect-object');
+    const value = this.value;
+    elements.forEach(element => {
+      element.style.opacity = value;
+    });
   });
 
 };
