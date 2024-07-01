@@ -46,9 +46,10 @@ window.onload = function () {
   document.getElementById('SVGAreaAlg-btn').addEventListener('click', function() {
     const startTime = performance.now();
     const intersectElements = new svgAreaIntersection('tutorial_svg');
-    const show = document.getElementById('SVGAreaAlg-checkBox').checked;
+    const show = document.getElementById('SVGAreaAlg-show').checked;
+    const redraw = document.getElementById('SVGAreaAlg-redraw').checked;
     const color = document.getElementById('SVGAreaAlg-color').value;
-    const area = intersectElements.polygonIntersectionInSvg(show, color);
+    const area = intersectElements.polygonIntersectionInSvg(show, redraw, color);
     document.getElementById('SVGAreaAlg-area').textContent = area + ' px';
     const endTime = performance.now();
     const elapsedTime = endTime - startTime;
