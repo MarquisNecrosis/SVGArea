@@ -16,7 +16,27 @@ export class svgRandomGenerate {
    * @param {number} count number of random elements
    */
   generateRandomRectangle(count = 1) {
-    for (let i = 0; i < count; i++) {
+    const inputNumber = Number(count);
+    if (isNaN(inputNumber)) {
+      alert('The value entered is not a number.');
+    } else if (inputNumber <= 0) {
+      alert('The value must be greater than 0.');
+    } else {
+      this.removeGeneratedElements();
+      this.generateRectangles(inputNumber);
+    }
+  }
+
+  removeGeneratedElements() {
+    const elements = document.getElementsByClassName('random-generate');
+    const elementsArray = Array.from(elements);
+    elementsArray.forEach(element => {
+      element.remove();
+    });
+  }
+
+  generateRectangles(inputNumber) {
+    for (let i = 0; i < inputNumber; i++) {
       const randomX = this.getRandomNumber(0, this.width);
       const randomY = this.getRandomNumber(0, this.height);
       const randomWidth = this.getRandomNumber(10, this.width - randomX);
@@ -29,7 +49,7 @@ export class svgRandomGenerate {
       rectElement.setAttribute('width', randomWidth);
       rectElement.setAttribute('height', randomHeight);
       rectElement.setAttribute('fill', randomColor);
-      rectElement.setAttribute('class', 'area-calculate');
+      rectElement.setAttribute('class', 'area-calculate random-generate');
       rectElement.setAttribute('areagroup', this.getRandomNumber(1, 3));
 
       this.svgElement.appendChild(rectElement);
