@@ -125,21 +125,21 @@ export class svgAreaIntersection {
   /**
    * Take every svg elements, in svg which is define in constructor and take every elements in this svg which has class "area-calculate"
    */
-  polygonIntersectionInSvg(show = false, redraw = true, color = 'blue', group = null) {
+  polygonIntersectionInSvg(show = false, redraw = true, color = 'blue', opacity = 1, group = null) {
     if(redraw) {
       this.removeGeneratedIntersection();
     }
     const elementsArray = this.elementsToIntersect(group);
-    const area = this.polygonIntersectionInSvgForElements(elementsArray, show, color);
+    const area = this.polygonIntersectionInSvgForElements(elementsArray, show, color, opacity);
     return area;
   }
 
-  polygonIntersectionInSvgForElements(elementsArray, show = false, color) {
+  polygonIntersectionInSvgForElements(elementsArray, show = false, color, opacity) {
     this.currentPolygon = [];
-    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current", color);
+    this.currentPolygon[0] = new svgAreaPolygonObject([], 0, this.parentSVG, "current", color, opacity);
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
-      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", color);
+      let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", color, opacity);
       let hasIntersection = false;
       let indexesForDelete = [];
       let indexForDelete = -1;

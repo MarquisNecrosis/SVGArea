@@ -15,7 +15,7 @@ export class svgAreaPolygonObject {
    * @param {string} id unique id of polygon, which will his indetified in html
    * @param {string} color color of polygon in html
    */
-  constructor(points, index, parent, id, color = 'black', element = null, path = null) {
+  constructor(points, index, parent, id, color = 'black', opacity = 1, element = null, path = null) {
     this.points = points;
     this.index = index;
     this.parent = parent;
@@ -24,6 +24,7 @@ export class svgAreaPolygonObject {
     this.color = color;
     this.parentPath = null;
     this.gaps = [];
+    this.opacity = opacity;
     this.area = 0;
     if(points != undefined){
       this.removeRedundantPoints();
@@ -141,6 +142,7 @@ export class svgAreaPolygonObject {
     this.path.setAttribute('class', 'intersect-object');
     this.path.setAttribute('stroke', 'silver');
     this.path.setAttribute('stroke-width', '2');
+    this.path.setAttribute('style', 'opacity: ' + this.opacity + ';');
     this.path.setAttribute('fill', this.color);
 
     this.parent.appendChild(this.path);
