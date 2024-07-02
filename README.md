@@ -81,9 +81,9 @@ This algorhitm merge all svg elements into one or many svg elements. It also mer
    - Area = 3 730 421 px
    - Deviation = -2 915 px
 - 100 polygons
-   - Time =
-   - Area =
-   - Deviation =
+   - Time = 456 986 ms
+   - Area = 3 711 372 px
+   - Deviation = -7 690 px
 
 ## Lehoczky heuristic algorhitm
 
@@ -115,17 +115,17 @@ This algorhitm merge all svg elements into one or many svg elements. It also mer
      - Deviation = 10 358 px
 - 100 polygons
   - 1000 points
-     - Time =
-     - Area =
-     - Deviation =
+     - Time = 6 742 ms
+     - Area = 3 721 066 px
+     - Deviation = -17 384 px
   - 10000 points
-     - Time =
-     - Area =
-     - Deviation =
+     - Time = 67 215 ms
+     - Area = 3 710 963 px
+     - Deviation = -7 281 px
   - 100000 points
-     - Time =
-     - Area =
-     - Deviation =
+     - Time = 663 222 ms
+     - Area = 3 696 769 px
+     - Deviation = 6 913 px
 
 ## Lehoczky merging polygon algorhitm
 
@@ -138,6 +138,6 @@ This algorhitm merge all svg elements into one or many svg elements. It also mer
    - Area = 3 727 506 px
    - Deviation = 0 px
 - 100 polygons
-   - Time =
-   - Area =
-   - Deviation =
+   - Time = 369 ms
+   - Area = 3 703 682 px
+   - Deviation = 0 px
