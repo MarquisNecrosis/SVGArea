@@ -30,6 +30,16 @@ This algorhitm take every point in svg and trying it if, is in fill of svg eleme
 
 For each svg element, this heuristic algorhitm takes number of points from one element and try if the point is in fill in another element. At the end, multiplies the ratio by the total area of the element and adds it into existing area. The calculated area can be smaller than the original area.
 
+### Procedure
+
+![svg heuristic](https://github.com/MarquisNecrosis/SVGArea/assets/49921881/70223d1a-d0a3-4fce-a05f-244890afaa33)
+
+1. First(black) rectangle has area `a1 * b1`
+2. The second(red) rectangle has area `a2 * b2`, but intersects the black one
+3. Generate random points in red rectangle. In our case is 10.
+4. 8 points are not in black one fill and 2 are inside black one so the area will be `(8 / 10) * (a2 * b2)`
+5. The area of two intersects rectangle will be `a1 * b1 + 0.8 * a2 * b2` 
+
 ### Using
 
 ```
