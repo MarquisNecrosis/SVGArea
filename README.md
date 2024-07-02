@@ -73,13 +73,13 @@ This algorhitm merge all svg elements into one or many svg elements. It also mer
 ## Lazy algorhitm
 
 - 10 polygons
-   - Time = 32378 ms
-   - Area = 1056609 px
+   - Time = 32 378 ms
+   - Area = 1 056 609 px
    - Deviation = -5 218 px
 - 50 polygons
-   - Time = 
-   - Area =
-   - Deviation =
+   - Time = 270 252 ms
+   - Area = 3 730 421 px
+   - Deviation = -2 915 px
 - 100 polygons
    - Time =
    - Area =
@@ -90,29 +90,29 @@ This algorhitm merge all svg elements into one or many svg elements. It also mer
 - 10 polygons
   - 1000 points
      - Time = 55 ms
-     - Area = 1048854 px
+     - Area = 1 048 854 px
      - Deviation = 2 537 px
   - 10000 points
      - Time = 518.5 ms
-     - Area = 1050992 px
+     - Area = 1 050 992 px
      - Deviation = 399 px
   - 100000 points
      - Time = 4769 ms
-     - Area = 1051543 px
+     - Area = 1 051 543 px
      - Deviation = -152 px
 - 50 polygons
   - 1000 points
-     - Time =
-     - Area =
-     - Deviation =
+     - Time = 1 664 ms
+     - Area = 3 632 566 px
+     - Deviation = 94 940 px
   - 10000 points
-     - Time =
-     - Area =
-     - Deviation =
+     - Time = 15 994 ms
+     - Area = 3 696 840 px
+     - Deviation = 30 666 px
   - 100000 points
-     - Time =
-     - Area =
-     - Deviation =
+     - Time = 16 0527 ms
+     - Area = 3 717 148 px
+     - Deviation = 10 358 px
 - 100 polygons
   - 1000 points
      - Time =
@@ -131,12 +131,12 @@ This algorhitm merge all svg elements into one or many svg elements. It also mer
 
 - 10 polygons
    - Time = 23 ms
-   - Area = 1051391 px
+   - Area = 1 051 391 px
    - Deviation = 0 px
 - 50 polygons
-   - Time =
-   - Area =
-   - Deviation =
+   - Time = 267 ms
+   - Area = 3 727 506 px
+   - Deviation = 0 px
 - 100 polygons
    - Time =
    - Area =
