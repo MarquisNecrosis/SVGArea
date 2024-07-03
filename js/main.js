@@ -24,6 +24,11 @@ window.onload = function () {
     const numberOfRandomPolygons = document.getElementById('generate-input').value;
     svgRandom.generateRandomRectangle(numberOfRandomPolygons);
   });
+  document.getElementById('generatePolygons-btn').addEventListener('click', function() {
+    const svgRandom = new svgRandomGenerate('tutorial_svg');
+    const numberOfRandomPolygons = document.getElementById('generatePolygons-input').value;
+    svgRandom.generateRandomPolygon(numberOfRandomPolygons);
+  });
   document.getElementById('lazyAlg-btn').addEventListener('click', function() {
     const startTime = performance.now();
     const areaCalculator = new svgAreaCalculation();
