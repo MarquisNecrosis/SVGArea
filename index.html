@@ -72,6 +72,181 @@
       <div class="tutorial-div">
         <svg id="tutorial_svg" width="2000" height="2000" class="area-calculate">
 
+          <!-- 10 polygons for testing -->
+          <!--
+          <rect x="1205" y="1863" width="776" height="104" fill="#6BE27A" class="area-calculate random-generate" areagroup="3" area="80704"></rect>
+          <rect x="721" y="1063" width="537" height="401" fill="#F9ADBF" class="area-calculate random-generate" areagroup="3" area="215337"></rect>
+          <rect x="1186" y="1805" width="580" height="164" fill="#1ED25D" class="area-calculate random-generate" areagroup="2" area="95120"></rect>
+          <rect x="1780" y="1638" width="92" height="252" fill="#27A9A4" class="area-calculate random-generate" areagroup="2" area="23184"></rect>
+          <rect x="1913" y="852" width="55" height="854" fill="#E2BDEA" class="area-calculate random-generate" areagroup="3" area="46970"></rect>
+          <rect x="1884" y="1557" width="48" height="185" fill="#B99E4C" class="area-calculate random-generate" areagroup="3" area="8880"></rect>
+          <rect x="1201" y="1217" width="723" height="418" fill="#FCAE5B" class="area-calculate random-generate" areagroup="3" area="302214"></rect>
+          <rect x="791" y="23" width="203" height="941" fill="#394D3C" class="area-calculate random-generate" areagroup="1" area="191023"></rect>
+          <rect x="110" y="1346" width="1038" height="103" fill="#8D3BED" class="area-calculate random-generate" areagroup="3" area="106914"></rect>
+          <rect x="1271" y="657" width="386" height="284" fill="#F6E616" class="area-calculate random-generate" areagroup="1" area="109624"></rect>
+          -->
+
+          <!-- 50 polygons for testing -->
+          <!-- 
+          <rect x="1316" y="1809" width="74" height="173" fill="#E1B80D" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1130" y="662" width="224" height="1012" fill="#42C296" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1076" y="560" width="796" height="687" fill="#E54834" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="36" y="51" width="1415" height="405" fill="#DD792A" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1676" y="418" width="292" height="344" fill="#637D6D" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="823" y="1097" width="526" height="688" fill="#F430BA" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="471" y="1854" width="1369" height="24" fill="#AD2EB7" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="792" y="233" width="296" height="185" fill="#A7C0CB" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="632" y="1911" width="18" height="42" fill="#96356F" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1656" y="713" width="238" height="884" fill="#1E0F70" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="168" y="1163" width="746" height="525" fill="#94C7C9" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="374" y="1472" width="1478" height="110" fill="#C5EB92" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="38" y="35" width="1288" height="1743" fill="#9CBCAB" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1965" y="854" width="29" height="460" fill="#EAD5A9" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="375" y="1564" width="453" height="207" fill="#866CA9" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1683" y="1436" width="298" height="289" fill="#2B75E8" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1465" y="1714" width="476" height="34" fill="#755A05" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="753" y="175" width="377" height="295" fill="#5A1BBB" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="672" y="364" width="1242" height="1153" fill="#4E7FC1" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="912" y="1764" width="721" height="186" fill="#1887B3" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1333" y="1311" width="497" height="394" fill="#E7D941" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="901" y="1164" width="400" height="459" fill="#861F03" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="23" y="566" width="521" height="1270" fill="#AD9E8A" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="506" y="790" width="1227" height="1112" fill="#FC0F62" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1130" y="584" width="815" height="215" fill="#5E5B73" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="198" y="1288" width="773" height="597" fill="#2F387D" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1026" y="31" width="896" height="348" fill="#7EF828" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1091" y="268" width="74" height="363" fill="#1348E4" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="381" y="926" width="408" height="229" fill="#1053BA" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1755" y="201" width="227" height="825" fill="#22AC8E" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="378" y="1129" width="1235" height="395" fill="#8ACCA4" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1732" y="1086" width="114" height="734" fill="#E35823" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1167" y="1350" width="490" height="312" fill="#D1ABC4" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="935" y="1658" width="908" height="229" fill="#3AC55F" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1444" y="591" width="194" height="554" fill="#88C9B3" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1170" y="46" width="730" height="1169" fill="#21E325" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="796" y="1789" width="132" height="76" fill="#B351E9" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="72" y="462" width="898" height="169" fill="#AFFE8B" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="954" y="1124" width="922" height="136" fill="#2F7766" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="938" y="1532" width="841" height="343" fill="#CDED1F" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1713" y="191" width="68" height="1717" fill="#CC0A25" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1643" y="1476" width="99" height="450" fill="#1AB7DC" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1561" y="1763" width="15" height="156" fill="#793CCB" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="461" y="210" width="688" height="1719" fill="#460B0A" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1173" y="596" width="767" height="1203" fill="#04924B" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="604" y="1167" width="778" height="338" fill="#74E9FA" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1021" y="1786" width="948" height="214" fill="#4F727B" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1152" y="1635" width="380" height="64" fill="#E4FA0E" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1905" y="699" width="37" height="97" fill="#2FE4C6" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="63" y="634" width="1088" height="629" fill="#79DF4F" class="area-calculate random-generate" areagroup="1"></rect> 
+          -->
+
+
+          <!-- 100 polygons for testing -->
+          <!-- 
+          <rect x="1312" y="1630" width="56" height="71" fill="#DC40E1" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1704" y="610" width="247" height="1088" fill="#388B86" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="531" y="1561" width="1241" height="351" fill="#C1764A" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1985" y="327" width="14" height="646" fill="#CD2349" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="782" y="1933" width="792" height="48" fill="#F81329" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1776" y="318" width="152" height="822" fill="#DF9D12" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1409" y="1728" width="28" height="233" fill="#EBDA75" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1276" y="1141" width="372" height="859" fill="#B9F84C" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1237" y="179" width="707" height="399" fill="#164B27" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="12" y="1476" width="1456" height="147" fill="#5F80F4" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1624" y="579" width="72" height="358" fill="#D90235" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="519" y="1715" width="59" height="205" fill="#43739D" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1120" y="1683" width="432" height="199" fill="#1DBD2A" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1680" y="1775" width="186" height="139" fill="#B342B9" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1083" y="182" width="429" height="685" fill="#11A730" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1428" y="1066" width="189" height="454" fill="#9AC463" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="996" y="956" width="674" height="150" fill="#56E446" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1075" y="967" width="682" height="904" fill="#AF6F3E" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1971" y="1918" width="29" height="80" fill="#236C7C" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="278" y="825" width="1193" height="1005" fill="#46E5B9" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="918" y="123" width="999" height="1352" fill="#9BA6AB" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="276" y="427" width="1564" height="742" fill="#4D9809" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1690" y="1052" width="62" height="271" fill="#E56ECB" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="246" y="665" width="411" height="1163" fill="#7740D6" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1494" y="1062" width="369" height="766" fill="#A359BC" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1642" y="1711" width="82" height="89" fill="#177B35" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1453" y="1010" width="400" height="73" fill="#C3841A" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1767" y="1905" width="51" height="22" fill="#9C99EF" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1294" y="1522" width="487" height="192" fill="#721192" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="153" y="165" width="1704" height="1607" fill="#EA0F72" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1489" y="1322" width="480" height="664" fill="#951062" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1327" y="1026" width="648" height="918" fill="#F61FFB" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="716" y="638" width="408" height="33" fill="#3F0419" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="977" y="473" width="301" height="1507" fill="#234C2D" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="271" y="1205" width="695" height="46" fill="#7B0BC0" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="197" y="1493" width="293" height="182" fill="#6933B3" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1708" y="577" width="230" height="1040" fill="#760095" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1763" y="995" width="121" height="368" fill="#03643B" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1046" y="1330" width="351" height="468" fill="#D4DF95" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1779" y="897" width="20" height="514" fill="#58FA4C" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="561" y="349" width="816" height="55" fill="#76F9AB" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="458" y="1350" width="789" height="395" fill="#498EE2" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="12" y="1062" width="1969" height="876" fill="#0807BC" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1826" y="1192" width="56" height="153" fill="#303E74" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="941" y="1556" width="825" height="436" fill="#EDEBFD" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1888" y="1247" width="74" height="234" fill="#B19CAB" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1083" y="1765" width="507" height="119" fill="#05847E" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1773" y="162" width="117" height="1812" fill="#9966F1" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="980" y="1887" width="846" height="84" fill="#910786" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1682" y="747" width="143" height="1136" fill="#1EC81B" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="867" y="1341" width="834" height="540" fill="#FFA1A7" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1844" y="230" width="151" height="193" fill="#07E5DD" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="196" y="1763" width="287" height="20" fill="#E6CDC8" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="196" y="1685" width="224" height="141" fill="#859B30" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="275" y="1710" width="980" height="93" fill="#45240E" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="465" y="1897" width="563" height="12" fill="#781BC2" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="583" y="1564" width="1354" height="52" fill="#20D35B" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="257" y="143" width="927" height="1211" fill="#AD1502" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="761" y="237" width="379" height="1610" fill="#9FF5EB" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="569" y="738" width="213" height="354" fill="#FF8114" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="123" y="355" width="1802" height="954" fill="#C61DE4" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1548" y="1517" width="311" height="301" fill="#1E1C88" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="727" y="812" width="503" height="419" fill="#8A8C85" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="309" y="117" width="1544" height="1069" fill="#B3FF82" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="733" y="449" width="1012" height="1402" fill="#6FB4D3" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1919" y="649" width="79" height="1016" fill="#79EC9B" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1716" y="192" width="92" height="1114" fill="#4751E5" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="323" y="806" width="225" height="390" fill="#E1466F" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1915" y="43" width="54" height="589" fill="#4DAE2F" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="814" y="179" width="1117" height="1058" fill="#C370DD" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1298" y="439" width="14" height="1372" fill="#DAAA20" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1379" y="209" width="373" height="389" fill="#D0977F" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="436" y="1418" width="876" height="548" fill="#9CE3EE" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="28" y="905" width="323" height="434" fill="#73ECB6" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1134" y="430" width="790" height="1242" fill="#5B8E77" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1075" y="398" width="284" height="390" fill="#8D9980" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1800" y="21" width="30" height="466" fill="#9A8131" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1295" y="1297" width="687" height="468" fill="#82309C" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="239" y="580" width="447" height="619" fill="#9B8FDB" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="260" y="547" width="535" height="688" fill="#C4DB8C" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1364" y="832" width="629" height="594" fill="#B4F038" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1779" y="685" width="90" height="351" fill="#CE6EC9" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="623" y="1435" width="604" height="178" fill="#A52FE5" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="840" y="946" width="237" height="823" fill="#0FA86F" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1966" y="684" width="22" height="1092" fill="#E09CF7" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="275" y="147" width="707" height="89" fill="#7C1EC6" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1581" y="1366" width="43" height="258" fill="#69B0AF" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1778" y="1283" width="32" height="75" fill="#8ED290" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1019" y="802" width="758" height="1168" fill="#30183A" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1017" y="224" width="443" height="1547" fill="#7793E2" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="27" y="240" width="485" height="795" fill="#DD534F" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="224" y="49" width="537" height="1116" fill="#77FAF2" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="922" y="84" width="365" height="1737" fill="#B26D8E" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="564" y="273" width="971" height="754" fill="#5344AC" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="1857" y="513" width="85" height="502" fill="#7D9D7D" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="1792" y="181" width="14" height="201" fill="#D6F2EA" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="907" y="479" width="1024" height="766" fill="#4A4C00" class="area-calculate random-generate" areagroup="2"></rect>
+          <rect x="979" y="396" width="965" height="1539" fill="#C6D1C2" class="area-calculate random-generate" areagroup="1"></rect>
+          <rect x="708" y="1754" width="324" height="46" fill="#603C97" class="area-calculate random-generate" areagroup="3"></rect>
+          <rect x="1562" y="1322" width="305" height="347" fill="#F5968C" class="area-calculate random-generate" areagroup="2"></rect>
+           -->
+
+
+
           <!-- <rect x="1443" y="438" width="78" height="1312" fill="#A12511" class="area-calculate" areagroup="1"></rect>
 <rect x="1341" y="1410" width="239" height="220" fill="#496260" class="area-calculate" areagroup="2"></rect>
 <rect x="378" y="1600" width="369" height="373" fill="#31B523" class="area-calculate" areagroup="1"></rect>
