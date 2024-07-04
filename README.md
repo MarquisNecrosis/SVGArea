@@ -1,14 +1,14 @@
-This algorhitm is for calculating area of complex SVG elements. Here is three algorhitm for calculate area.
+This algorithm is for calculating area of complex SVG elements. Here is three algorithm for calculate area.
 
-All algorhitm needs id of svg element. In demo is it `tutorial_svg`. In this svg element the algorhitm take every elements with class `area-calculate`.
+All algorithm needs id of svg element. In demo is it `tutorial_svg`. In this svg element the algorithm take every elements with class `area-calculate`.
 
 ```
 <rect x="352" y="1649" width="774" height="178" fill="#90929C" class="area-calculate random-generate" areagroup="2"></rect>
 ```
 
-# 1. Lazy algorhitm
+# 1. Lazy algorithm
 
-This algorhitm take every point in svg and trying it if, is in fill of svg element. After that, sums all points which are in fill and that is area.
+This algorithm take every point in svg and trying it if, is in fill of svg element. After that, sums all points which are in fill and that is area.
 
 ### Using
 
@@ -26,9 +26,9 @@ This algorhitm take every point in svg and trying it if, is in fill of svg eleme
 - Non efficiency for memory and time
 - Non accurate due to to pixel. The points on the edge do not have to belong to the entire element. In this case the calculated area can be bigger than the original area.
 
-# 2. Lehoczky heuristic algorhitm
+# 2. Lehoczky heuristic algorithm
 
-For each svg element, this heuristic algorhitm takes number of points from one element and try if the point is in fill in another element. At the end, multiplies the ratio by the total area of the element and adds it into existing area. The calculated area can be smaller than the original area.
+For each svg element, this heuristic algorithm takes number of points from one element and try if the point is in fill in another element. At the end, multiplies the ratio by the total area of the element and adds it into existing area. The calculated area can be smaller than the original area.
 
 ### Procedure
 
@@ -62,9 +62,9 @@ For each svg element, this heuristic algorhitm takes number of points from one e
 
 - For big ammount of svg element is slow.
 
-# 3. Lehoczky merging polygon algorhitm
+# 3. Lehoczky merging polygon algorithm
 
-This algorhitm merge all svg elements into one or many svg elements. It also merging gaps between polygons. After that calculate area all merged polygons via Shoelace formula and substracts area of gaps.
+This algorithm merge all svg elements into one or many svg elements. It also merging gaps between polygons. After that calculate area all merged polygons via Shoelace formula and substracts area of gaps.
 
 ### Using
 
@@ -80,7 +80,7 @@ This algorhitm merge all svg elements into one or many svg elements. It also mer
 
 # Testing
 
-## Lazy algorhitm
+## Lazy algorithm
 
 - 10 polygons
    - Time = 32 378 ms
@@ -95,7 +95,7 @@ This algorhitm merge all svg elements into one or many svg elements. It also mer
    - Area = 3 711 372 px
    - Deviation = -7 690 px
 
-## Lehoczky heuristic algorhitm
+## Lehoczky heuristic algorithm
 
 - 10 polygons
   - 1000 points
@@ -137,7 +137,7 @@ This algorhitm merge all svg elements into one or many svg elements. It also mer
      - Area = 3 696 769 px
      - Deviation = 6 913 px
 
-## Lehoczky merging polygon algorhitm
+## Lehoczky merging polygon algorithm
 
 - 10 polygons
    - Time = 23 ms
