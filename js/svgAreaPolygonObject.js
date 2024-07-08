@@ -28,6 +28,10 @@ export class svgAreaPolygonObject {
     this.area = 0;
     if(points != undefined){
       this.removeRedundantPoints();
+      let area = this.calculateArea(false, false, false);
+      if (area > 0) {
+        this.reversePoints();
+      }
       if (element == null){
         this.createSvg();
       }

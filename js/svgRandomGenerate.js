@@ -70,11 +70,11 @@ export class svgRandomGenerate {
       alert('The value must be greater than 0.');
     } else {
       this.removeGeneratedElements();
-      this.generatePologons(inputNumber);
+      this.generatePolygons(inputNumber);
     }
   }
 
-  generatePologons(inputNumber) {
+  generatePolygons(inputNumber) {
     for (let i = 0; i < inputNumber; i++) {
       const randomX = this.getRandomNumber(0, this.width);
       const randomY = this.getRandomNumber(0, this.height);
