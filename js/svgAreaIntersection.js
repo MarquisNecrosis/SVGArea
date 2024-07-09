@@ -140,79 +140,87 @@ export class svgAreaIntersection {
     elementsArray.forEach(element => {
       const points = this.elementPointTransformation(element);
       let intersectPolygon = new svgAreaPolygonObject(points, 0, this.parentSVG, "intersect", color, opacity);
-      let hasIntersection = false;
-      let indexesForDelete = [];
-      let indexForDelete = -1;
-      this.currentPolygon.forEach((polygon, index) => {
-        let newPolygon = null;
-        let stat = 0;
-        let allIntersection = this.findAllIntersection(polygon, intersectPolygon);
-        let allVertexes = this.findAllVertexes(polygon, intersectPolygon);
-        let allVertexesIntersect = this.findAllVertexes(polygon, intersectPolygon, false);
-        [stat, newPolygon] = this.polygonIntersection(polygon, intersectPolygon);
-        allIntersection = this.filterIntersection(allIntersection, newPolygon);
-        allVertexes = this.filterPoints(allVertexes, newPolygon);
-        allVertexesIntersect = this.filterPoints(allVertexesIntersect, newPolygon);
-        this.manageGapsIntersection(polygon, intersectPolygon);
-        const gapsIntersection = this.manageGapsIntersection(intersectPolygon, polygon);
-        if (gapsIntersection) {
-          stat = this.INTERSECT.ADD;
-        }
-        allVertexes = this.filterGapsPoints(allVertexes, polygon);
-        allVertexesIntersect = this.filterGapsPoints(allVertexesIntersect, polygon);
-        polygon.redrawSvg();
+      const isValid = this.checkIfItsValidPolygon(intersectPolygon);
+      if(isValid) {
+        let hasIntersection = false;
+        let indexesForDelete = [];
+        let indexForDelete = -1;
+        this.currentPolygon.forEach((polygon, index) => {
+          let newPolygon = null;
+          let stat = 0;
+          let allIntersection = this.findAllIntersection(polygon, intersectPolygon);
+          let allVertexes = this.findAllVertexes(polygon, intersectPolygon);
+          let allVertexesIntersect = this.findAllVertexes(polygon, intersectPolygon, false);
+          [stat, newPolygon] = this.polygonIntersection(polygon, intersectPolygon);
+          allIntersection = this.filterIntersection(allIntersection, newPolygon);
+          allVertexes = this.filterPoints(allVertexes, newPolygon);
+          allVertexesIntersect = this.filterPoints(allVertexesIntersect, newPolygon);
+          this.manageGapsIntersection(polygon, intersectPolygon);
+          const gapsIntersection = this.manageGapsIntersection(intersectPolygon, polygon);
+          if (gapsIntersection) {
+            stat = this.INTERSECT.ADD;
+          }
+          allVertexes = this.filterGapsPoints(allVertexes, polygon);
+          allVertexesIntersect = this.filterGapsPoints(allVertexesIntersect, polygon);
+          polygon.redrawSvg();
 
-        let gaps = [];
-        while (allVertexes.length > 0 && stat == this.INTERSECT.ADD) {
-          let gap = null;
-          let clockTurn = true;
-          if (allVertexesIntersect.length > 0) {
-            clockTurn = true;
-            [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexesIntersect[0], null, clockTurn);
-          }
-          else {
-            [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0], null, clockTurn);
-          }
-          allIntersection = this.filterIntersection(allIntersection, gap);
-          allVertexes = this.filterPoints(allVertexes, gap);
-          allVertexesIntersect = this.filterPoints(allVertexesIntersect, gap);
-          gaps.push(gap);
-        }
-        if (allIntersection.length > 0) {
-          let gap = null
-          console.log("vznika nova dira bez vrcholu");
-          [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
-          gaps.push(gap);
-        }
-        switch (stat) {
-          case this.INTERSECT.ADD:
-            polygon.createFromObject(newPolygon, intersectPolygon);
-            gaps.forEach(gap => {
-              if (gap != null) {
-                polygon.createGap(gap);
-                polygon.chooseCorrectGap();
-                polygon.redrawSvg();
-              }
-            });
-            intersectPolygon.removeSvg();
-            intersectPolygon.removePath();
-            intersectPolygon = polygon;
-            if (hasIntersection) {
-              indexesForDelete.push(indexForDelete);
+          let gaps = [];
+          while (allVertexes.length > 0 && stat == this.INTERSECT.ADD) {
+            let gap = null;
+            let clockTurn = true;
+            if (allVertexesIntersect.length > 0) {
+              clockTurn = true;
+              [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexesIntersect[0], null, clockTurn);
             }
-            hasIntersection = true;
-            indexForDelete = index;
-            break;
-          case this.INTERSECT.NEW:
-            break;
-          default:
-            break;
+            else {
+              [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, allVertexes[0], null, clockTurn);
+            }
+            allIntersection = this.filterIntersection(allIntersection, gap);
+            allVertexes = this.filterPoints(allVertexes, gap);
+            allVertexesIntersect = this.filterPoints(allVertexesIntersect, gap);
+            gaps.push(gap);
+          }
+          if (allIntersection.length > 0) {
+            let gap = null
+            console.log("vznika nova dira bez vrcholu");
+            [stat, gap] = this.polygonIntersection(polygon, intersectPolygon, null, [allIntersection[0]['intersection'], allIntersection[0]['startPoint']], false);
+            gaps.push(gap);
+          }
+          switch (stat) {
+            case this.INTERSECT.ADD:
+              polygon.createFromObject(newPolygon, intersectPolygon);
+              gaps.forEach(gap => {
+                if (gap != null) {
+                  polygon.createGap(gap);
+                  polygon.chooseCorrectGap();
+                  polygon.redrawSvg();
+                }
+              });
+              intersectPolygon.removeSvg();
+              intersectPolygon.removePath();
+              intersectPolygon = polygon;
+              if (hasIntersection) {
+                indexesForDelete.push(indexForDelete);
+              }
+              hasIntersection = true;
+              indexForDelete = index;
+              break;
+            case this.INTERSECT.NEW:
+              break;
+            default:
+              break;
+          }
+        });
+        if (!hasIntersection) {
+          this.currentPolygon.push(intersectPolygon);
         }
-      });
-      if (!hasIntersection) {
-        this.currentPolygon.push(intersectPolygon);
+        this.manageCurrentPolygons(indexesForDelete);
       }
-      this.manageCurrentPolygons(indexesForDelete);
+      else {
+        console.log('Polygon is not valid');
+        intersectPolygon.removeSvg();
+        intersectPolygon.removePath();
+      }
     });
     const area = this.calculateAreaofAllPolygons();
     this.removePolygons(show);
@@ -1226,6 +1234,26 @@ export class svgAreaIntersection {
     elementsArray.forEach(element => {
       element.remove();
     });
+  }
+
+  checkIfItsValidPolygon(polygon) {
+    const allLines = polygon.getAllLines();
+    let isValid = true;
+    for (let i = 0; i < allLines.length - 1; i++) {
+      const line1 = allLines[i];
+      for (let j = i; j < allLines.length; j++) {
+        const line2 = allLines[j];
+        const intersection = this.lineIntersectionLine(line1, line2, true);
+        if(intersection[0] != null && intersection[1] != null && !this.arraysAreEqual(intersection, line1[0]) && !this.arraysAreEqual(intersection, line1[1]) && !this.arraysAreEqual(intersection, line2[0]) && !this.arraysAreEqual(intersection, line2[1])) {
+          isValid = false;
+          break;
+        }
+      }
+      if(!isValid){
+        break;
+      }
+    }
+    return isValid;
   }
 
 }
