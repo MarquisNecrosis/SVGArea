@@ -5,7 +5,8 @@
   "main": "js/polygonLib.js",
   "type": "module",
   "exports": {
-    ".": "./js/polygonLib.js"
+    "./polygon": "./js/polygonLib.js",
+    "./random": "./js/svgRandomLib.js"
   },
   "author": "MarquisNecrosis",
   "license": "MIT"
