@@ -1088,7 +1088,7 @@ export class svgAreaIntersection {
     newPoint.setAttribute("class", "helpPoints"); // Add the class 'point'
 
     // Append the point to the SVG
-    document.getElementById("tutorial_svg").appendChild(newPoint);
+    document.getElementById("this.parentSVG").appendChild(newPoint);
   }
 
   deleteHelpPoints() {
