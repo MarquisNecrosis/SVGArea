@@ -1088,7 +1088,7 @@ export class svgAreaIntersection {
     newPoint.setAttribute("class", "helpPoints"); // Add the class 'point'
 
     // Append the point to the SVG
-    document.getElementById(this.parentSVG).appendChild(newPoint);
+    this.parentSVG.appendChild(newPoint);
   }
 
   deleteHelpPoints() {
@@ -1181,7 +1181,7 @@ export class svgAreaIntersection {
       line.setAttribute("stroke", "red");
       line.setAttribute("stroke-width", "8");
       line.setAttribute("class", "helpLine");
-      document.getElementById(this.parentSVG).appendChild(line);
+      this.parentSVG.appendChild(line);
     }
   }
 
@@ -1199,7 +1199,7 @@ export class svgAreaIntersection {
       line.setAttribute("stroke", "black");
       line.setAttribute("stroke-width", "8");
       line.setAttribute("class", "helpIntersectLine");
-      document.getElementById(this.parentSVG).appendChild(line);
+      this.parentSVG.appendChild(line);
     }
   }
 
