@@ -1,0 +1,12 @@
+{
+  "name": "svg-area-intersection",
+  "version": "1.0.0",
+  "description": "Polygon intersection calculation for SVG elements",
+  "main": "js/polygonLib.js",
+  "type": "module",
+  "exports": {
+    ".": "./js/polygonLib.js"
+  },
+  "author": "MarquisNecrosis",
+  "license": "MIT"
+}
