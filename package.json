@@ -7,7 +7,8 @@
   "exports": {
     ".": "./js/polygonLib.js",
     "./polygon": "./js/polygonLib.js",
-    "./random": "./js/svgRandomLib.js"
+    "./random": "./js/svgRandomLib.js",
+    "./heuristic": "./js/heuristicLib.js"
   },
   "author": "MarquisNecrosis",
   "license": "MIT"
